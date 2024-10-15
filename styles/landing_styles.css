@@ -94,8 +94,6 @@ body {
   display: block;
 }
 
-
-
 /* Section Styling */
 .section {
     padding: 120px 40px;
@@ -124,47 +122,40 @@ body {
 .team-cards {
   display: flex;
   justify-content: center;
-  gap: 40px; /* Increased gap between cards */
-  padding: 20px; 
+  gap: 40px; /* Adjust gap as needed */
+  padding: 20px;
 }
 
 .card {
   background-color: #f9f9f9;
   border-radius: 10px;
   padding: 20px;
-  width: 450px; /* Adjusted width for 5:2 aspect ratio */
-  height: 180px; /* Adjusted height for 5:2 aspect ratio */
+  width: 450px;
+  height: 250px; /* Adjust height to accommodate text */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
 }
 
+.card h3, .card p {
+  display: inline-block;
+  margin-right: 10px; /* Add space between name and role */
+}
+
+.card .info-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* Adjust gap between name and role */
+}
+
 .card img {
-  width: 100px; /* Placeholder image size */
+  width: 100px;
   height: 100px;
-  border-radius: 50%; /* Circular image */
+  border-radius: 50%;
   margin-bottom: 15px;
-}
-
-.card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-}
-
-.card h3 {
-  font-size: 1.8rem;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  margin-bottom: 10px;
-}
-
-.card p {
-  margin-top: 40px;
-  font-size: 1.2rem;
-  font-family: 'Montserrat', sans-serif;
-  color: #6c757d;
 }
 
 /* Join the Waitlist Button */
