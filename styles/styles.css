@@ -1,0 +1,283 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    overflow-x: hidden;
+  }
+  
+  .container {
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  header {
+    background: linear-gradient(135deg, #FEC5BB 0%, #FFDFD3 100%);
+    padding: 60px 0;
+    text-align: center;
+    position: relative;
+    animation: fadeIn 2s ease-in-out;
+  }
+  
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+  }
+  
+  nav .logo img {
+    width: 60px;
+    transform: scale(1);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  nav .logo img:hover {
+    transform: scale(1.2);
+  }
+  
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+  
+  nav ul li a:hover {
+    color: #ff6b6b;
+  }
+  
+  .hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    color: #ff6b6b;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: popUp 2s ease-out;
+  }
+  
+  .hero p {
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+    font-weight: 300;
+    color: #6c757d;
+    animation: fadeIn 3s ease-in;
+  }
+  
+  .cta-buttons {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .btn {
+    text-decoration: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-primary {
+    background-color: #ff6b6b;
+    color: white;
+    transform: scale(1);
+  }
+  
+  .btn-primary:hover {
+    background-color: #ff4757;
+    transform: scale(1.1);
+  }
+  
+  .btn-secondary {
+    background-color: #feca57;
+    color: white;
+    transform: scale(1);
+  }
+  
+  .btn-secondary:hover {
+    background-color: #ffcc5c;
+    transform: scale(1.1);
+  }
+  
+  .features {
+    padding: 100px 0;
+    text-align: center;
+    animation: fadeInUp 1.5s ease-in-out;
+  }
+  
+  .features h2 {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    color: #ff6b6b;
+  }
+  
+  .feature-icons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    animation: bounceIcons 2s ease-in-out infinite;
+  }
+  
+  .feature-icons img {
+    width: 60px;
+    transition: transform 0.3s ease;
+  }
+  
+  .feature-icons img:hover {
+    transform: scale(1.2);
+  }
+  
+  .analytics {
+    background-color: #6C5CE7;
+    padding: 100px 0;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .analytics h2 {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    color: #ffcc5c;
+    animation: pulse 2s infinite;
+  }
+  
+  .analytics .globe {
+    width: 250px;
+    height: 250px;
+    background: url('globe.png') no-repeat center;
+    background-size: contain;
+    margin: 50px auto;
+    animation: spin 5s linear infinite;
+  }
+  
+  footer {
+    background-color: #333;
+    color: white;
+    padding: 50px 0;
+    text-align: center;
+  }
+  
+  footer p {
+    margin-bottom: 20px;
+    color: #feca57;
+  }
+  
+  footer .btn-primary {
+    background-color: #ff6b6b;
+    padding: 15px 30px;
+    border-radius: 50px;
+    margin-top: 20px;
+  }
+  
+  footer .btn-primary:hover {
+    background-color: #ff4757;
+    transform: scale(1.1);
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      width: 95%;
+    }
+  
+    nav ul {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .cta-buttons {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .features {
+      padding: 50px 0;
+    }
+  
+    .feature-icons {
+      flex-direction: column;
+    }
+  
+    .analytics {
+      padding: 60px 0;
+    }
+  
+    .analytics .globe {
+      width: 180px;
+      height: 180px;
+    }
+  }
+  
+  /* Fun and cute animations */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes popUp {
+    0% {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeInUp {
+    0% {
+      transform: translateY(100px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes bounceIcons {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
