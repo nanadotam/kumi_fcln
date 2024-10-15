@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #fff;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .waitlist-logo {
+    text-align: center;
+    margin-bottom: 30px; 
+  }
+  
+  .waitlist-logo img {
+    width: 250px;
+    margin-bottom: 20px;
+  }
+  
+  /* Content Styling */
+  .waitlist-content {
+    text-align: center;
+  }
+  
+  .waitlist-content h2 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 3em;
+    margin-bottom: 10px;
+  }
+  
+  .waitlist-content p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+  }
+  
+  /* Form Styling */
+  .waitlist-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .email-input {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 1em;
+  }
+  
+  .join-btn {
+    background-color: #187045;
+    color: white;
+    padding: 20px 40px;
+    border: none; 
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1.4rem;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+  }
+  
+  .join-btn:hover {
+    background-color: #044B85;
+  }
+  
+  footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 30px;
+    width: 100vw;  
+    position: fixed;
+    bottom: 0;
+    left: 0;  
+  }
+  
+  footer p {
+      margin: 0;
+      font-size: 0.9rem;
+  }
+  
