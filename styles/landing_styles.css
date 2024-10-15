@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #ffffff; /* White theme */
+  color: #333;
+}
+
+/* Navbar Styling */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px;
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo img {
+  width: 140px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 40px;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.2rem;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav-links li a:hover {
+  color: #DCA05F;
+}
+
+/* Auth buttons (Login/Register) */
+.auth-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.auth-buttons a {
+  text-decoration: none;
+  padding: 15px 25px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.auth-buttons a.btn-login {
+  background-color: #DCA05F;
+  color: white;
+}
+
+.auth-buttons a.btn-register {
+  background-color: #E46E51;
+  color: white;
+}
+
+.auth-buttons a:hover {
+  background-color: #AE3A6D;
+}
+
+/* Fullscreen Image */
+.fullscreen-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.fullscreen-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+
+/* Section Styling */
+.section {
+    padding: 120px 40px;
+    text-align: center;
+}
+
+/* About Section Styling */
+#about h2, #waitlist h2 {
+    font-size: 36px; /* Increased font size */
+    font-family: 'Bricolage Grotesque', sans-serif;
+    margin-bottom: 60px; /* Increased gap between header and cards */
+  }
+
+#about p, #waitlist a {
+  font-size: 1.4rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Team Section Styling */
+#team h2, #waitlist h2 {
+  font-size: 36px; /* Increased font size */
+  font-family: 'Bricolage Grotesque', sans-serif;
+  margin-bottom: 60px; /* Increased gap between header and cards */
+}
+
+.team-cards {
+  display: flex;
+  justify-content: center;
+  gap: 40px; /* Increased gap between cards */
+}
+
+.card {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+  width: 400px; /* Adjusted width for 5:2 aspect ratio */
+  height: 160px; /* Adjusted height for 5:2 aspect ratio */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card img {
+  width: 100px; /* Placeholder image size */
+  height: 100px;
+  border-radius: 50%; /* Circular image */
+  margin-bottom: 15px;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card h3 {
+  font-size: 1.8rem;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 1.2rem;
+  font-family: 'Montserrat', sans-serif;
+  color: #6c757d;
+}
+
+/* Join the Waitlist Button */
+.btn-primary {
+  background-color: #187045;
+  color: white;
+  padding: 20px 40px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1.4rem;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background-color: #044B85;
+  transform: scale(1.05);
+}
+
+/* Footer */
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 30px;
+}
