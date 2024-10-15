@@ -30,6 +30,18 @@ body {
   width: 140px;
 }
 
+.waitlistlogo {
+  display: flex;
+  justify-content: center;  /* Horizontal centering */
+  align-items: center;      /* Vertical centering */
+  height: 100vh;            /* Full viewport height to center vertically */
+}
+
+.waitlistlogo img {
+  width: 500px;
+}
+
+
 .nav-links {
   list-style: none;
   display: flex;
@@ -125,14 +137,15 @@ body {
   display: flex;
   justify-content: center;
   gap: 40px; /* Increased gap between cards */
+  padding: 20px; 
 }
 
 .card {
   background-color: #f9f9f9;
   border-radius: 10px;
   padding: 20px;
-  width: 400px; /* Adjusted width for 5:2 aspect ratio */
-  height: 160px; /* Adjusted height for 5:2 aspect ratio */
+  width: 450px; /* Adjusted width for 5:2 aspect ratio */
+  height: 180px; /* Adjusted height for 5:2 aspect ratio */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
@@ -160,6 +173,7 @@ body {
 }
 
 .card p {
+  margin-top: 40px;
   font-size: 1.2rem;
   font-family: 'Montserrat', sans-serif;
   color: #6c757d;
@@ -181,6 +195,8 @@ body {
   background-color: #044B85;
   transform: scale(1.05);
 }
+
+
 
 /* Footer */
 footer {
