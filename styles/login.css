@@ -1,18 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
 }
 body {
-    font-family: 'Montserrat', sans-serif;
-    background: url('imgs\wheat.png');
     color: #333;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background-image: url('../imgs/bgimg1.png'); 
+    background-size: cover;
   }
+
+h2{
+  font-family: 'Bricolage Grotesque', sans-serif;
+  text-align: center;
+  font-size: 40px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #333;
+}
 
 .navbar {
   display: flex;
@@ -64,15 +74,9 @@ body {
     padding: 40px;
     background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-    border-radius: 8p;
+    border-radius: 10px;
 }
 
-
-h2 {
-  margin-bottom: 20px;
-  font-weight: 600;
-  color: #333;
-}
 
 input[type="text"], input[type="password"] {
   width: 100%;
@@ -98,7 +102,7 @@ input::placeholder {
 input[type="submit"] {
   width: 100%;
   padding: 12px;
-  background-color: #17643b;
+  background-color: #187045;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -108,7 +112,8 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-  background-color: #41b073;
+  background-color: #044B85;
+  transition: background-color 0.3s ease;
 }
 
 footer {
