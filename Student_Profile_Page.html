@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile Page</title>
+    <link rel="stylesheet" href="styles/Profile_Page.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="logo">
+            <span>K</span><span>u</span><span>m</span><span>i</span>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-primary">Home</button>
+            <button class="btn btn-secondary">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="profile-card">
+            <h2 class="card-title">Student Profile Information</h2>
+            <div class="profile-header">
+                <div class="profile-picture">
+                    <img src="/api/placeholder/150/150" alt="Profile Picture">
+                    <div class="profile-picture-upload">
+                        Change Picture
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" class="form-control" value="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" value="john.doe@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="bio">Bio</label>
+                            <textarea id="bio" class="form-control">Mathematics teacher with 5 years of experience specializing in calculus and algebra.</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <h2 class="card-title">Change Password</h2>
+            <form>
+                <div class="form-group">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Password</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
