@@ -85,6 +85,7 @@ body {
   align-items: center;
   height: 100vh;
   width: 100%;
+  margin-bottom: var(--gutter-huge);
 }
 
 .fullscreen-image {
@@ -96,7 +97,8 @@ body {
 
 /* Section Styling */
 .section {
-  padding: var(--gutter-huge) var(--gutter-small);
+  padding: var(--gutter-huge);
+  margin: var(--gutter-large) 0;
   text-align: center;
 }
 
@@ -104,7 +106,9 @@ body {
 #about h2, #waitlist h2 {
   font-size: var(--h2);
   font-family: 'Bricolage Grotesque', sans-serif;
+  margin: var(--gutter-large);
   margin-bottom: var(--gutter-medium);
+  gap: var(--gutter-huge);
 }
 
 #about p, #waitlist a {
