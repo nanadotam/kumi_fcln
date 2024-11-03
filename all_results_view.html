@@ -1,0 +1,175 @@
+<!-- 
+- designing a students result dashboard
+-  displaying student's name, roll number, and marks in for a given subject to the course instructor
+-   displaying the average marks of all students in the given subject
+-   displaying the highest marks of all students in the given subject
+-   displaying the lowest marks of all students in the given subject
+-   displaying the number of students who scored above average marks
+-   displaying the number of students who scored below average marks
+- adds charts for viewing and displaying dat (chart js)
+- pie chart for the distribution of marks
+- can lead to individual student's result page (PROBABLY AS A POP UP DIALOG BOX OR A NEW PAGE)
+- can lead BACK to the course instructor's dashboard
+- can lead to the course instructor's profile page
+
+
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Results Dashboard</title>
+  <link rel="stylesheet" href="styles/styles.css">
+  <link rel="stylesheet" href="styles/overall_grades_dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <a href="instructor_dashboard.html">Instructor Dashboard</a>
+    </div>
+    <div class="nav-links">
+      <a href="profile.html">Profile</a>
+    </div>
+  </nav>
+
+  <!-- Dashboard Header -->
+  <header class="dashboard-header">
+    <h1>Student Results Dashboard</h1>
+    <p>Subject: <strong>Mathematics</strong></p>
+  </header>
+
+  <!-- Main Content -->
+  <div class="content">
+    <!-- Student Information Table -->
+    <section class="student-info">
+      <h2>Class Performance</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Roll Number</th>
+            <th>Marks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Sample Data -->
+          <tr>
+            <td>John Doe</td>
+            <td>101</td>
+            <td>85</td>
+          </tr>
+          <tr>
+            <td>Jane Smith</td>
+            <td>102</td>
+            <td>78</td>
+          </tr>
+          <tr>
+            <td>Alex Johnson</td>
+            <td>103</td>
+            <td>92</td>
+          </tr>
+          <tr>
+            <td>Emily Davis</td>
+            <td>104</td>
+            <td>67</td>
+          </tr>
+          <!-- Add more rows as needed -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Performance Statistics -->
+    <section class="statistics">
+      <h2>Statistics</h2>
+      <ul>
+        <li>Average Marks: <strong>80.5</strong></li>
+        <li>Highest Marks: <strong>95</strong></li>
+        <li>Lowest Marks: <strong>50</strong></li>
+        <li>Students Above Average: <strong>15</strong></li>
+        <li>Students Below Average: <strong>10</strong></li>
+      </ul>
+    </section>
+
+    <!-- Chart Section -->
+    <section class="chart-section">
+      <h2>Marks Distribution</h2>
+      <canvas id="marksDistributionChart"></canvas>
+
+      <!-- Bar Chart for Individual Student Marks -->
+      <h2>Individual Student Marks</h2>
+      <canvas id="studentMarksChart"></canvas>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 School Dashboard</p>
+    <a href="instructor_dashboard.html">Back to Dashboard</a>
+  </footer>
+
+  <!-- JavaScript for Charts -->
+  <script>
+    // Pie Chart for Marks Distribution
+    const ctxPie = document.getElementById('marksDistributionChart').getContext('2d');
+    const marksDistributionChart = new Chart(ctxPie, {
+      type: 'pie',
+      data: {
+        labels: ['Above Average', 'Below Average'],
+        datasets: [{
+          data: [15, 10], // Replace with dynamic data as needed
+          backgroundColor: ['#4caf50', '#f44336'],
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+        }
+      },
+    });
+
+    // Bar Chart for Individual Student Marks
+    const ctxBar = document.getElementById('studentMarksChart').getContext('2d');
+    const studentNames = ['John Doe', 'Jane Smith', 'Alex Johnson', 'Emily Davis']; // Replace with dynamic data
+    const studentMarks = [85, 78, 92, 67]; // Replace with dynamic data
+
+    const studentMarksChart = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels: studentNames,
+        datasets: [{
+          label: 'Marks',
+          data: studentMarks,
+          backgroundColor: '#3e95cd',
+          borderColor: '#3e95cd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'x',
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
