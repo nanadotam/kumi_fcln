@@ -1,37 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
 }
+
 body {
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-image: url('../imgs/wheat.png'); 
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-image: url('../imgs/wheat.png');
+  background-color: var(--bg-color-primary);
+}
 
-  }
-
-h2{
+h2 {
   font-family: 'Bricolage Grotesque', sans-serif;
   text-align: center;
-  font-size: 40px;
-  margin-bottom: 20px;
+  font-size: var(--h2);
+  margin-bottom: var(--padding-medium);
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
-  margin-bottom: 50px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: var(--gutter-small) var(--gutter-medium);
+  margin-bottom: var(--gutter-large);
+  background-color: var(--color-light);
+  box-shadow: var(--shadow-light);
 }
 
 .logo img {
@@ -40,52 +42,51 @@ h2{
 
 .auth-buttons a {
   text-decoration: none;
-  padding: 12px 24px;
-  border-radius: 25px;
+  padding: var(--padding-small) var(--padding-medium);
+  border-radius: var(--radius-large);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--text-small);
   transition: background-color 0.3s ease;
 }
 
 .auth-buttons a.btn-login {
-  background-color: #DCA05F;
-  color: #fff;
+  background-color: var(--color-accent);
+  color: var(--color-light);
 }
 
 .auth-buttons a.btn-register {
-  background-color: #E46E51;
-  color: #fff;
+  background-color: var(--color-secondary);
+  color: var(--color-light);
 }
 
 .auth-buttons a:hover {
   background-color: #AE3A6D;
 }
 
-.container{
-    position:relative;
-    height:80%;
-    overflow: hidden;
+.container {
+  position: relative;
+  height: 80%;
+  overflow: hidden;
 }
 
 .login-container {
-    position:relative;
-    width:100%;
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 40px;
-    background-color: #fff;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-    border-radius: 10px;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: 50px auto;
+  padding: var(--gutter-medium);
+  background-color: var(--color-light);
+  box-shadow: var(--shadow-light);
+  border-radius: var(--radius-small);
 }
-
 
 input[type="text"], input[type="password"] {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
+  padding: var(--padding-small);
+  margin-bottom: var(--padding-medium);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  font-size: var(--text-medium);
 }
 
 input::placeholder {
@@ -95,33 +96,33 @@ input::placeholder {
 .error {
   display: block;
   font-size: 0.85rem;
-  color: tomato;
+  color: var(--color-error);
   margin-top: -15px;
-  margin-bottom: 10px;
+  margin-bottom: var(--padding-small);
 }
 
 input[type="submit"] {
   width: 100%;
-  padding: 12px;
-  background-color: #187045;
-  color: #fff;
+  padding: var(--padding-small);
+  background-color: var(--color-primary);
+  color: var(--color-light);
   border: none;
-  border-radius: 5px;
-  font-size: 18px;
+  border-radius: var(--radius-small);
+  font-size: var(--text-large);
   cursor: pointer;
   transition: all 0.3s ease-in-out;
 }
 
 input[type="submit"]:hover {
-  background-color: #044B85;
+  background-color: var(--color-hover-dark);
   transform: scale(1.05);
 }
 
 footer {
   margin-top: auto;
-  background-color: #333;
-  color: white;
+  background-color: var(--color-dark);
+  color: var(--color-light);
   text-align: center;
-  padding: 20px;
-  font-size: 0.9rem;
+  padding: var(--padding-small);
+  font-size: var(--text-small);
 }

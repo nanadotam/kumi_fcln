@@ -10,8 +10,8 @@
 /* Body Styling */
 body {
   font-family: 'Montserrat', sans-serif;
-  background-color: #ffffff; /* White theme */
-  color: #333;
+  background-color: var(--bg-color-primary);
+  color: var(--text-color);
 }
 
 /* Navbar Styling */
@@ -19,8 +19,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 30px;
-  background-color: #ffffff;
+  padding: var(--gutter-small) var(--gutter-medium);
+  background-color: var(--color-light);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -33,45 +33,45 @@ body {
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 40px;
+  gap: var(--gutter-medium);
 }
 
 .nav-links li a {
   text-decoration: none;
-  color: #333;
+  color: var(--text-color);
   font-weight: bold;
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 1.2rem;
+  font-size: var(--text-medium);
   transition: color 0.3s ease-in-out;
 }
 
 .nav-links li a:hover {
-  color: #DCA05F;
+  color: var(--color-accent);
 }
 
 /* Auth buttons (Login/Register) */
 .auth-buttons {
   display: flex;
-  gap: 20px;
+  gap: var(--padding-medium);
 }
 
 .auth-buttons a {
   text-decoration: none;
-  padding: 15px 25px;
-  border-radius: 30px;
+  padding: var(--padding-small) var(--padding-medium);
+  border-radius: var(--radius-large);
   font-weight: bold;
-  font-size: 1rem;
+  font-size: var(--text-medium);
   transition: all 0.3s ease-in-out;
 }
 
 .auth-buttons a.btn-login {
-  background-color: #DCA05F;
-  color: white;
+  background-color: var(--color-accent);
+  color: var(--color-light);
 }
 
 .auth-buttons a.btn-register {
-  background-color: #E46E51;
-  color: white;
+  background-color: var(--color-secondary);
+  color: var(--color-light);
 }
 
 .auth-buttons a:hover {
@@ -96,44 +96,44 @@ body {
 
 /* Section Styling */
 .section {
-    padding: 120px 40px;
-    text-align: center;
+  padding: var(--gutter-huge) var(--gutter-small);
+  text-align: center;
 }
 
 /* About Section Styling */
 #about h2, #waitlist h2 {
-    font-size: 36px; /* Increased font size */
-    font-family: 'Bricolage Grotesque', sans-serif;
-    margin-bottom: 60px; /* Increased gap between header and cards */
-  }
+  font-size: var(--h2);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  margin-bottom: var(--gutter-medium);
+}
 
 #about p, #waitlist a {
-  font-size: 1.4rem;
+  font-size: var(--text-large);
   font-family: 'Montserrat', sans-serif;
 }
 
 /* Team Section Styling */
 #team h2, #waitlist h2 {
-  font-size: 36px; /* Increased font size */
+  font-size: var(--h2);
   font-family: 'Bricolage Grotesque', sans-serif;
-  margin-bottom: 60px; /* Increased gap between header and cards */
+  margin-bottom: var(--gutter-medium);
 }
 
 .team-cards {
   display: flex;
   justify-content: center;
-  gap: 40px; /* Adjust gap as needed */
-  padding: 20px;
+  gap: var(--gutter-medium);
+  padding: var(--padding-small);
 }
 
 .card {
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  padding: 20px;
+  background-color: var(--bg-color-secondary);
+  border-radius: var(--radius-small);
+  padding: var(--padding-small);
   width: 450px;
-  height: 250px; /* Adjust height to accommodate text */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.5s ease, box-shadow 0.5s ease; 
+  height: 250px;
+  box-shadow: var(--shadow-light);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -142,14 +142,14 @@ body {
 
 .card h3, .card p {
   display: inline-block;
-  margin-right: 10px; /* Add space between name and role */
+  margin-right: var(--padding-small);
 }
 
 .card .info-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px; 
+  gap: var(--padding-small);
 }
 
 .card img {
@@ -157,8 +157,8 @@ body {
   height: 100px;
   display: flex;
   border-radius: 50%;
-  margin-bottom: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: var(--padding-small);
+  box-shadow: var(--shadow-light);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -167,28 +167,27 @@ body {
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
-
 /* Waitlist Button */
 .btn-primary {
-  background-color: #187045;
-  color: white;
-  padding: 20px 40px;
-  border-radius: 30px;
+  background-color: var(--color-primary);
+  color: var(--color-light);
+  padding: var(--padding-medium) var(--gutter-medium);
+  border-radius: var(--radius-large);
   font-weight: bold;
-  font-size: 1.4rem;
+  font-size: var(--text-large);
   transition: all 0.3s ease-in-out;
   text-decoration: none;
 }
 
 .btn-primary:hover {
-  background-color: #044B85;
+  background-color: var(--color-hover-dark);
   transform: scale(1.05);
 }
+
 /* Footer */
 footer {
-  background-color: #333;
-  color: white;
+  background-color: var(--color-dark);
+  color: var(--color-light);
   text-align: center;
-  padding: 30px;
+  padding: var(--gutter-medium);
 }
-
