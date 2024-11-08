@@ -1,0 +1,112 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  background-color: #f4f4f4;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Navbar */
+.navbar {
+  background: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+}
+
+.navbar a:hover {
+  color: #C2185B;
+}
+
+/* Header */
+.dashboard-header {
+  text-align: center;
+  padding: 2rem 1rem;
+  background-color: #fff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.dashboard-header p {
+  font-size: 1.2rem;
+}
+
+/* Table */
+.student-info table {
+  width: 100%;
+  margin-bottom: 2rem;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.student-info th, .student-info td {
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.student-info th {
+  background-color: #C2185B;
+  color: #fff;
+}
+
+.student-info td {
+  font-size: 1rem;
+}
+
+/* Statistics */
+.statistics ul {
+  list-style: none;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.statistics li {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+/* Chart Section */
+.chart-section {
+  margin: 2rem 0;
+}
+
+.chart-section canvas {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #333;
+  color: #fff;
+  border-radius: 8px 8px 0 0;
+}

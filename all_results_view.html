@@ -15,21 +15,19 @@
 
 -->
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Results Dashboard</title>
-  <link rel="stylesheet" href="styles/styles.css">
-  <link rel="stylesheet" href="styles/overall_grades_dashboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles/all_results_view.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-
   <!-- Navbar -->
   <nav class="navbar">
     <div class="logo">
@@ -42,7 +40,7 @@
 
   <!-- Dashboard Header -->
   <header class="dashboard-header">
-    <h1>Student Results Dashboard</h1>
+    <h1>Student Results</h1>
     <p>Subject: <strong>Mathematics</strong></p>
   </header>
 
@@ -60,7 +58,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Sample Data -->
           <tr>
             <td>John Doe</td>
             <td>101</td>
@@ -71,17 +68,6 @@
             <td>102</td>
             <td>78</td>
           </tr>
-          <tr>
-            <td>Alex Johnson</td>
-            <td>103</td>
-            <td>92</td>
-          </tr>
-          <tr>
-            <td>Emily Davis</td>
-            <td>104</td>
-            <td>67</td>
-          </tr>
-          <!-- Add more rows as needed -->
         </tbody>
       </table>
     </section>
@@ -93,8 +79,6 @@
         <li>Average Marks: <strong>80.5</strong></li>
         <li>Highest Marks: <strong>95</strong></li>
         <li>Lowest Marks: <strong>50</strong></li>
-        <li>Students Above Average: <strong>15</strong></li>
-        <li>Students Below Average: <strong>10</strong></li>
       </ul>
     </section>
 
@@ -102,8 +86,6 @@
     <section class="chart-section">
       <h2>Marks Distribution</h2>
       <canvas id="marksDistributionChart"></canvas>
-
-      <!-- Bar Chart for Individual Student Marks -->
       <h2>Individual Student Marks</h2>
       <canvas id="studentMarksChart"></canvas>
     </section>
@@ -117,58 +99,29 @@
 
   <!-- JavaScript for Charts -->
   <script>
-    // Pie Chart for Marks Distribution
     const ctxPie = document.getElementById('marksDistributionChart').getContext('2d');
-    const marksDistributionChart = new Chart(ctxPie, {
+    new Chart(ctxPie, {
       type: 'pie',
       data: {
         labels: ['Above Average', 'Below Average'],
         datasets: [{
-          data: [15, 10], // Replace with dynamic data as needed
+          data: [15, 10],
           backgroundColor: ['#4caf50', '#f44336'],
         }]
       },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-        }
-      },
     });
 
-    // Bar Chart for Individual Student Marks
     const ctxBar = document.getElementById('studentMarksChart').getContext('2d');
-    const studentNames = ['John Doe', 'Jane Smith', 'Alex Johnson', 'Emily Davis']; // Replace with dynamic data
-    const studentMarks = [85, 78, 92, 67]; // Replace with dynamic data
-
-    const studentMarksChart = new Chart(ctxBar, {
+    new Chart(ctxBar, {
       type: 'bar',
       data: {
-        labels: studentNames,
+        labels: ['John Doe', 'Jane Smith'],
         datasets: [{
           label: 'Marks',
-          data: studentMarks,
+          data: [85, 78],
           backgroundColor: '#3e95cd',
-          borderColor: '#3e95cd',
-          borderWidth: 1
         }]
       },
-      options: {
-        indexAxis: 'x',
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100
-          }
-        },
-        plugins: {
-          legend: {
-            display: false
-          }
-        }
-      }
     });
   </script>
 </body>
