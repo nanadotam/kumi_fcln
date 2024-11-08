@@ -5,16 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kumi Teacher Dashboard</title>
     <link rel="stylesheet" href="styles/teacher_dashboard.css">
+    <!-- Boxicons CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <nav>
+        <nav class="navbar">
             <div class="logo">
                 <img src="imgs/KUMI.png" alt="Kumi Logo">
             </div>
             <div class="nav-links">
                 <a href="profile.html">Profile</a>
-                <a href="logout.html">LogOut</a>
+                <a href="logout.html">Logout</a>
             </div>
         </nav>
     </header>
@@ -22,13 +26,13 @@
     <main class="dashboard">
         <section class="welcome-section">
             <h1>Welcome Back</h1>
+            <p class="welcome-message">Welcome back to your dashboard</p>
             <div class="welcome-content">
                 <div class="create-quiz-button">
                     <a href="create-quiz.html">Create Quiz</a>
                 </div>
                 <div class="welcome-image">
-                    <!-- Placeholder for geometric shapes image -->
-                    <img src="imgs/geometricimage.png" alt="Geometric Shapes">
+                    <img src="imgs/teacherdash.svg" alt="Geometric Shapes">
                 </div>
             </div>
         </section>
@@ -39,14 +43,11 @@
                 <div class="quiz-item">
                     <span class="quiz-title">Algorithms Quiz 1</span>
                     <div class="quiz-actions">
-                        <button class="view-stats" title="View Stats">
-                            <span class="icon">👁️</span>
-                        </button>
                         <button class="edit" title="Edit">
-                            <span class="icon">✏️</span>
+                            <i class='bx bxs-edit'></i>
                         </button>
                         <button class="delete" title="Delete">
-                            <span class="icon">🗑️</span>
+                            <i class='bx bx-trash'></i>
                         </button>
                     </div>
                 </div>
@@ -54,29 +55,11 @@
                 <div class="quiz-item">
                     <span class="quiz-title">Web Tech Quiz 3</span>
                     <div class="quiz-actions">
-                        <button class="view-stats" title="View Stats">
-                            <span class="icon">👁️</span>
-                        </button>
                         <button class="edit" title="Edit">
-                            <span class="icon">✏️</span>
+                            <i class='bx bxs-edit'></i>
                         </button>
                         <button class="delete" title="Delete">
-                            <span class="icon">🗑️</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="quiz-item">
-                    <span class="quiz-title">Web Tech Quiz 3</span>
-                    <div class="quiz-actions">
-                        <button class="view-stats" title="View Stats">
-                            <span class="icon">👁️</span>
-                        </button>
-                        <button class="edit" title="Edit">
-                            <span class="icon">✏️</span>
-                        </button>
-                        <button class="delete" title="Delete">
-                            <span class="icon">🗑️</span>
+                            <i class='bx bx-trash'></i>
                         </button>
                     </div>
                 </div>
@@ -85,7 +68,7 @@
     </main>
 
     <footer>
-        <p> &copy Kumi 2024 | All rights reserved</p>
+        <p>&copy; Kumi 2024 | All rights reserved</p>
     </footer>
 </body>
 </html>

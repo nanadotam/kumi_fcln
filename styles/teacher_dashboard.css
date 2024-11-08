@@ -1,19 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 /* General Styles */
 :root {
-    --primary-color: #45744C;  /* Green from Join Now button */
-    --secondary-color: #E27D60;  /* Coral color from background */
-    --background-color: #ffffff;
-    --text-color: #333333;
-    --border-radius: 8px;
-    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --color-primary: #187045;
+    --color-secondary: #E46E51;
+    --color-dark-pink: #ae3a6d; 
+    --color-accent: #DCA05F;
+    --color-dark: #333;
+    --color-light: #fff;
+    --color-bg-dark: #f5f5f5;
+    --color-bg-light: #ffffff;
+    --color-hover-dark: #044B85;
+    --color-error: tomato;
 }
 
 body {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--color-bg-light);
+    color: var(--color-dark);
 }
 
 /* Header Styles */
@@ -22,39 +29,42 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background-color: var(--background-color);
+    background-color: var(--color-bg-light);
     border-bottom: 1px solid #eaeaea;
 }
 
 .logo img {
-    height: 40px;
+    height: 100px;
 }
 
 .nav-links {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .nav-links a {
     text-decoration: none;
-    color: var(--text-color);
-    padding: 0.5rem 1.5rem;
-    border-radius: 20px;
-    font-weight: 500;
+    color: var(--color-dark);
+    padding: 0.6rem 1.8rem;
+    border-radius: 25px;
+    font-weight: 600;
     transition: all 0.3s ease;
 }
 
 .nav-links a:first-child {
-    background-color: #E6C4A0;  /* Login button color from image */
-    color: white;
+    background-color: var(--color-secondary);
+    color: var(--color-light);
 }
 
 .nav-links a:last-child {
-    background-color: #E27D60;  /* Register/Logout button color from image */
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-light);
 }
 
-/* Dashboard Styles */
+.nav-links a:hover {
+    background-color: var(--color-dark-pink);
+}
+
 .dashboard {
     max-width: 1200px;
     margin: 0 auto;
@@ -62,71 +72,69 @@ body {
 }
 
 .welcome-section {
-    background-color: white;
+    background-color: var(--color-light);
     border: 2px solid #000;
     border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 3rem;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .welcome-section h1 {
     font-size: 2.5rem;
-    margin: 0;
-}
-.welcome-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto; /* Center the image */
+    font-family: 'Bricolage Grotesque', sans-serif;
+    margin-bottom: 1.5rem;
 }
 
 .welcome-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 2rem;
 }
 
 .create-quiz-button a {
     display: inline-block;
-    padding: 0.8rem 1.5rem;
-    background-color: white;
-    color: black;
+    padding: 0.9rem 2rem;
+    background-color: var(--color-secondary);
+    color: var(--color-light);
     text-decoration: none;
-    border: 2px solid #000;
-    border-radius: 8px;
+    border-radius: 10px;
     font-weight: bold;
-    transition: all 0.3s ease;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
 }
 
 .create-quiz-button a:hover {
-    background-color: #f5f5f5;
+    background-color: var(--color-dark-pink);
 }
 
-/* Published Quizzes Section */
-.published-quizzes {
-    margin-top: 2rem;
+.welcome-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .published-quizzes h2 {
     font-size: 2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .quiz-list {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .quiz-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
-    background-color: white;
-    border: 2px solid #000;
+    padding: 1.2rem 2rem;
+    background-color: var(--color-light);
     border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .quiz-title {
@@ -136,45 +144,27 @@ body {
 
 .quiz-actions {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
-.icon {
+button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
     cursor: pointer;
-    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+button:hover {
+    color: var(--color-dark-pink); 
 }
 
 /* Footer */
 footer {
     text-align: center;
     padding: 2rem;
-    background-color: #2D2D2D;  /* Dark background from image 2 */
-    color: #FFD700;  /* Golden color from image 2 */
-    margin-top: 4rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .welcome-content {
-        flex-direction: column;
-        gap: 2rem;
-    }
-    
-    .welcome-image img {
-        max-width: 100%;
-    }
-    
-    .quiz-item {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .nav-links {
-        gap: 0.5rem;
-    }
-    
-    .nav-links a {
-        padding: 0.5rem 1rem;
-    }
+    background-color: #2D2D2D;
+    color: #FFD700;
+    margin-top: 3rem;
+    font-size: 1rem;
 }
