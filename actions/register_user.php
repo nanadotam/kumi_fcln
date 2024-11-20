@@ -1,74 +1,61 @@
 <?php
-header('Content-Type: application/json');
+session_start();
 require_once '../db/config.php';
+require_once '../functions/auth_functions.php';
 
 try {
-    // Get JSON input
-    $json = file_get_contents('php://input');
-    $data = json_decode($json, true);
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Get and sanitize inputs from URL-encoded data
+        $first_name = trim($_POST['first_Name']);
+        $last_name = trim($_POST['last_Name']);
+        $email = trim($_POST['email']);
+        $password = $_POST['password'];
+        $role = strtolower(trim($_POST['role']));
 
-    // Validate input
-    if (!$data) {
-        throw new Exception('Invalid input data');
+        // Validate input
+        $errors = validateRegistrationData($email, $password, $first_name, $last_name);
+
+        // Validate role
+        if (!in_array($role, ['student', 'teacher'])) {
+            $errors[] = 'Invalid role selected.';
+        }
+
+        if (!empty($errors)) {
+            echo json_encode([
+                'success' => false,
+                'message' => $errors[0]
+            ]);
+            exit();
+        }
+
+        // Check if email exists
+        if (checkEmailExists($conn, $email)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Email already exists.'
+            ]);
+            exit();
+        }
+
+        // Register user
+        if (registerUser($conn, $first_name, $last_name, $email, $password, $role)) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Registration successful! Redirecting to login...'
+            ]);
+        } else {
+            throw new Exception("Registration failed");
+        }
     }
-
-    // Extract data
-    $firstName = trim($data['firstName']);
-    $lastName = trim($data['lastName']);
-    $email = trim($data['email']);
-    $password = $data['password'];
-    $role = strtolower(trim($data['role']));
-
-    // Additional server-side validation
-    if (empty($firstName) || empty($lastName) || empty($email) || empty($password) || empty($role)) {
-        throw new Exception('All fields are required');
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        throw new Exception('Invalid email format');
-    }
-
-    if (!in_array($role, ['student', 'teacher'])) {
-        throw new Exception('Invalid role');
-    }
-
-    // Check if email already exists
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($result->num_rows > 0) {
-        echo json_encode([
-            'success' => false,
-            'error' => 'email_exists',
-            'message' => 'This email is already registered'
-        ]);
-        exit;
-    }
-
-    // Hash password
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-    // Insert user into database
-    $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password, role) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $firstName, $lastName, $email, $hashedPassword, $role);
-    
-    if ($stmt->execute()) {
-        echo json_encode([
-            'success' => true,
-            'message' => 'Registration successful'
-        ]);
-    } else {
-        throw new Exception('Database error occurred');
-    }
-
 } catch (Exception $e) {
+    error_log($e->getMessage());
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => 'An error occurred during registration. Please try again.'
     ]);
+} finally {
+    if (isset($conn)) {
+        $conn->close();
+    }
 }
-
-$conn->close();
 ?>

@@ -10,8 +10,8 @@ document.getElementById("signupForm")?.addEventListener("submit", async function
     document.getElementById("roleError").textContent = "";
 
     // Get input values
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("lastName").value;
+    const firstName = document.getElementById("first_name").value;
+    const lastName = document.getElementById("last_name").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
@@ -21,12 +21,12 @@ document.getElementById("signupForm")?.addEventListener("submit", async function
     let valid = true;
 
     // Validate fields
-    if (!firstName) {
+    if (!first_name) {
         document.getElementById("firstNameError").textContent = "First name is required.";
         valid = false;
     }
 
-    if (!lastName) {
+    if (!last_name) {
         document.getElementById("lastNameError").textContent = "Last name is required.";
         valid = false;
     }
@@ -65,26 +65,26 @@ document.getElementById("signupForm")?.addEventListener("submit", async function
     if (valid) {
         try {
             console.log('Sending data:', {
-                firstName,
-                lastName,
+                first_name,
+                last_name,
                 email,
                 password,
                 role
             });
 
-            const response = await fetch('../../actions/register_user.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    firstName,
-                    lastName,
-                    email,
-                    password,
-                    role
-                })
-            });
+            const response = await fetch('../actions/register_user.php', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body: new URLSearchParams({
+					first_name,
+					last_name,
+					email,
+					password,
+					role
+				}).toString()
+			});			
 
             console.log('Response status:', response.status);
             const data = await response.json();
