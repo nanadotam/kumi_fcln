@@ -10,8 +10,8 @@ document.getElementById("signupForm")?.addEventListener("submit", async function
     document.getElementById("roleError").textContent = "";
 
     // Get input values
-    const firstName = document.getElementById("first_name").value;
-    const lastName = document.getElementById("last_name").value;
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
@@ -78,8 +78,8 @@ document.getElementById("signupForm")?.addEventListener("submit", async function
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 				body: new URLSearchParams({
-					first_name,
-					last_name,
+					firstName,
+					lastName,
 					email,
 					password,
 					role
@@ -136,6 +136,7 @@ function validatePassword(password) {
     const passwordPattern = /^(?=.*[A-Z])(?=.*\d{3,})(?=.*[!@#\$%\^\&\)\(+=._-]).{8,}$/;
     return passwordPattern.test(password);
 }
+
 
 const strengthIndicator = document.createElement('div');
 strengthIndicator.className = 'password-strength';

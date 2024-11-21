@@ -1,61 +1,35 @@
 <?php
 session_start();
 require_once '../db/config.php';
-require_once '../functions/auth_functions.php';
 
-try {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Get and sanitize inputs from URL-encoded data
-        $first_name = trim($_POST['first_Name']);
-        $last_name = trim($_POST['last_Name']);
-        $email = trim($_POST['email']);
-        $password = $_POST['password'];
-        $role = strtolower(trim($_POST['role']));
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // The form field names (firstName, lastName) come from the HTML form in register.php
+    // While the database columns use first_name, last_name
+    // The names don't need to match exactly - we just need to map them correctly when inserting
+    $firstName = trim($_POST['firstName']); // Maps to first_name in Users table
+    $lastName = trim($_POST['lastName']);   // Maps to last_name in Users table
+    $email = trim($_POST['email']);
+    $password = $_POST['password']; 
+    $role = trim($_POST['role']);
 
-        // Validate input
-        $errors = validateRegistrationData($email, $password, $first_name, $last_name);
+    // Validate inputs (add your validation logic here)
 
-        // Validate role
-        if (!in_array($role, ['student', 'teacher'])) {
-            $errors[] = 'Invalid role selected.';
-        }
+    // Hash the password
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        if (!empty($errors)) {
-            echo json_encode([
-                'success' => false,
-                'message' => $errors[0]
-            ]);
-            exit();
-        }
+    // Insert into the database
+    $stmt = $conn->prepare("INSERT INTO Users (first_name, last_name, email, password, role) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $firstName, $lastName, $email, $hashedPassword, $role);
 
-        // Check if email exists
-        if (checkEmailExists($conn, $email)) {
-            echo json_encode([
-                'success' => false,
-                'message' => 'Email already exists.'
-            ]);
-            exit();
-        }
-
-        // Register user
-        if (registerUser($conn, $first_name, $last_name, $email, $password, $role)) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Registration successful! Redirecting to login...'
-            ]);
-        } else {
-            throw new Exception("Registration failed");
-        }
+    if ($stmt->execute()) {
+        $_SESSION['notification'] = "Registration successful! You can now log in.";
+        header("Location: ../view/login.php");
+    } else {
+        $_SESSION['notification'] = "Registration failed: " . $stmt->error;
+        header("Location: ../view/register.php");
     }
-} catch (Exception $e) {
-    error_log($e->getMessage());
-    echo json_encode([
-        'success' => false,
-        'message' => 'An error occurred during registration. Please try again.'
-    ]);
-} finally {
-    if (isset($conn)) {
-        $conn->close();
-    }
+
+    $stmt->close();
+    $conn->close();
 }
 ?>

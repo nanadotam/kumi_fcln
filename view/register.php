@@ -16,15 +16,20 @@ include '../db/config.php';
     <header>
         <nav class="navbar">
           <div class="logo">
-            <img src="imgs/KUMI_logo.svg" alt="Kumi Logo">
+            <img src="../assests/images/KUMI_logo.svg" alt="Kumi Logo">
           </div>
           <div class="auth-buttons">
-            <a href="index.html" class="btn btn-login">Home</a>
-            <a href="login.html" class="btn btn-register">Login</a>
+            <a href="../view/index.php" class="btn btn-login">Home</a>
+            <a href="../view/login.php" class="btn btn-register">Login</a>
           </div>
         </nav>
       </header>
 
+    <?php if (isset($_SESSION['notification'])): ?>
+        <div class="notification">
+            <?php echo $_SESSION['notification']; unset($_SESSION['notification']); ?>
+        </div>
+    <?php endif; ?>
 
 	<div class="signup-container">
 	
