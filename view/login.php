@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kumi Login Page</title>
-    <link rel="stylesheet" href="styles/styles.css">
-    <link rel="stylesheet" href="styles/login.css">
+    <link rel="stylesheet" href="../assests/css/styles.css">
+    <link rel="stylesheet" href="../assests/css/login.css">
 </head>
 <body>
     <header>
         <nav class="navbar">
           <div class="logo">
-            <img src="imgs/KUMI_logo.svg" alt="Kumi Logo">
+            <img src="../assests/images/KUMI_logo.svg" alt="Kumi Logo">
           </div>
           </ul>
           <div class="auth-buttons">
-            <a href="index.html" class="btn btn-login">Home</a>
-            <a href="register.html" class="btn btn-register">Register</a>
+            <a href="../view/index.php" class="btn btn-login">Home</a>
+            <a href="../view/register.php" class="btn btn-register">Register</a>
           </div>
         </nav>
       </header>

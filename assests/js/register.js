@@ -136,3 +136,42 @@ function validatePassword(password) {
     const passwordPattern = /^(?=.*[A-Z])(?=.*\d{3,})(?=.*[!@#\$%\^\&\)\(+=._-]).{8,}$/;
     return passwordPattern.test(password);
 }
+
+const strengthIndicator = document.createElement('div');
+strengthIndicator.className = 'password-strength';
+
+function calculatePasswordStrength(password) {
+    let strength = 0;
+    
+    // Length check
+    if (password.length >= 8) strength += 20;
+    if (password.length >= 12) strength += 10;
+    
+    // Character variety checks
+    if (/[A-Z]/.test(password)) strength += 20;
+    if (/[a-z]/.test(password)) strength += 10;
+    if (/[0-9]{3,}/.test(password)) strength += 20;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += 20;
+    
+    return {
+        score: strength,
+        text: strength < 40 ? 'Weak' : strength < 70 ? 'Moderate' : 'Strong',
+        color: strength < 40 ? '#ff4d4d' : strength < 70 ? '#ffd700' : '#00cc00'
+    };
+}
+
+function updateStrengthIndicator(password) {
+    const strength = calculatePasswordStrength(password);
+    
+    strengthIndicator.innerHTML = `
+        <div class="strength-bar">
+            <div class="strength-fill" style="width: ${strength.score}%; background-color: ${strength.color}"></div>
+        </div>
+        <span class="strength-text" style="color: ${strength.color}">${strength.text}</span>
+    `;
+}
+
+// Insert after password input
+const passwordInput = document.getElementById('password');
+passwordInput.parentNode.insertBefore(strengthIndicator, passwordInput.nextSibling);
+passwordInput.addEventListener('input', (e) => updateStrengthIndicator(e.target.value));

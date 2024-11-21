@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kumi Landing Page</title>
-  <link rel="stylesheet" href="styles/styles.css">
-  <link rel="stylesheet" href="styles/landing_styles.css">
+  <link rel="stylesheet" href="../assests/css/styles.css">
+  <link rel="stylesheet" href="../assests/css/landing_styles.css">
 </head>
 <body>
   <!-- Navbar -->
   <header>
     <nav class="navbar">
       <div class="logo">
-        <img src="imgs/KUMI_logo.svg" alt="Kumi Logo">
+        <img src="../assests/images/KUMI_logo.svg" alt="Kumi Logo">
       </div>
       <ul class="nav-links">
         <li><a href="#home">Home</a></li>
@@ -21,8 +21,8 @@
         <li><a href="#waitlist">Join the Waitlist</a></li>
       </ul>
       <div class="auth-buttons">
-        <a href="login.html" class="btn btn-login">Login</a>
-        <a href="register.html" class="btn btn-register">Register</a>
+        <a href="../view/login.php" class="btn btn-login">Login</a>
+        <a href="../view/register.php" class="btn btn-register">Register</a>
       </div>
     </nav>
   </header>
@@ -31,7 +31,7 @@
   <section id="home" class="section">
     <div class="fullscreen-container">
         <video autoplay muted loop class="fullscreen-video">
-            <source src="vid/KUMI_home.mp4" type="video/mp4">
+            <source src="../assests/vid/KUMI_home.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
     </div>
@@ -48,22 +48,22 @@
     <h2>Meet the Team</h2>
     <div class="team-cards">
       <div class="card">
-        <img src = "imgs/nana.jpeg"> 
+        <img src = "../assests/images/nana.jpeg"> 
         <h3>Nana Kwaku Amoako</h3>
         <p>Front End Developer</p>
       </div>
       <div class="card">
-        <img src = "imgs/lady.jpeg"> 
+        <img src = "../assests/images/lady.jpeg"> 
         <h3>Lady-M. Hagan</h3>
         <p>Product Manager</p>
       </div>
       <div class="card">
-        <img src = "imgs/caleb.jpeg"> 
+        <img src = "../assests/images/caleb.jpeg"> 
         <h3>Caleb O. Arthur</h3>
         <p>Backend Developer</p>
       </div>
       <div class="card">
-        <img src = "imgs/frances.jpg"> 
+        <img src = "../assests/images/frances.jpg"> 
         <h3>Frances S. Fiahagbe</h3>
         <p>Backend Developer</p>
       </div>
@@ -73,7 +73,7 @@
   <!-- Join the Waitlist Section -->
   <section id="waitlist" class="section">
     <h2>Join the Waitlist</h2>
-    <a href="waitlist.html" class="btn btn-primary">Join Now</a>
+    <a href="../view/waitlist.html" class="btn btn-primary">Join Now</a>
   </section>
 
   <!-- Footer -->
