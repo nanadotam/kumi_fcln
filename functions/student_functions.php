@@ -2,7 +2,7 @@
 require_once '../utils/Database.php';
 
 function getStudentProgress($studentId) {
-    $db = Database::getInstance();
+    $db = new Database();
     
     $sql = "SELECT 
             COUNT(DISTINCT q.quiz_id) as total_quizzes,
@@ -10,21 +10,15 @@ function getStudentProgress($studentId) {
             AVG(qr.score) as average_score,
             SUM(CASE WHEN qr.score >= 70 THEN 1 ELSE 0 END) as quizzes_passed
             FROM Quizzes q
-            LEFT JOIN QuizResults qr ON q.quiz_id = qr.quiz_id AND qr.user_id = ?";
+            LEFT JOIN QuizResults qr ON q.quiz_id = qr.quiz_id AND qr.user_id = ?
+            WHERE q.deadline >= CURDATE() OR q.deadline IS NULL";
             
     $result = $db->query($sql, [$studentId]);
-    $stats = $result->fetch_assoc();
-    
-    return [
-        'total_quizzes' => (int)$stats['total_quizzes'],
-        'completed_quizzes' => (int)$stats['completed_quizzes'],
-        'average_score' => $stats['average_score'] ? round($stats['average_score'], 1) : 0,
-        'quizzes_passed' => (int)$stats['quizzes_passed']
-    ];
+    return $result->fetch_assoc();
 }
 
 function getUpcomingDeadlines($studentId) {
-    $db = Database::getInstance();
+    $db = new Database();
     
     $sql = "SELECT q.quiz_id, q.title, q.deadline
             FROM Quizzes q
@@ -40,8 +34,9 @@ function getUpcomingDeadlines($studentId) {
     $deadlines = [];
     while ($row = $result->fetch_assoc()) {
         $deadlines[] = [
+            'quiz_id' => (int)$row['quiz_id'],
             'title' => htmlspecialchars($row['title']),
-            'deadline' => date('M d, Y', strtotime($row['deadline']))
+            'deadline' => $row['deadline']
         ];
     }
     
@@ -57,23 +52,24 @@ function createNotification($userId, $type, $message, $relatedId = null) {
     return $db->query($sql, [$userId, $type, $message, $relatedId]);
 }
 
-function getUserNotifications($studentId) {
-    $db = Database::getInstance();
+function getUserNotifications($userId, $limit = 10) {
+    $db = new Database();
     
     $sql = "SELECT * FROM Notifications 
             WHERE user_id = ? 
             ORDER BY created_at DESC 
-            LIMIT 10";
+            LIMIT ?";
             
-    $result = $db->query($sql, [$studentId]);
+    $result = $db->query($sql, [$userId, $limit]);
     
     $notifications = [];
     while ($row = $result->fetch_assoc()) {
         $notifications[] = [
             'id' => (int)$row['notification_id'],
+            'type' => $row['type'],
             'message' => htmlspecialchars($row['message']),
             'read' => (bool)$row['is_read'],
-            'created_at' => date('M d, Y', strtotime($row['created_at']))
+            'created_at' => $row['created_at']
         ];
     }
     

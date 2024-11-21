@@ -34,7 +34,7 @@ $quizzes = getQuizzesByTeacher($teacherId);
                 <i class='bx bxs-dashboard'></i>
                 <span>Dashboard</span>
             </a>
-            <a href="quizzes.php">
+            <a href="quiz.php">
                 <i class='bx bx-book-content'></i>
                 <span>Quizzes</span>
             </a>
