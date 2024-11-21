@@ -31,24 +31,24 @@ $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
     <title>Student Dashboard - Kumi</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/student_dashboard.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="dashboard-container">
         <div class="welcome-container">
-            <h1>Welcome Back, <?= htmlspecialchars($_SESSION['first_name']) ?>!</h1>
-            <p>Here's your learning progress</p>
+            <h1>Welcome Back, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Student') ?>!</h1>
+            <p>Here's your learning progress:</p>
             
             <div class="dashboard-stats">
                 <div class="stat-box">
                     <h3>Completion Rate</h3>
                     <p class="stat-number">
-                        <?= round(($progress['completed_quizzes'] / max(1, $progress['total_quizzes'])) * 100) ?>%
+                        <?= isset($progress['total_quizzes']) ? round(($progress['completed_quizzes'] / max(1, $progress['total_quizzes'])) * 100) : 0 ?>%
                     </p>
                 </div>
                 <div class="stat-box">
                     <h3>Average Score</h3>
-                    <p class="stat-number"><?= round($progress['average_score'], 1) ?>%</p>
+                    <p class="stat-number"><?= round($progress['average_score'] ?? 0, 1) ?>%</p>
                 </div>
             </div>
         </div>
@@ -57,36 +57,43 @@ $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
             <div class="section-card">
                 <h2>Recent Scores</h2>
                 <div class="quiz-list">
-                    <?php foreach ($recentCompletedQuizzes as $quiz): ?>
-                        <div class="quiz-item">
-                            <div>
-                                <h4><?= htmlspecialchars($quiz['title']) ?></h4>
-                                <small><?= date('M d, Y', strtotime($quiz['submitted_at'])) ?></small>
+                    <?php if (!empty($recentCompletedQuizzes)): ?>
+                        <?php foreach ($recentCompletedQuizzes as $quiz): ?>
+                            <div class="quiz-item">
+                                <div>
+                                    <h4><?= htmlspecialchars($quiz['title']) ?></h4>
+                                    <small><?= date('M d, Y', strtotime($quiz['submitted_at'])) ?></small>
+                                </div>
+                                <span class="score-badge <?= $quiz['score'] >= 70 ? 'passing' : 'failing' ?>">
+                                    <?= $quiz['score'] ?>%
+                                </span>
                             </div>
-                            <span class="score-badge <?= $quiz['score'] >= 70 ? 'passing' : 'failing' ?>">
-                                <?= $quiz['score'] ?>%
-                            </span>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>No recent scores available.</p>
+                    <?php endif; ?>
                 </div>
             </div>
 
             <div class="section-card">
                 <h2>Upcoming Quizzes</h2>
                 <div class="quiz-list">
-                    <?php foreach ($upcomingDeadlines as $deadline): ?>
-                        <div class="quiz-item">
-                            <div>
-                                <h4><?= htmlspecialchars($deadline['title']) ?></h4>
-                                <small>Due: <?= date('M d, Y', strtotime($deadline['deadline'])) ?></small>
+                    <?php if (!empty($upcomingDeadlines)): ?>
+                        <?php foreach ($upcomingDeadlines as $deadline): ?>
+                            <div class="quiz-item">
+                                <div>
+                                    <h4><?= htmlspecialchars($deadline['title']) ?></h4>
+                                    <small>Due: <?= date('M d, Y', strtotime($deadline['deadline'])) ?></small>
+                                </div>
+                                <a href="take_quiz.php?id=<?= $deadline['quiz_id'] ?>" class="start-quiz-btn">Start Quiz</a>
                             </div>
-                            <a href="take_quiz.php?id=<?= $deadline['quiz_id'] ?>" 
-                               class="start-quiz-btn">Start Quiz</a>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>No upcoming quizzes at the moment.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
 </body>
-</html> 
+</html>
