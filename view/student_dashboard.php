@@ -5,6 +5,10 @@ require_once '../functions/quiz_functions.php';
 require_once '../functions/student_functions.php';
 
 
+$currentPage = 'dashboard';
+include_once '../components/sidebar.php';
+
+
 // Check if user is logged in and is a student
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
     header('Location: login.php');
@@ -14,9 +18,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 $studentId = $_SESSION['user_id'];
 $availableQuizzes = getAvailableQuizzes($studentId);
 $completedQuizzes = getCompletedQuizzes($studentId);
-$progress = getStudentProgress($studentId);
-$upcomingDeadlines = getUpcomingDeadlines($studentId);
-$notifications = getUserNotifications($studentId);
+// $progress = getStudentProgress($studentId);
+// $upcomingDeadlines = getUpcomingDeadlines($studentId);
+// $notifications = getUserNotifications($studentId);
 ?>
 
 <!DOCTYPE html>

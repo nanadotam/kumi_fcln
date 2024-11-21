@@ -147,3 +147,55 @@ function viewResponses() {
     alert("Check responses to your quiz here! (Feature coming soon!)");
    //This could also navigate to a new page or maybe display a modal or something, tbd
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Search and filter functionality for teacher view
+    const searchInput = document.getElementById('search-quiz');
+    const modeFilter = document.getElementById('filter-mode');
+    
+    if (searchInput && modeFilter) {
+        const quizCards = document.querySelectorAll('.quiz-card');
+
+        function filterQuizzes() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedMode = modeFilter.value;
+
+            quizCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const mode = card.dataset.mode;
+                const matchesSearch = title.includes(searchTerm);
+                const matchesMode = !selectedMode || mode === selectedMode;
+
+                card.style.display = matchesSearch && matchesMode ? 'block' : 'none';
+            });
+        }
+
+        searchInput.addEventListener('input', filterQuizzes);
+        modeFilter.addEventListener('change', filterQuizzes);
+    }
+});
+
+function editQuiz(quizId) {
+    window.location.href = `create_quiz.php?id=${quizId}`;
+}
+
+function deleteQuiz(quizId) {
+    if (confirm('Are you sure you want to delete this quiz?')) {
+        fetch('../actions/delete_quiz.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quiz_id: quizId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete quiz');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}

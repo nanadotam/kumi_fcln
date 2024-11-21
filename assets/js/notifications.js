@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     notificationBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        notificationContent.style.display = 
-            notificationContent.style.display === 'block' ? 'none' : 'block';
+        notificationContent.classList.toggle('show');
         
         // Mark notifications as read
         const unreadNotifications = document.querySelectorAll('.notification-item.unread');
@@ -22,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Close notifications when clicking outside
     document.addEventListener('click', function(e) {
-        if (!notificationContent.contains(e.target)) {
-            notificationContent.style.display = 'none';
+        if (!notificationContent.contains(e.target) && !notificationBtn.contains(e.target)) {
+            notificationContent.classList.remove('show');
         }
     });
 });

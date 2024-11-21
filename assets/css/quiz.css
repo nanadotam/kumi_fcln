@@ -1,95 +1,146 @@
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
     font-family: Arial, sans-serif;
     background-color: #f7f7f7;
-    margin: 0;
-    padding: 20px;
+    display: flex;
+}
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: var(--color-light);
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 1rem;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container {
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-container img {
+    width: 120px;
+    height: auto;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--color-dark);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background-color: var(--color-primary);
+    color: var(--color-light);
+}
+
+.nav-links i {
+    font-size: 1.5rem;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 1200px;
     margin: 0 auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-left: 250px;
+    width: 100%;
 }
 
 h1 {
-    text-align: center;
-    color: #333;
+    color: var(--color-dark);
+    margin-bottom: 2rem;
 }
 
 .menu-bar {
     display: flex;
     justify-content: flex-end;
-    background-color: #333;
-    padding: 10px;
-    color: white;
+    background-color: var(--color-light);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
 }
 
 .menu-bar button {
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-light);
     border: none;
-    padding: 10px 20px;
-    margin-left: 10px;
-    border-radius: 5px;
+    padding: 0.8rem 1.5rem;
+    margin-left: 1rem;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
 }
 
 .menu-bar button:hover {
-    background-color: #45a049;
+    background-color: var(--color-secondary);
 }
 
 .question-container {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #ddd;
+    background-color: var(--color-light);
+    padding: 1.5rem;
     border-radius: 8px;
-    background-color: #fafafa;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 label {
     display: block;
-    margin-top: 10px;
-    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--color-dark);
+    font-weight: 500;
 }
 
-input[type="text"], select, textarea {
+input[type="text"], 
+select, 
+textarea {
     width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
 }
 
 button {
-    margin-top: 10px;
-    padding: 10px;
+    padding: 0.8rem 1.5rem;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    background-color: #4CAF50;
-    color: #fff;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #45a049;
-}
-
-.remove-option-btn, .remove-question-btn {
-    background-color: #ff4d4d;
-    margin-top: 5px;
+.remove-option-btn, 
+.remove-question-btn {
+    background-color: #dc3545;
+    color: white;
 }
 
 .add-option-btn {
     background-color: #2196F3;
+    color: white;
 }
 
 .preview-modal {
@@ -106,9 +157,9 @@ button:hover {
 }
 
 .preview-content {
-    background: white;
+    background: var(--color-light);
     padding: 2rem;
-    border-radius: 8px;
+    border-radius: 12px;
     max-width: 800px;
     width: 90%;
     max-height: 90vh;
@@ -117,20 +168,209 @@ button:hover {
 
 .preview-question {
     margin-bottom: 2rem;
-    padding: 1rem;
+    padding: 1.5rem;
     border: 1px solid #eee;
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 .preview-option {
-    margin: 0.5rem 0;
+    margin: 0.8rem 0;
 }
 
 .preview-question textarea {
     width: 100%;
     min-height: 100px;
-    margin-top: 1rem;
-    padding: 0.5rem;
+    padding: 1rem;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.quiz-page {
+    margin-left: 250px;
+    padding: 2rem;
+    width: 100%;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.create-btn, 
+.start-btn, 
+.view-result-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--color-primary);
+    color: var(--color-light);
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.create-btn:hover, 
+.start-btn:hover {
+    background-color: var(--color-secondary);
+}
+
+.quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.quiz-card {
+    background: var(--color-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.quiz-card:hover {
+    transform: translateY(-5px);
+}
+
+.quiz-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.quiz-card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--color-dark);
+}
+
+.mode-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.mode-badge.individual {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.mode-badge.group {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.score-badge {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.quiz-description {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.quiz-meta {
+    display: flex;
+    gap: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.quiz-meta i {
+    vertical-align: middle;
+}
+
+.deadline-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-secondary);
+    margin-bottom: 1rem;
+}
+
+.quiz-actions {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.edit-btn, 
+.delete-btn {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-btn {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.delete-btn {
+    background-color: #fce4ec;
+    color: #c2185b;
+}
+
+.quiz-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.filters input,
+.filters select {
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.filters input {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .quiz-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        width: 70px;
+    }
+    
+    .sidebar span {
+        display: none;
+    }
+    
+    .quiz-page {
+        margin-left: 70px;
+    }
+    
+    .logo-container img {
+        width: 40px;
+    }
 }
