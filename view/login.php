@@ -1,3 +1,7 @@
+<?php
+include '../db/config.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,65 +26,20 @@
       </header>
     <div class = "login-container">
         <h2>Login</h2>
-        <form id= "loginForm" action="Login" method="Post">
-            <input type="text" id="username" name="username" required placeholder="Enter your email / username ">
-            <span style= "color: tomato" id="usernameError" class="error"></span>
+        <form id="loginForm" method="POST" action="../actions/login_user.php">
+            <input type="text" id="username" name="email" required placeholder="Enter your email">
+            <span style="color: tomato" id="usernameError" class="error"></span>
     
-            <input type="password" id="password" name="password" required placeholder = "Enter your password">
-            <span style = "color: tomato" id="passwordError" class="error"></span>
+            <input type="password" id="password" name="password" required placeholder="Enter your password">
+            <span style="color: tomato" id="passwordError" class="error"></span>
     
             <input type="submit" value="Login">
         </form>
-
     </div>
     <script>
-            document.getElementById("loginForm").addEventListener("submit", function(event) {
-                // Prevent form submission
-                event.preventDefault();
-                
-                // Clear error messages
-                document.getElementById("usernameError").textContent = "";
-                document.getElementById("passwordError").textContent = "";
-    
-                // Get input values
-                const username = document.getElementById("username").value;
-                const password = document.getElementById("password").value;
-    
-                // Validation flags
-                let valid = true;
-    
-                // Validate username (email format)
-                if (!validateEmail(username)) {
-                    document.getElementById("usernameError").textContent = "Please enter a valid email address.";
-                    valid = false;
-                }
-    
-                // Validate password
-                if (!validatePassword(password)) {
-                    document.getElementById("passwordError").textContent = 
-                        "Password must be at least 8 characters long, include one uppercase letter, at least three digits, and one special character.";
-                    valid = false;
-                }
-    
-                // If all fields are valid, display a success message (instead of submitting)
-                if (valid) {
-                    alert("Form is valid. Proceeding without backend submission for now.");
-                }
-            });
-    
-            // Email validation function
-            function validateEmail(email) {
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return emailPattern.test(email);
-            }
-    
-            // Password validation function
-            function validatePassword(password) {
-                const passwordPattern = /^(?=.*[A-Z])(?=.*\d{3,})(?=.*[!@#\$%\^\&*\)\(+=._-]).{8,}$/;
-                return passwordPattern.test(password);
-            }
-    
-        </script>
+        // Removed unnecessary JavaScript validation
+        // The form will submit directly to the backend for validation
+    </script>
     </body>
     <footer>
         <p>&copy; 2024 Kumi - All rights reserved.</p>

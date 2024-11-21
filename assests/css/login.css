@@ -13,7 +13,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-image: url('../imgs/wheat.png');
+  background-image: url('../images/wheat.png');
   background-color: var(--bg-color-primary);
 }
 
