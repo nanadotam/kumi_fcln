@@ -2,10 +2,10 @@
 session_start();
 require_once '../functions/auth_functions.php';
 require_once '../functions/user_functions.php';
-require_once '../config/database.php';
-$currentPage = 'dashboard';
-include_once '../components/sidebar.php';
+require_once '../functions/quiz_functions.php';
 
+$currentPage = 'profile';
+include_once '../components/sidebar.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -15,30 +15,29 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $userRole = $_SESSION['role'];
 
-// Get user data from database
+// Get user data using the Database class
 try {
-    $pdo = getConnection();
+    $db = Database::getInstance();
     
-    $query = "SELECT * FROM users WHERE user_id = :user_id";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute(['user_id' => $userId]);
-    $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Get basic user data
+    $userData = getUserData($userId);
 
     if ($userRole === 'student') {
-        // Get student stats
+        // Get student statistics
         $statsQuery = "SELECT 
             COUNT(DISTINCT qa.quiz_id) as total_quizzes,
             COALESCE(AVG(qa.score), 0) as average_score
             FROM quiz_attempts qa 
-            WHERE qa.user_id = :user_id";
-        $statsStmt = $pdo->prepare($statsQuery);
-        $statsStmt->execute(['user_id' => $userId]);
-        $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
+            WHERE qa.user_id = ?";
+        
+        $result = $db->query($statsQuery, [$userId]);
+        $stats = $result->fetch_assoc();
+        
         $userData['total_quizzes'] = $stats['total_quizzes'];
         $userData['average_score'] = $stats['average_score'];
     }
 
-} catch(PDOException $e) {
+} catch(Exception $e) {
     $_SESSION['error'] = "Database error: " . $e->getMessage();
     $userData = [];
 }
@@ -46,43 +45,27 @@ try {
 // Handle profile updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $pdo->beginTransaction();
-
-        $updateFields = [
+        $updateData = [
             'first_name' => $_POST['first_name'],
             'last_name' => $_POST['last_name'],
             'email' => $_POST['email']
         ];
 
         if ($userRole === 'teacher' && isset($_POST['department'])) {
-            $updateFields['department'] = $_POST['department'];
+            $updateData['department'] = $_POST['department'];
         }
 
         if (!empty($_POST['new_password'])) {
             if ($_POST['new_password'] !== $_POST['confirm_password']) {
                 throw new Exception('Passwords do not match');
             }
-            $updateFields['password'] = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+            $updateData['password'] = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
         }
 
-        $sql = "UPDATE users SET ";
-        $updates = [];
-        foreach ($updateFields as $field => $value) {
-            $updates[] = "$field = :$field";
-        }
-        $sql .= implode(', ', $updates);
-        $sql .= " WHERE user_id = :user_id";
-
-        $updateFields['user_id'] = $userId;
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($updateFields);
-
-        $pdo->commit();
+        updateUserProfile($userId, $updateData);
         $_SESSION['message'] = 'Profile updated successfully!';
         
     } catch (Exception $e) {
-        $pdo->rollBack();
         $_SESSION['error'] = $e->getMessage();
     }
     
