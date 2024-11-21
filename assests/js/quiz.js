@@ -88,8 +88,59 @@ document.getElementById('preview-btn').addEventListener('click', previewQuiz);
 document.getElementById('view-responses-btn').addEventListener('click', viewResponses);
 
 function previewQuiz() {
-    alert("Preview your quiz here! (Feature coming soon!)");
-    //This could also be a link to another page to preview the quiz?
+    // Get all questions
+    const questions = document.querySelectorAll('.question-container');
+    const previewHTML = [];
+    
+    // Create preview modal
+    const modal = document.createElement('div');
+    modal.className = 'preview-modal';
+    
+    questions.forEach((question, index) => {
+        const questionText = question.querySelector('.question-text').value;
+        const answerType = question.querySelector('.answer-type').value;
+        const required = question.querySelector('.required-checkbox').checked;
+        const points = question.querySelector('.points-input').value;
+        
+        let optionsHTML = '';
+        if (answerType !== 'paragraph') {
+            const options = question.querySelectorAll('.option-input input[type="text"]');
+            options.forEach(option => {
+                const inputType = answerType === 'multiple-choice' ? 'radio' : 'checkbox';
+                optionsHTML += `
+                    <div class="preview-option">
+                        <input type="${inputType}" name="q${index}" disabled>
+                        <label>${option.value}</label>
+                    </div>
+                `;
+            });
+        }
+        
+        previewHTML.push(`
+            <div class="preview-question">
+                <h3>Question ${index + 1} ${required ? '*' : ''} (${points} points)</h3>
+                <p>${questionText}</p>
+                ${answerType === 'paragraph' 
+                    ? '<textarea disabled placeholder="Student answer here..."></textarea>'
+                    : optionsHTML
+                }
+            </div>
+        `);
+    });
+    
+    modal.innerHTML = `
+        <div class="preview-content">
+            <h2>Quiz Preview</h2>
+            ${previewHTML.join('')}
+            <button onclick="closePreview()">Close Preview</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closePreview() {
+    document.querySelector('.preview-modal').remove();
 }
 
 function viewResponses() {
