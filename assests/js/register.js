@@ -1,5 +1,5 @@
 document.getElementById("signupForm")?.addEventListener("submit", async function(event) {
-    event.preventDefault();
+    // event.preventDefault();
     
     // Clear error messages
     document.getElementById("firstNameError").textContent = "";
