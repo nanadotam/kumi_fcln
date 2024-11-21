@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&display=swap');
+
+:root {
+    --color-primary: #187045;
+    --color-secondary: #E46E51;
+    --color-dark-pink: #ae3a6d;
+    --color-accent: #DCA05F;
+    --color-dark: #333;
+    --color-light: #fff;
+    --color-bg-dark: #f5f5f5;
+    --color-bg-light: #ffffff;
+}
+
+/* ... existing general styles ... */
+
+.welcome-section {
+    background-color: var(--color-light);
+    border: 2px solid #000;
+    border-radius: 15px;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--color-light);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card i {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+}
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-dark);
+}
+
+.stat-info p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-secondary);
+}
+
+/* Add notification styles */
+.notification-dropdown {
+    position: relative;
+}
+
+.notification-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-dark);
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 10px;
+    height: 10px;
+    background-color: var(--color-secondary);
+    border-radius: 50%;
+}
+
+.notification-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 300px;
+    background: var(--color-light);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.notification-item.unread {
+    background-color: #f8f9fa;
+}

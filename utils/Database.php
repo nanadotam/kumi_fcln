@@ -1,14 +1,21 @@
 <?php
 class Database {
+    private static $instance = null;
     private $connection;
     
-    public function __construct() {
-        require_once '../db/config.php';
-        $this->connection = $conn;
+    private function __construct() {
+        $this->connection = require_once '../db/config.php';
+        
+        if (!$this->connection) {
+            throw new Exception("Database connection failed");
+        }
     }
     
-    public function getConnection() {
-        return $this->connection;
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
     
     public function query($sql, $params = []) {

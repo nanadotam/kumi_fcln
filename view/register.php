@@ -7,8 +7,8 @@ include '../db/config.php';
 <head>
 	<link rel = "icon" type = "image/x-icon" href = "mainLogo.jpg">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="../assests/css/styles.css">
-	<link rel="stylesheet" href="../assests/css/register.css">
+	<link rel="stylesheet" href="../assets/css/styles.css">
+	<link rel="stylesheet" href="../assets/css/register.css">
 	<Title> Kumi-Register</Title>
 </head>
 <body>
@@ -16,7 +16,7 @@ include '../db/config.php';
     <header>
         <nav class="navbar">
           <div class="logo">
-            <img src="../assests/images/KUMI_logo.svg" alt="Kumi Logo">
+            <img src="../assets/images/KUMI_logo.svg" alt="Kumi Logo">
           </div>
           <div class="auth-buttons">
             <a href="../view/index.php" class="btn btn-login">Home</a>
@@ -62,7 +62,7 @@ include '../db/config.php';
 	</div>
 </div>
 
-<script src="../assests/js/register.js"></script>
+<script src="../assets/js/register.js"></script>
 </body>
  <footer>
     <p>&copy; 2024 Kumi - All rights reserved.</p>

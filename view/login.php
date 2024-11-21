@@ -8,14 +8,14 @@ include '../db/config.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kumi Login Page</title>
-    <link rel="stylesheet" href="../assests/css/styles.css">
-    <link rel="stylesheet" href="../assests/css/login.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/login.css">
 </head>
 <body>
     <header>
         <nav class="navbar">
           <div class="logo">
-            <img src="../assests/images/KUMI_logo.svg" alt="Kumi Logo">
+            <img src="../assets/images/KUMI_logo.svg" alt="Kumi Logo">
           </div>
           </ul>
           <div class="auth-buttons">

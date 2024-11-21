@@ -3,7 +3,7 @@ session_start();
 require_once '../functions/auth_functions.php';
 require_once '../functions/quiz_functions.php';
 require_once '../functions/student_functions.php';
-require_once '../functions/notification_functions.php';
+
 
 // Check if user is logged in and is a student
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
@@ -26,12 +26,13 @@ $notifications = getUserNotifications($studentId);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard - Kumi</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/student_dashboard.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
     <nav class="navbar">
         <div class="logo">
-            <img src="../assets/imgs/KUMI_logo.svg" alt="Kumi Logo">
+            <img src="../assets/images/KUMI_logo.svg" alt="Kumi Logo">
         </div>
         <div class="nav-links">
             <div class="notification-dropdown">
@@ -58,15 +59,27 @@ $notifications = getUserNotifications($studentId);
 
     <main class="dashboard">
         <section class="welcome-section">
-            <h1>Welcome, <?= htmlspecialchars($_SESSION['first_name']) ?></h1>
-            <div class="stats-overview">
-                <div class="stat-card">
-                    <h3>Completed Quizzes</h3>
-                    <p><?= count($completedQuizzes) ?></p>
+            <h1>Welcome Back, <?= htmlspecialchars($_SESSION['first_name']) ?></h1>
+            <p class="welcome-message">Track your progress and take your quizzes</p>
+            <div class="welcome-content">
+                <div class="stats-overview">
+                    <div class="stat-card">
+                        <i class='bx bx-check-circle'></i>
+                        <div class="stat-info">
+                            <h3>Completed</h3>
+                            <p><?= count($completedQuizzes) ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class='bx bx-book-open'></i>
+                        <div class="stat-info">
+                            <h3>Available</h3>
+                            <p><?= count($availableQuizzes) ?></p>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <h3>Available Quizzes</h3>
-                    <p><?= count($availableQuizzes) ?></p>
+                <div class="welcome-image">
+                    <img src="../assets/imgs/studentdash.svg" alt="Student Dashboard">
                 </div>
             </div>
         </section>
