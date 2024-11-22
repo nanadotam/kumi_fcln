@@ -1,12 +1,10 @@
-let questionCounter = 0;
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Add event listeners
+    console.log('DOM loaded');
     const addQuestionBtn = document.getElementById('addQuestionBtn');
     const saveQuizBtn = document.getElementById('saveQuizBtn');
     
     if (addQuestionBtn) {
-        addQuestionBtn.addEventListener('click', addQuestion);
+        addQuestionBtn.addEventListener('click', addNewQuestion);
     }
     
     if (saveQuizBtn) {
@@ -14,134 +12,148 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function addQuestion() {
-    questionCounter++;
+function addNewQuestion() {
     const questionsContainer = document.getElementById('questionsContainer');
-    
-    const questionCard = createQuestionCard();
-    questionsContainer.appendChild(questionCard);
-}
-
-function createQuestionCard() {
-    const card = document.createElement('div');
-    card.className = 'question-card';
-    card.dataset.questionId = questionCounter;
-    
-    card.innerHTML = `
-        <div class="question-header">
-            <div class="question-main">
-                <input type="text" class="question-text" placeholder="Enter your question">
-                <div class="question-settings">
-                    <div class="points-input">
-                        <label>Points:</label>
-                        <input type="number" class="question-points" value="1" min="1">
-                    </div>
-                    <select class="question-type" onchange="handleQuestionTypeChange(this)">
-                        <option value="multiple_choice">Multiple Choice</option>
-                        <option value="paragraph">Paragraph</option>
-                        <option value="checkbox">Select All That Apply</option>
-                    </select>
-                </div>
+    const questionHTML = `
+        <div class="question-card">
+            <div class="question-header">
+                <input type="text" class="question-text" placeholder="Question">
+                <select class="question-type" onchange="handleQuestionTypeChange(this)">
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="paragraph">Paragraph</option>
+                    <option value="checkbox">Select All That Apply</option>
+                </select>
+                <button class="btn-delete" onclick="deleteQuestion(this)">
+                    <i class='bx bx-trash'></i>
+                </button>
             </div>
-            <button class="btn-delete" onclick="deleteQuestion(this)">
-                <i class='bx bx-trash'></i>
-            </button>
-        </div>
-        <div class="options-container">
-            <!-- Options will be added here -->
+            <div class="options-container">
+                <div class="option-item">
+                    <input type="radio" disabled>
+                    <input type="text" class="option-input" placeholder="Option 1">
+                    <button class="btn-delete" onclick="deleteOption(this)">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
+                <div class="option-item">
+                    <input type="radio" disabled>
+                    <input type="text" class="option-input" placeholder="Option 2">
+                    <button class="btn-delete" onclick="deleteOption(this)">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
+                <button class="btn-add" onclick="addOption(this.parentElement, 'radio')">
+                    <i class='bx bx-plus'></i> Add Option
+                </button>
+            </div>
         </div>
     `;
-
-    // Initialize with multiple choice options by default
-    const optionsContainer = card.querySelector('.options-container');
-    initializeMultipleChoice(optionsContainer);
-
-    return card;
+    
+    questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
 }
 
 function handleQuestionTypeChange(select) {
     const optionsContainer = select.closest('.question-card').querySelector('.options-container');
-    optionsContainer.innerHTML = ''; // Clear existing options
-
-    switch(select.value) {
+    const type = select.value;
+    
+    switch(type) {
         case 'multiple_choice':
-            initializeMultipleChoice(optionsContainer);
+            createMultipleChoiceOptions(optionsContainer);
             break;
         case 'checkbox':
-            initializeCheckbox(optionsContainer);
+            createCheckboxOptions(optionsContainer);
             break;
         case 'paragraph':
-            initializeParagraph(optionsContainer);
+            createParagraphOption(optionsContainer);
             break;
     }
 }
 
-function initializeMultipleChoice(container) {
+function createMultipleChoiceOptions(container) {
     container.innerHTML = `
-        <div class="options-list">
-            ${createOption('radio', 1)}
-            ${createOption('radio', 2)}
-        </div>
-        <button class="btn-add-option" onclick="addOption(this, 'radio')">
-            <i class='bx bx-plus'></i> Add Option
-        </button>
-    `;
-}
-
-function initializeCheckbox(container) {
-    container.innerHTML = `
-        <div class="options-list">
-            ${createOption('checkbox', 1)}
-            ${createOption('checkbox', 2)}
-        </div>
-        <button class="btn-add-option" onclick="addOption(this, 'checkbox')">
-            <i class='bx bx-plus'></i> Add Option
-        </button>
-    `;
-}
-
-function initializeParagraph(container) {
-    container.innerHTML = `
-        <div class="paragraph-answer">
-            <textarea disabled placeholder="Students will type their answer here" class="answer-preview"></textarea>
-        </div>
-    `;
-}
-
-function createOption(type, index) {
-    return `
         <div class="option-item">
-            <input type="${type}" disabled>
-            <input type="text" class="option-input" placeholder="Option ${index}">
-            <button class="btn-delete-option" onclick="deleteOption(this)">
+            <input type="radio" disabled>
+            <input type="text" class="option-input" placeholder="Option 1">
+            <button class="btn-delete" onclick="deleteOption(this)">
                 <i class='bx bx-trash'></i>
             </button>
         </div>
+        <div class="option-item">
+            <input type="radio" disabled>
+            <input type="text" class="option-input" placeholder="Option 2">
+            <button class="btn-delete" onclick="deleteOption(this)">
+                <i class='bx bx-trash'></i>
+            </button>
+        </div>
+        <button class="btn-add" onclick="addOption(this.parentElement, 'radio')">
+            <i class='bx bx-plus'></i> Add Option
+        </button>
     `;
 }
 
-function addOption(button, type) {
-    const optionsList = button.previousElementSibling;
-    const optionCount = optionsList.children.length + 1;
+function createCheckboxOptions(container) {
+    container.innerHTML = `
+        <div class="option-item">
+            <input type="checkbox" disabled>
+            <input type="text" class="option-input" placeholder="Option 1">
+            <button class="btn-delete" onclick="deleteOption(this)">
+                <i class='bx bx-trash'></i>
+            </button>
+        </div>
+        <div class="option-item">
+            <input type="checkbox" disabled>
+            <input type="text" class="option-input" placeholder="Option 2">
+            <button class="btn-delete" onclick="deleteOption(this)">
+                <i class='bx bx-trash'></i>
+            </button>
+        </div>
+        <button class="btn-add" onclick="addOption(this.parentElement, 'checkbox')">
+            <i class='bx bx-plus'></i> Add Option
+        </button>
+    `;
+}
+
+function createParagraphOption(container) {
+    container.innerHTML = `
+        <div class="option-item">
+            <textarea disabled placeholder="Students will type their answer here" 
+                      style="width: 100%; min-height: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+        </div>
+    `;
+}
+
+function addOption(container, type) {
+    const optionCount = container.querySelectorAll('.option-item').length + 1;
     const newOption = document.createElement('div');
-    newOption.innerHTML = createOption(type, optionCount);
-    optionsList.appendChild(newOption.firstElementChild);
+    newOption.className = 'option-item';
+    newOption.innerHTML = `
+        <input type="${type}" disabled>
+        <input type="text" class="option-input" placeholder="Option ${optionCount}">
+        <button class="btn-delete" onclick="deleteOption(this)">
+            <i class='bx bx-trash'></i>
+        </button>
+    `;
+    
+    // Insert before the "Add Option" button
+    container.insertBefore(newOption, container.lastElementChild);
 }
 
 function deleteOption(button) {
     const optionItem = button.closest('.option-item');
-    const optionsList = optionItem.parentElement;
+    const container = optionItem.parentElement;
     optionItem.remove();
     
     // Renumber remaining options
-    optionsList.querySelectorAll('.option-item').forEach((item, index) => {
-        item.querySelector('.option-input').placeholder = `Option ${index + 1}`;
+    container.querySelectorAll('.option-item').forEach((item, index) => {
+        const input = item.querySelector('.option-input');
+        if (input) {
+            input.placeholder = `Option ${index + 1}`;
+        }
     });
 }
 
 function deleteQuestion(button) {
-    const questionCard = button.closest('.question-card');
-    questionCard.remove();
+    button.closest('.question-card').remove();
 }
 
 function saveQuiz() {
@@ -156,7 +168,6 @@ function saveQuiz() {
         const question = {
             text: card.querySelector('.question-text').value,
             type: card.querySelector('.question-type').value,
-            points: parseInt(card.querySelector('.question-points').value),
             options: []
         };
 
