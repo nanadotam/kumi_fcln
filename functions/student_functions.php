@@ -82,3 +82,4 @@ function markNotificationAsRead($notificationId) {
     $sql = "UPDATE Notifications SET is_read = 1 WHERE notification_id = ?";
     return $db->query($sql, [$notificationId]);
 } 
+

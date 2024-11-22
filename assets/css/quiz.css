@@ -374,3 +374,52 @@ button {
         width: 40px;
     }
 }
+
+/* Add these styles for validation and notifications */
+.question-card.error {
+    border: 1px solid #ff4444;
+    padding: 15px;
+    border-radius: 4px;
+    background-color: #fff5f5;
+}
+
+.error-message {
+    color: #ff4444;
+    font-size: 0.875rem;
+    margin-top: 5px;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 4px;
+    color: white;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.success {
+    background-color: #28a745;
+}
+
+.notification.error {
+    background-color: #dc3545;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

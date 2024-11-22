@@ -28,7 +28,7 @@ $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - Kumi</title>
+    <title> Student Dashboard - Kumi</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/student_dashboard.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
@@ -41,7 +41,7 @@ $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
             
             <div class="dashboard-stats">
                 <div class="stat-box">
-                    <h3>Completion Rate</h3>
+                    <h3> Completion Rate </h3>
                     <p class="stat-number">
                         <?= isset($progress['total_quizzes']) ? round(($progress['completed_quizzes'] / max(1, $progress['total_quizzes'])) * 100) : 0 ?>%
                     </p>
