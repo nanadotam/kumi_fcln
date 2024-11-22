@@ -5,7 +5,7 @@ require_once '../functions/quiz_functions.php';
 require_once '../functions/student_functions.php';
 
 $currentPage = 'dashboard';
-// include_once '../components/sidebar.php';
+include_once '../components/sidebar.php';
 
 // Check if user is logged in and is a student
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
@@ -37,7 +37,7 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard - Kumi</title>
-    <!-- <link rel="stylesheet" href="../assets/css/styles.css"> -->
+
     <link rel="stylesheet" href="../assets/css/student_dashboard.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
