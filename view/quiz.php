@@ -22,6 +22,12 @@ if ($userRole === 'student') {
 } else {
     $quizzes = getQuizzesByTeacher($userId);
 }
+
+$completedQuizIds = [];
+if ($userRole === 'student') {
+    $completedQuizzes = getCompletedQuizzes($userId);
+    $completedQuizIds = array_column($completedQuizzes, 'quiz_id');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -125,7 +131,7 @@ if ($userRole === 'student') {
                                         <?= $quiz['score'] ?>%
                                     </span>
                                 </div>
-                                <div class="quiz-meta">
+                                <div clas≠≠s="quiz-meta">
                                     <span>
                                         <i class='bx bx-calendar'></i>
                                         Completed: <?= date('M d, Y', strtotime($quiz['submitted_at'])) ?>

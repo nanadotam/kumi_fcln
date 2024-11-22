@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $resultId = $_GET['id'] ?? null;
 if (!$resultId) {
-    header('Location: dashboard.php');
+    header('Location: student_dashboard.php');
     exit();
 }
 
@@ -42,7 +42,7 @@ try {
     
 } catch (Exception $e) {
     $_SESSION['error'] = $e->getMessage();
-    header('Location: dashboard.php');
+    header('Location: student_dashboard.php');
     exit();
 }
 ?>
@@ -105,7 +105,7 @@ try {
         </div>
         
         <div class="actions">
-            <a href="dashboard.php" class="btn">Back to Dashboard</a>
+            <a href="student_dashboard.php" class="btn">Back to Dashboard</a>
             <a href="quiz.php" class="btn">Take Another Quiz</a>
         </div>
     </main>

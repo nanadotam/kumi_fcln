@@ -17,7 +17,7 @@ $studentId = $_SESSION['user_id'];
 
 // Fetch all required data
 // $availableQuizzes = getAvailableQuizzes($studentId);
-// $completedQuizzes = getCompletedQuizzes($studentId);
+$completedQuizzes = getCompletedQuizzes($studentId);
 // $progress = getStudentProgress($studentId);
 // $upcomingDeadlines = getUpcomingDeadlines($studentId);
 
@@ -101,6 +101,39 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
                     <?php endif; ?>
                 </div>
             </div>
+
+            <section class="completed-quizzes">
+                <h2>Completed Quizzes</h2>
+                <?php if (empty($completedQuizzes)): ?>
+                    <p class="no-quizzes">You haven't completed any quizzes yet.</p>
+                <?php else: ?>
+                    <div class="quiz-grid">
+                        <?php foreach ($completedQuizzes as $quiz): ?>
+                            <div class="quiz-card <?= $quiz['performance'] ?>">
+                                <div class="quiz-header">
+                                    <h3><?= $quiz['title'] ?></h3>
+                                    <span class="score-badge">
+                                        <?= number_format($quiz['score'], 1) ?>%
+                                    </span>
+                                </div>
+                                <div class="quiz-stats">
+                                    <span>
+                                        <i class='bx bx-check-circle'></i>
+                                        <?= $quiz['correct_answers'] ?>/<?= $quiz['total_questions'] ?> Correct
+                                    </span>
+                                    <span>
+                                        <i class='bx bx-time'></i>
+                                        <?= date('M d, Y', strtotime($quiz['submitted_at'])) ?>
+                                    </span>
+                                </div>
+                                <a href="quiz_result.php?id=<?= $quiz['result_id'] ?>" class="view-result-btn">
+                                    View Details
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </section>
         </div>
     </div>
 </body>

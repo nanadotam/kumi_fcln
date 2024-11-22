@@ -124,35 +124,53 @@ function getAvailableQuizzes($studentId) {
     return $quizzes;
 }
 
-// function getCompletedQuizzes($studentId) {
-//     try {
-//         $db = Database::getInstance();
+function getCompletedQuizzes($userId) {
+    try {
+        $db = Database::getInstance();
         
-//         $sql = "SELECT q.title, qr.* 
-//                 FROM QuizResults qr 
-//                 JOIN Quizzes q ON qr.quiz_id = q.quiz_id 
-//                 WHERE qr.user_id = ? 
-//                 ORDER BY qr.submitted_at DESC";
-                
-//         $result = $db->query($sql, [$studentId]);
+        $sql = "SELECT 
+                qr.result_id,
+                qr.quiz_id,
+                qr.score,
+                qr.submitted_at,
+                q.title,
+                q.description,
+                q.mode,
+                (SELECT COUNT(*) 
+                 FROM Responses r 
+                 WHERE r.result_id = qr.result_id AND r.is_correct = 1) as correct_answers,
+                (SELECT COUNT(*) 
+                 FROM Questions qs 
+                 WHERE qs.quiz_id = q.quiz_id) as total_questions
+                FROM QuizResults qr
+                JOIN Quizzes q ON qr.quiz_id = q.quiz_id
+                WHERE qr.user_id = ?
+                ORDER BY qr.submitted_at DESC";
         
-//         $quizzes = [];
-//         while ($row = $result->fetch_assoc()) {
-//             $quizzes[] = [
-//                 'result_id' => (int)$row['result_id'],
-//                 'quiz_id' => (int)$row['quiz_id'],
-//                 'title' => htmlspecialchars($row['title']),
-//                 'score' => (float)$row['score'],
-//                 'submitted_at' => $row['submitted_at']
-//             ];
-//         }
+        $result = $db->query($sql, [$userId]);
         
-//         return $quizzes;
-//     } catch (Exception $e) {
-//         error_log("Database error in getCompletedQuizzes: " . $e->getMessage());
-//         return [];
-//     }
-// }
+        $completedQuizzes = [];
+        while ($row = $result->fetch_assoc()) {
+            $completedQuizzes[] = [
+                'result_id' => (int)$row['result_id'],
+                'quiz_id' => (int)$row['quiz_id'],
+                'title' => htmlspecialchars($row['title']),
+                'description' => htmlspecialchars($row['description']),
+                'score' => (float)$row['score'],
+                'submitted_at' => $row['submitted_at'],
+                'mode' => $row['mode'],
+                'correct_answers' => (int)$row['correct_answers'],
+                'total_questions' => (int)$row['total_questions'],
+                'performance' => $row['score'] >= 70 ? 'pass' : 'fail'
+            ];
+        }
+        
+        return $completedQuizzes;
+    } catch (Exception $e) {
+        error_log("Error getting completed quizzes: " . $e->getMessage());
+        return [];
+    }
+}
 
 function getCorrectAnswer($questionId) {
     try {
