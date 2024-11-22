@@ -5,7 +5,7 @@ require_once '../functions/quiz_functions.php';
 
 
 $currentPage = 'quiz';
-//include_once '../components/sidebar.php';
+include_once '../components/sidebar.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
