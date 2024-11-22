@@ -25,30 +25,6 @@ $quizzes = getQuizzesByTeacher($teacherId);
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="logo-container">
-            <img src="../assets/images/KUMI_logo.svg" alt="Kumi Logo">
-        </div>
-        <nav class="nav-links">
-            <a href="teacher_dashboard.php" class="active">
-                <i class='bx bxs-dashboard'></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="quiz.php">
-                <i class='bx bx-book-content'></i>
-                <span>Quizzes</span>
-            </a>
-            <a href="profile.php">
-                <i class='bx bx-user'></i>
-                <span>Profile</span>
-            </a>
-            <a href="../actions/logout.php">
-                <i class='bx bx-log-out'></i>
-                <span>Logout</span>
-            </a>
-        </nav>
-    </div>
-
     <main class="dashboard">
         <section class="welcome-section">
             <h1>Welcome Back, <?= htmlspecialchars($_SESSION['first_name']) ?></h1>

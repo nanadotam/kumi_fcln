@@ -85,31 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <!-- Reuse sidebar from student/teacher dashboard -->
-    <div class="sidebar">
-        <div class="logo-container">
-            <img src="../assets/images/KUMI_logo.svg" alt="Kumi Logo">
-        </div>
-        <nav class="nav-links">
-            <a href="<?= $userRole ?>_dashboard.php">
-                <i class='bx bxs-dashboard'></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="quiz.php">
-                <i class='bx bx-book-content'></i>
-                <span>Quizzes</span>
-            </a>
-            <a href="profile.php" class="active">
-                <i class='bx bx-user'></i>
-                <span>Profile</span>
-            </a>
-            <a href="../actions/logout.php">
-                <i class='bx bx-log-out'></i>
-                <span>Logout</span>
-            </a>
-        </nav>
-    </div>
-
     <main class="profile-page">
         <div class="profile-header">
             <h1>My Profile</h1>
