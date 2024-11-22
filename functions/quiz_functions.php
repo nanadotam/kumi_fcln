@@ -153,3 +153,18 @@ function getAvailableQuizzes($studentId) {
 //         return [];
 //     }
 // }
+
+function getCorrectAnswer($questionId) {
+    try {
+        $db = Database::getInstance();
+        $sql = "SELECT answer_text 
+                FROM Answers 
+                WHERE question_id = ? AND is_correct = 1";
+        $result = $db->query($sql, [$questionId]);
+        $answer = $result->fetch_assoc();
+        return $answer ? $answer['answer_text'] : 'Not available';
+    } catch (Exception $e) {
+        error_log("Error getting correct answer: " . $e->getMessage());
+        return 'Not available';
+    }
+}
