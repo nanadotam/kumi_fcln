@@ -4,9 +4,6 @@ require_once '../functions/auth_functions.php';
 require_once '../functions/user_functions.php';
 require_once '../functions/quiz_functions.php';
 
-$currentPage = 'profile';
-include_once '../components/sidebar.php';
-
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -15,55 +12,71 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $userRole = $_SESSION['role'];
 
-// Get user data using the Database class
+// Get user data and statistics
 try {
     $db = Database::getInstance();
     
-    // Get basic user data
-    $userData = getUserData($userId);
-
+    // Get basic user info
+    $sql = "SELECT 
+            u.first_name,
+            u.last_name,
+            u.email";
+    
+    // Add role-specific statistics
     if ($userRole === 'student') {
-        // Get student statistics
-        $statsQuery = "SELECT 
-            COUNT(DISTINCT qa.quiz_id) as total_quizzes,
-            COALESCE(AVG(qa.score), 0) as average_score
-            FROM quiz_attempts qa 
-            WHERE qa.user_id = ?";
-        
-        $result = $db->query($statsQuery, [$userId]);
-        $stats = $result->fetch_assoc();
-        
-        $userData['total_quizzes'] = $stats['total_quizzes'];
-        $userData['average_score'] = $stats['average_score'];
+        $sql .= ", COUNT(DISTINCT qr.quiz_id) as total_quizzes,
+                  ROUND(AVG(qr.score), 1) as average_score,
+                  COUNT(CASE WHEN qr.score >= 70 THEN 1 END) as quizzes_passed";
+    } else {
+        $sql .= ", COUNT(DISTINCT q.quiz_id) as total_quizzes_created,
+                  (SELECT COUNT(DISTINCT qr.user_id) 
+                   FROM Quizzes q2 
+                   LEFT JOIN QuizResults qr ON q2.quiz_id = qr.quiz_id 
+                   WHERE q2.created_by = u.user_id) as total_students,
+                  (SELECT COUNT(*) 
+                   FROM QuizResults qr 
+                   JOIN Quizzes q2 ON qr.quiz_id = q2.quiz_id 
+                   WHERE q2.created_by = u.user_id) as total_attempts";
     }
+    
+    $sql .= " FROM Users u";
+    
+    if ($userRole === 'student') {
+        $sql .= " LEFT JOIN QuizResults qr ON u.user_id = qr.user_id";
+    } else {
+        $sql .= " LEFT JOIN Quizzes q ON u.user_id = q.created_by";
+    }
+    
+    $sql .= " WHERE u.user_id = ? GROUP BY u.user_id";
+            
+    $result = $db->query($sql, [$userId]);
+    $userData = $result->fetch_assoc();
 
 } catch(Exception $e) {
-    $_SESSION['error'] = "Database error: " . $e->getMessage();
+    $_SESSION['error'] = "Error fetching user data: " . $e->getMessage();
     $userData = [];
 }
 
-// Handle profile updates
+// Handle password update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $updateData = [
-            'first_name' => $_POST['first_name'],
-            'last_name' => $_POST['last_name'],
-            'email' => $_POST['email']
-        ];
-
-        if ($userRole === 'teacher' && isset($_POST['department'])) {
-            $updateData['department'] = $_POST['department'];
+        if (empty($_POST['new_password']) || empty($_POST['confirm_password'])) {
+            throw new Exception('Both password fields are required');
         }
-
-        if (!empty($_POST['new_password'])) {
-            if ($_POST['new_password'] !== $_POST['confirm_password']) {
-                throw new Exception('Passwords do not match');
-            }
-            $updateData['password'] = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+        
+        if ($_POST['new_password'] !== $_POST['confirm_password']) {
+            throw new Exception('Passwords do not match');
         }
-
-        updateUserProfile($userId, $updateData);
-        $_SESSION['message'] = 'Profile updated successfully!';
+        
+        if (strlen($_POST['new_password']) < 8) {
+            throw new Exception('Password must be at least 8 characters long');
+        }
+        
+        $hashedPassword = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+        $sql = "UPDATE Users SET password = ? WHERE user_id = ?";
+        $db->query($sql, [$hashedPassword, $userId]);
+        
+        $_SESSION['message'] = 'Password updated successfully!';
         
     } catch (Exception $e) {
         $_SESSION['error'] = $e->getMessage();
@@ -85,9 +98,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
+    <?php include_once '../components/sidebar.php'; ?>
+    
     <main class="profile-page">
         <div class="profile-header">
-            <h1>My Profile</h1>
+            <h1><?= ucfirst($userRole) ?> Profile</h1>
             <?php if (isset($_SESSION['message'])): ?>
                 <div class="alert success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
             <?php endif; ?>
@@ -97,75 +112,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="profile-content">
-            <form action="profile.php" method="POST" class="profile-form">
-                <div class="form-group">
-                    <label for="first_name">First Name</label>
-                    <input type="text" id="first_name" name="first_name" 
-                           value="<?= htmlspecialchars($userData['first_name'] ?? '') ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="last_name">Last Name</label>
-                    <input type="text" id="last_name" name="last_name" 
-                           value="<?= htmlspecialchars($userData['last_name'] ?? '') ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" 
-                           value="<?= htmlspecialchars($userData['email'] ?? '') ?>" required>
-                </div>
-
-                <?php if ($userRole === 'student'): ?>
-                <div class="form-group">
-                    <label for="student_id">Student ID</label>
-                    <input type="text" id="student_id" name="student_id" 
-                           value="<?= htmlspecialchars($userData['student_id'] ?? '') ?>" readonly>
-                </div>
-                <?php endif; ?>
-
-                <?php if ($userRole === 'teacher'): ?>
-                <div class="form-group">
-                    <label for="department">Department</label>
-                    <input type="text" id="department" name="department" 
-                           value="<?= htmlspecialchars($userData['department'] ?? '') ?>">
-                </div>
-                <?php endif; ?>
-
-                <div class="form-group">
-                    <label for="new_password">New Password (leave blank to keep current)</label>
-                    <input type="password" id="new_password" name="new_password">
-                </div>
-
-                <div class="form-group">
-                    <label for="confirm_password">Confirm New Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password">
-                </div>
-
-                <button type="submit" class="save-btn">Save Changes</button>
-            </form>
-
-            <?php if ($userRole === 'student'): ?>
-            <div class="stats-section">
-                <h2>Your Statistics</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class='bx bx-book-open'></i>
-                        <div class="stat-info">
-                            <h3>Total Quizzes</h3>
-                            <p><?= $userData['total_quizzes'] ?? 0 ?></p>
-                        </div>
+            <div class="user-info">
+                <div class="info-card">
+                    <h2>Personal Information</h2>
+                    <div class="info-item">
+                        <label>Name:</label>
+                        <span><?= htmlspecialchars($userData['first_name'] . ' ' . $userData['last_name']) ?></span>
                     </div>
-                    <div class="stat-card">
-                        <i class='bx bx-trophy'></i>
-                        <div class="stat-info">
-                            <h3>Average Score</h3>
-                            <p><?= number_format($userData['average_score'] ?? 0, 1) ?>%</p>
-                        </div>
+                    <div class="info-item">
+                        <label>Email:</label>
+                        <span><?= htmlspecialchars($userData['email']) ?></span>
                     </div>
+                    <div class="info-item">
+                        <label>Role:</label>
+                        <span><?= ucfirst($userRole) ?></span>
+                    </div>
+                </div>
+
+                <div class="password-section">
+                    <h2>Change Password</h2>
+                    <form action="profile.php" method="POST" class="password-form">
+                        <div class="form-group">
+                            <label for="new_password">New Password</label>
+                            <input type="password" id="new_password" name="new_password" required>
+                            <span class="error" id="passwordError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required>
+                            <span class="error" id="confirmPasswordError"></span>
+                        </div>
+                        <button type="submit" class="save-btn">Update Password</button>
+                    </form>
                 </div>
             </div>
-            <?php endif; ?>
+
+            <div class="stats-section">
+                <h2><?= ucfirst($userRole) ?> Statistics</h2>
+                <div class="stats-grid">
+                    <?php if ($userRole === 'student'): ?>
+                        <div class="stat-card">
+                            <i class='bx bx-book-open'></i>
+                            <div class="stat-info">
+                                <h3>Quizzes Taken</h3>
+                                <p><?= $userData['total_quizzes'] ?? 0 ?></p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class='bx bx-trophy'></i>
+                            <div class="stat-info">
+                                <h3>Average Score</h3>
+                                <p><?= $userData['average_score'] ?? 0 ?>%</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class='bx bx-check-circle'></i>
+                            <div class="stat-info">
+                                <h3>Quizzes Passed</h3>
+                                <p><?= $userData['quizzes_passed'] ?? 0 ?></p>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="stat-card">
+                            <i class='bx bx-book-content'></i>
+                            <div class="stat-info">
+                                <h3>Quizzes Created</h3>
+                                <p><?= $userData['total_quizzes_created'] ?? 0 ?></p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class='bx bx-group'></i>
+                            <div class="stat-info">
+                                <h3>Total Students</h3>
+                                <p><?= $userData['total_students'] ?? 0 ?></p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class='bx bx-chart'></i>
+                            <div class="stat-info">
+                                <h3>Total Attempts</h3>
+                                <p><?= $userData['total_attempts'] ?? 0 ?></p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </main>
 
