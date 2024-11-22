@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate inputs (add your validation logic here)
 
     // Prepare and execute query to check if user exists
-    $stmt = $conn->prepare("SELECT user_id, role, password FROM Users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT user_id, role, password, first_name FROM Users WHERE email = ?");
     $stmt->bind_param("s", $email); // This line binds the email parameter to the prepared statement as a string.
     $stmt->execute(); 
     $stmt->store_result();
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // If user exists in database
     if ($stmt->num_rows > 0) {
         // Bind the query results to variables BEFORE using them
-        $stmt->bind_result($userId, $role, $hashedPassword);
+        $stmt->bind_result($userId, $role, $hashedPassword, $firstName);
         $stmt->fetch();
         
         error_log("User found: ID = $userId, Role = $role");
@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Store user info in session
             $_SESSION['user_id'] = $userId;
             $_SESSION['role'] = $role;
+            $_SESSION['first_name'] = $firstName;
 
             // Redirect user based on their role
             if ($role === 'student') {
