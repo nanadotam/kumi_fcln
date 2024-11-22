@@ -19,7 +19,6 @@ $quizId = $_GET['id'] ?? null;
 // Get appropriate quizzes based on user role
 if ($userRole === 'student') {
     $availableQuizzes = getAvailableQuizzes($userId);
-    $completedQuizzes = getCompletedQuizzes($userId);
 } else {
     $quizzes = getQuizzesByTeacher($userId);
 }
