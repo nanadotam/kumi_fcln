@@ -244,4 +244,41 @@
 
 .form-group input.invalid {
     border-color: #dc3545;
+}
+
+.password-strength {
+    margin: 5px 0 15px;
+}
+
+.strength-bar {
+    height: 6px;
+    background-color: #eee;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.strength-text {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
 } 

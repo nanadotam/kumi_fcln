@@ -5,6 +5,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordError = document.getElementById('passwordError');
     const confirmPasswordError = document.getElementById('confirmPasswordError');
 
+    // Create strength indicator
+    const strengthIndicator = document.createElement('div');
+    strengthIndicator.className = 'password-strength';
+    newPassword.parentNode.insertBefore(strengthIndicator, passwordError);
+
+    function calculatePasswordStrength(password) {
+        let strength = 0;
+        
+        // Length check
+        if (password.length >= 8) strength += 20;
+        if (password.length >= 12) strength += 10;
+        
+        // Character variety checks
+        if (/[A-Z]/.test(password)) strength += 20;
+        if (/[a-z]/.test(password)) strength += 10;
+        if (/[0-9]{3,}/.test(password)) strength += 20;
+        if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += 20;
+        
+        return {
+            score: strength,
+            text: strength < 40 ? 'Weak' : strength < 70 ? 'Moderate' : 'Strong',
+            color: strength < 40 ? '#ff4d4d' : strength < 70 ? '#ffd700' : '#00cc00'
+        };
+    }
+
+    function updateStrengthIndicator(password) {
+        const strength = calculatePasswordStrength(password);
+        
+        strengthIndicator.innerHTML = `
+            <div class="strength-bar">
+                <div class="strength-fill" style="width: ${strength.score}%; background-color: ${strength.color}"></div>
+            </div>
+            <span class="strength-text" style="color: ${strength.color}">${strength.text}</span>
+        `;
+    }
+
     function validatePassword(password) {
         const minLength = 8;
         const hasUpperCase = /[A-Z]/.test(password);
@@ -15,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     newPassword.addEventListener('input', function() {
+        updateStrengthIndicator(this.value);
         if (!validatePassword(this.value)) {
             passwordError.textContent = "Password must be at least 8 characters long, include one uppercase letter, at least three digits, and one special character.";
         } else {
