@@ -4,8 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveQuizBtn = document.getElementById('saveQuizBtn');
     
     if (addQuestionBtn) {
-        addQuestionBtn.addEventListener('click', addNewQuestion);
-    }
+        addQuestionBtn.addEventListener('click', function() {
+            console.log('Add Question Button Clicked');
+            addNewQuestion();
+        });
+            }
     
     if (saveQuizBtn) {
         saveQuizBtn.addEventListener('click', saveQuiz);
