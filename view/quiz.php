@@ -4,7 +4,7 @@ require_once '../functions/auth_functions.php';
 require_once '../functions/quiz_functions.php';
 
 
-$currentPage = 'dashboard';
+$currentPage = 'quiz';
 include_once '../components/sidebar.php';
 
 if (!isset($_SESSION['user_id'])) {
