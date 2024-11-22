@@ -20,7 +20,7 @@ $availableQuizzes = getAvailableQuizzes($studentId);
 // $upcomingDeadlines = getUpcomingDeadlines($studentId);
 
 // Get only recent completed quizzes (last 5)
-$recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
+// $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
 ?>
 
 <!DOCTYPE html>

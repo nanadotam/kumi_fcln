@@ -16,7 +16,7 @@ $userRole = $_SESSION['role'];
             <i class='bx bxs-dashboard'></i>
             <span>Dashboard</span>
         </a>
-        <a href="quiz.php" class="<?= $currentPage === 'quizzes' ? 'active' : '' ?>">
+        <a href="quiz.php" class="<?= $currentPage === 'quiz' ? 'active' : '' ?>">
             <i class='bx bx-book-content'></i>
             <span>Quizzes</span>
         </a>
