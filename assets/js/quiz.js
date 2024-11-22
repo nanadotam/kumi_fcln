@@ -218,7 +218,7 @@ function saveQuiz() {
         .then(data => {
             if (data.success) {
                 alert('Quiz saved successfully!');
-                window.location.href = 'quizzes.php';
+                window.location.href = 'view/quiz.php';
             } else {
                 alert('Error saving quiz: ' + data.message);
             }
