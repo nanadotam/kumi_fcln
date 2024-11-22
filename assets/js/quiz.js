@@ -159,29 +159,44 @@ function deleteQuestion(button) {
 
 function saveQuiz() {
     const quiz = {
-        title: document.getElementById('quizTitle').value,
-        description: document.getElementById('quizDescription').value,
-        dueDate: document.getElementById('quizDueDate').value,
+        title: document.getElementById('quizTitle')?.value || 'Untitled Quiz',
+        description: document.getElementById('quizDescription')?.value || '',
+        dueDate: document.getElementById('quizDueDate')?.value || '',
         questions: []
     };
 
+    if (!quiz.title.trim()) {
+        alert('Quiz title is required.');
+        return;
+    }
+
     document.querySelectorAll('.question-card').forEach(card => {
+        const questionText = card.querySelector('.question-text')?.value.trim();
+        const questionType = card.querySelector('.question-type')?.value;
+
+        if (!questionText) {
+            alert('All questions must have text.');
+            return;
+        }
+
         const question = {
-            text: card.querySelector('.question-text').value,
-            type: card.querySelector('.question-type').value,
+            text: questionText,
+            type: questionType,
             options: []
         };
 
         if (question.type !== 'paragraph') {
             card.querySelectorAll('.option-input').forEach(option => {
-                question.options.push(option.value);
+                const optionValue = option.value.trim();
+                if (optionValue) {
+                    question.options.push(optionValue);
+                }
             });
         }
 
         quiz.questions.push(question);
     });
 
-    // Send to server
     fetch('../actions/save_quiz.php', {
         method: 'POST',
         headers: {
@@ -189,17 +204,17 @@ function saveQuiz() {
         },
         body: JSON.stringify(quiz)
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Quiz saved successfully!');
-            window.location.href = 'quizzes.php';
-        } else {
-            alert('Error saving quiz: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error saving quiz. Please try again.');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Quiz saved successfully!');
+                window.location.href = 'quizzes.php';
+            } else {
+                alert('Error saving quiz: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error saving quiz. Please try again.');
+        });
 }
