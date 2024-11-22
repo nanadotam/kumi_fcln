@@ -3,12 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const addQuestionBtn = document.getElementById('addQuestionBtn');
     const saveQuizBtn = document.getElementById('saveQuizBtn');
     
-    if (addQuestionBtn) {
-        addQuestionBtn.addEventListener('click', function() {
-            console.log('Add Question Button Clicked');
-            addNewQuestion();
-        });
-            }
+    addQuestionBtn.addEventListener('click', function() {
+        console.log('Add Question Button Clicked');
+        addNewQuestion();
+    });
     
     if (saveQuizBtn) {
         saveQuizBtn.addEventListener('click', saveQuiz);
