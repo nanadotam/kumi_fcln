@@ -31,7 +31,17 @@ try {
     }
     
     // Get responses with question and answer details
-    $sql = "SELECT r.*, q.question_text, q.points, a.answer_text, q.type
+    $sql = "SELECT r.*, q.question_text, q.points, q.type,
+            CASE 
+                WHEN q.type = 'short_answer' THEN r.text_response
+                ELSE a.answer_text 
+            END as user_answer,
+            CASE 
+                WHEN q.type = 'short_answer' THEN 
+                    (SELECT answer_text FROM Answers WHERE question_id = q.question_id AND is_correct = 1)
+                ELSE 
+                    (SELECT answer_text FROM Answers WHERE answer_id = r.selected_answer_id)
+            END as answer_text
             FROM Responses r
             JOIN Questions q ON r.question_id = q.question_id
             LEFT JOIN Answers a ON r.selected_answer_id = a.answer_id
@@ -83,12 +93,12 @@ try {
                     
                     <div class="answer-section">
                         <p class="your-answer">
-                            Your answer: <?= htmlspecialchars($response['answer_text'] ?? 'No answer provided') ?>
+                            Your answer: <?= htmlspecialchars($response['user_answer'] ?? 'No answer provided') ?>
                         </p>
                         
                         <?php if (!$response['is_correct']): ?>
                             <p class="correct-answer">
-                                Correct answer: <?= htmlspecialchars(getCorrectAnswer($response['question_id'])) ?>
+                                Correct answer: <?= htmlspecialchars($response['answer_text']) ?>
                             </p>
                         <?php endif; ?>
                     </div>

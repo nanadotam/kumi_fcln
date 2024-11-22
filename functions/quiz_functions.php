@@ -198,57 +198,79 @@ function validateMultipleChoice($questionId, $answerId) {
 }
 
 function validateTextAnswer($questionId, $response) {
-    global $conn;
-    $stmt = $conn->prepare("SELECT correct_answer, points FROM text_answers WHERE question_id = ?");
-    $stmt->bind_param("i", $questionId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    
-    if (!$row) return 0;
-    
-    // Simple string comparison - you might want to implement more sophisticated matching
-    $similarity = similar_text(
-        strtolower(trim($response)), 
-        strtolower(trim($row['correct_answer'])), 
-        $percent
-    );
-    
-    return $percent >= 80 ? $row['points'] : 0;
+    try {
+        $db = Database::getInstance();
+        $sql = "SELECT answer_text, model_answer 
+                FROM Answers 
+                WHERE question_id = ? AND is_correct = 1";
+                
+        $result = $db->query($sql, [$questionId]);
+        $row = $result->fetch_assoc();
+        
+        if (!$row) return 0;
+        
+        // Simple string comparison
+        $similarity = similar_text(
+            strtolower(trim($response)), 
+            strtolower(trim($row['answer_text'])), 
+            $percent
+        );
+        
+        return $percent >= 80 ? 1 : 0;
+        
+    } catch (Exception $e) {
+        error_log("Error validating text answer: " . $e->getMessage());
+        return 0;
+    }
 }
 
 function saveQuizResults($userId, $quizId, $score, $responses) {
-    global $conn;
-    
-    // Start transaction
-    $conn->begin_transaction();
-    
     try {
+        $db = Database::getInstance();
+        
+        // Start transaction
+        $db->begin_transaction();
+        
         // Insert quiz result
-        $stmt = $conn->prepare("INSERT INTO quiz_results (user_id, quiz_id, score) VALUES (?, ?, ?)");
-        $stmt->bind_param("iid", $userId, $quizId, $score);
-        $stmt->execute();
-        $resultId = $conn->insert_id;
+        $sql = "INSERT INTO QuizResults (user_id, quiz_id, score, submitted_at) 
+                VALUES (?, ?, ?, NOW())";
+        $db->query($sql, [$userId, $quizId, $score]);
+        
+        $resultId = $db->insert_id();
         
         // Insert individual responses
-        $stmt = $conn->prepare("INSERT INTO quiz_responses (result_id, question_id, response, is_correct, points) VALUES (?, ?, ?, ?, ?)");
-        
         foreach ($responses as $response) {
-            $stmt->bind_param("iisid", 
-                $resultId,
-                $response['question_id'],
-                $response['response'],
-                $response['is_correct'],
-                $response['points']
-            );
-            $stmt->execute();
+            if ($response['type'] === 'short_answer') {
+                // For text/short answers
+                $sql = "INSERT INTO Responses (result_id, question_id, text_response, is_correct) 
+                        VALUES (?, ?, ?, ?)";
+                $db->query($sql, [
+                    $resultId,
+                    $response['question_id'],
+                    $response['response'],
+                    $response['is_correct'] ? 1 : 0
+                ]);
+            } else {
+                // For multiple choice answers
+                $sql = "INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct) 
+                        VALUES (?, ?, ?, ?)";
+                $db->query($sql, [
+                    $resultId,
+                    $response['question_id'],
+                    $response['response'],
+                    $response['is_correct'] ? 1 : 0
+                ]);
+            }
         }
         
-        $conn->commit();
+        $db->commit();
         return $resultId;
         
     } catch (Exception $e) {
-        $conn->rollback();
+        if (isset($db)) {
+            $db->rollback();
+        }
+        error_log("Error saving quiz results: " . $e->getMessage());
         throw $e;
     }
 }

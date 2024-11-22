@@ -34,24 +34,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     foreach ($quiz['questions'] as $question) {
         $questionId = $question['question_id'];
-        $response = $responses["q_{$questionId}"] ?? null;
+        $response = $_POST['responses']["q_{$questionId}"] ?? null;
         
-        if ($question['type'] === 'multiple_choice') {
-            $isCorrect = validateMultipleChoice($questionId, $response);
-            if ($isCorrect) $correctAnswers++;
-        } else {
-            // Text answer validation
+        if ($question['type'] === 'short_answer') {
             $points = validateTextAnswer($questionId, $response);
-            $correctAnswers += ($points > 0) ? 1 : 0;
+            $quizResults[] = [
+                'question_id' => $questionId,
+                'response' => $response,
+                'is_correct' => ($points > 0),
+                'type' => 'short_answer'
+            ];
+        } else {
+            $isCorrect = validateMultipleChoice($questionId, $response);
+            $quizResults[] = [
+                'question_id' => $questionId,
+                'response' => $response,
+                'is_correct' => $isCorrect,
+                'type' => 'multiple_choice'
+            ];
         }
         
-        // Store response
-        $quizResults[] = [
-            'question_id' => $questionId,
-            'response' => $response,
-            'is_correct' => $isCorrect ?? false,
-            'points' => $points ?? 0
-        ];
+        if ($isCorrect ?? ($points > 0)) {
+            $correctAnswers++;
+        }
     }
 
     // Calculate final score

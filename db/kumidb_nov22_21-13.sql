@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 22, 2024 at 12:53 AM
+-- Generation Time: Nov 22, 2024 at 10:13 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -161,7 +161,9 @@ INSERT INTO `QuizResults` (`result_id`, `quiz_id`, `user_id`, `group_id`, `score
 (1, 1, 2, NULL, 95.00, '2024-11-21 18:02:25'),
 (2, 1, 5, NULL, 88.00, '2024-11-21 18:02:25'),
 (3, 2, NULL, 1, 85.00, '2024-11-21 18:02:25'),
-(4, 2, NULL, 2, 90.00, '2024-11-21 18:02:25');
+(4, 2, NULL, 2, 90.00, '2024-11-21 18:02:25'),
+(5, 1, 6, NULL, 0.00, '2024-11-22 15:26:56'),
+(6, 2, 6, NULL, 0.00, '2024-11-22 15:31:34');
 
 -- --------------------------------------------------------
 
@@ -213,7 +215,9 @@ INSERT INTO `Responses` (`response_id`, `result_id`, `question_id`, `selected_an
 (3, 2, 1, 2, 0, NULL),
 (4, 2, 2, 5, 0, NULL),
 (5, 3, 3, NULL, 1, NULL),
-(6, 4, 3, NULL, 1, NULL);
+(6, 4, 3, NULL, 1, NULL),
+(7, 5, 1, 1, 0, NULL),
+(8, 5, 2, 4, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -354,7 +358,7 @@ ALTER TABLE `Questions`
 -- AUTO_INCREMENT for table `QuizResults`
 --
 ALTER TABLE `QuizResults`
-  MODIFY `result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `Quizzes`
@@ -366,7 +370,7 @@ ALTER TABLE `Quizzes`
 -- AUTO_INCREMENT for table `Responses`
 --
 ALTER TABLE `Responses`
-  MODIFY `response_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `response_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `Users`
