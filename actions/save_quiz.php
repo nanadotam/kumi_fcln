@@ -1,77 +1,97 @@
 <?php
-// Include the database connection
+session_start();
 include('../utils/Database.php');
 
-// Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve data from the form
-    $title = trim($_POST['title']);
-    $description = trim($_POST['description']);
-    $created_by = (int)$_POST['created_by'];
-    $mode = trim($_POST['mode']);
-    $deadline = trim($_POST['deadline']);
-    $questions = isset($_POST['questions']) ? $_POST['questions'] : [];
+// Set headers for JSON response
+header('Content-Type: application/json');
 
-    // Validation: Ensure required fields are not empty
-    if (empty($title) || empty($mode) || empty($created_by)) {
-        die('Error: Title, mode, and created_by are required.');
+// Verify user is logged in and is a teacher
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Unauthorized access'
+    ]);
+    exit;
+}
+
+try {
+    // Get JSON input
+    $jsonData = file_get_contents('php://input');
+    $data = json_decode($jsonData, true);
+
+    if (!$data) {
+        throw new Exception('Invalid JSON data received');
     }
 
-    // Insert the quiz details into the Quizzes table
+    $db = Database::getInstance();
+    $db->begin_transaction();
+
+    // Insert quiz
     $insertQuizQuery = "
         INSERT INTO Quizzes (title, description, created_by, mode, deadline)
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, 'asynchronous', ?)
     ";
-    $stmt = $connection->prepare($insertQuizQuery);
-    $stmt->bind_param('ssiss', $title, $description, $created_by, $mode, $deadline);
     
-    if ($stmt->execute()) {
-        $quiz_id = $stmt->insert_id; // Get the auto-generated quiz_id
+    $quizResult = $db->query($insertQuizQuery, [
+        $data['title'],
+        $data['description'],
+        $_SESSION['user_id'],
+        $data['dueDate']
+    ]);
 
-        // Process each question associated with this quiz
-        foreach ($questions as $question) {
-            $question_text = trim($question['text']);
-            $type = trim($question['type']);
-            $points = isset($question['points']) ? (float)$question['points'] : 1.00;
-            $answers = isset($question['answers']) ? $question['answers'] : [];
+    $quiz_id = $db->insert_id();
 
-            // Insert each question into the Questions table
-            $insertQuestionQuery = "
-                INSERT INTO Questions (quiz_id, question_text, type, points)
-                VALUES (?, ?, ?, ?)
-            ";
-            $questionStmt = $connection->prepare($insertQuestionQuery);
-            $questionStmt->bind_param('issd', $quiz_id, $question_text, $type, $points);
+    // Process questions
+    foreach ($data['questions'] as $question) {
+        // Convert frontend question type to database type
+        $questionType = match($question['type']) {
+            'paragraph' => 'short_answer',
+            'multiple_choice', 'checkbox' => 'multiple_choice',
+            default => 'multiple_choice'
+        };
 
-            if ($questionStmt->execute()) {
-                $question_id = $questionStmt->insert_id; // Get the question ID
+        // Insert question
+        $insertQuestionQuery = "
+            INSERT INTO Questions (quiz_id, question_text, type, points)
+            VALUES (?, ?, ?, 1.00)
+        ";
+        
+        $db->query($insertQuestionQuery, [
+            $quiz_id,
+            $question['text'],
+            $questionType
+        ]);
+
+        $question_id = $db->insert_id();
+
+        // Insert options/answers if not a paragraph question
+        if ($question['type'] !== 'paragraph' && !empty($question['options'])) {
+            foreach ($question['options'] as $index => $optionText) {
+                $insertAnswerQuery = "
+                    INSERT INTO Answers (question_id, answer_text, is_correct)
+                    VALUES (?, ?, 0)
+                ";
                 
-                // Process answers for this question
-                foreach ($answers as $answer) {
-                    $answer_text = trim($answer['text']);
-                    $is_correct = isset($answer['is_correct']) ? (int)$answer['is_correct'] : 0;
-
-                    // Insert answers into the Answers table
-                    $insertAnswerQuery = "
-                        INSERT INTO Answers (question_id, answer_text, is_correct)
-                        VALUES (?, ?, ?)
-                    ";
-                    $answerStmt = $connection->prepare($insertAnswerQuery);
-                    $answerStmt->bind_param('isi', $question_id, $answer_text, $is_correct);
-                    $answerStmt->execute();
-                }
+                $db->query($insertAnswerQuery, [
+                    $question_id,
+                    $optionText
+                ]);
             }
         }
-
-        echo 'Quiz and questions saved successfully.';
-    } else {
-        echo 'Error saving the quiz: ' . $stmt->error;
     }
 
-    // Close statements
-    $stmt->close();
-    $connection->close();
-} else {
-    echo 'Invalid request method.';
+    $db->commit();
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Quiz saved successfully'
+    ]);
+
+} catch (Exception $e) {
+    $db->rollback();
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }
 ?>
