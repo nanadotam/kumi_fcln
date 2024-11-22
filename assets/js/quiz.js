@@ -158,6 +158,16 @@ function deleteQuestion(button) {
 }
 
 function saveQuiz() {
+     // Generate a random 6-character alphanumeric code
+     const generateQuizCode = () => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let code = '';
+        for (let i = 0; i < 6; i++) {
+            code += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return code;
+    };
+
     const quiz = {
         title: document.getElementById('quizTitle')?.value || 'Untitled Quiz',
         description: document.getElementById('quizDescription')?.value || '',
@@ -208,7 +218,7 @@ function saveQuiz() {
         .then(data => {
             if (data.success) {
                 alert('Quiz saved successfully!');
-                window.location.href = '/view/quiz.php';
+                window.location.href = 'quizzes.php';
             } else {
                 alert('Error saving quiz: ' + data.message);
             }
