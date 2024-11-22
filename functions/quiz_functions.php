@@ -124,32 +124,32 @@ function getAvailableQuizzes($studentId) {
     return $quizzes;
 }
 
-function getCompletedQuizzes($studentId) {
-    try {
-        $db = Database::getInstance();
+// function getCompletedQuizzes($studentId) {
+//     try {
+//         $db = Database::getInstance();
         
-        $sql = "SELECT q.title, qr.* 
-                FROM QuizResults qr 
-                JOIN Quizzes q ON qr.quiz_id = q.quiz_id 
-                WHERE qr.user_id = ? 
-                ORDER BY qr.submitted_at DESC";
+//         $sql = "SELECT q.title, qr.* 
+//                 FROM QuizResults qr 
+//                 JOIN Quizzes q ON qr.quiz_id = q.quiz_id 
+//                 WHERE qr.user_id = ? 
+//                 ORDER BY qr.submitted_at DESC";
                 
-        $result = $db->query($sql, [$studentId]);
+//         $result = $db->query($sql, [$studentId]);
         
-        $quizzes = [];
-        while ($row = $result->fetch_assoc()) {
-            $quizzes[] = [
-                'result_id' => (int)$row['result_id'],
-                'quiz_id' => (int)$row['quiz_id'],
-                'title' => htmlspecialchars($row['title']),
-                'score' => (float)$row['score'],
-                'submitted_at' => $row['submitted_at']
-            ];
-        }
+//         $quizzes = [];
+//         while ($row = $result->fetch_assoc()) {
+//             $quizzes[] = [
+//                 'result_id' => (int)$row['result_id'],
+//                 'quiz_id' => (int)$row['quiz_id'],
+//                 'title' => htmlspecialchars($row['title']),
+//                 'score' => (float)$row['score'],
+//                 'submitted_at' => $row['submitted_at']
+//             ];
+//         }
         
-        return $quizzes;
-    } catch (Exception $e) {
-        error_log("Database error in getCompletedQuizzes: " . $e->getMessage());
-        return [];
-    }
-}
+//         return $quizzes;
+//     } catch (Exception $e) {
+//         error_log("Database error in getCompletedQuizzes: " . $e->getMessage());
+//         return [];
+//     }
+// }

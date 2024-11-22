@@ -5,7 +5,7 @@ require_once '../functions/quiz_functions.php';
 require_once '../functions/student_functions.php';
 
 $currentPage = 'dashboard';
-include_once '../components/sidebar.php';
+// include_once '../components/sidebar.php';
 
 // Check if user is logged in and is a student
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
@@ -14,13 +14,21 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 }
 
 $studentId = $_SESSION['user_id'];
-$availableQuizzes = getAvailableQuizzes($studentId);
+
+// Fetch all required data
+// $availableQuizzes = getAvailableQuizzes($studentId);
 // $completedQuizzes = getCompletedQuizzes($studentId);
 // $progress = getStudentProgress($studentId);
 // $upcomingDeadlines = getUpcomingDeadlines($studentId);
 
 // Get only recent completed quizzes (last 5)
 // $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
+
+// Calculate additional stats for display
+$totalQuizzes = $progress['total_quizzes'] ?? 0;
+$completedQuizCount = $progress['completed_quizzes'] ?? 0;
+$completionRate = $totalQuizzes > 0 ? round(($completedQuizCount / $totalQuizzes) * 100) : 0;
+$averageScore = round($progress['average_score'] ?? 0, 1);
 ?>
 
 <!DOCTYPE html>
@@ -28,8 +36,8 @@ $availableQuizzes = getAvailableQuizzes($studentId);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Student Dashboard - Kumi</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <title>Student Dashboard - Kumi</title>
+    <!-- <link rel="stylesheet" href="../assets/css/styles.css"> -->
     <link rel="stylesheet" href="../assets/css/student_dashboard.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
@@ -43,12 +51,12 @@ $availableQuizzes = getAvailableQuizzes($studentId);
                 <div class="stat-box">
                     <h3> Completion Rate </h3>
                     <p class="stat-number">
-                        <?= isset($progress['total_quizzes']) ? round(($progress['completed_quizzes'] / max(1, $progress['total_quizzes'])) * 100) : 0 ?>%
+                        <?= $completionRate ?>%
                     </p>
                 </div>
                 <div class="stat-box">
                     <h3>Average Score</h3>
-                    <p class="stat-number"><?= round($progress['average_score'] ?? 0, 1) ?>%</p>
+                    <p class="stat-number"><?= $averageScore ?>%</p>
                 </div>
             </div>
         </div>

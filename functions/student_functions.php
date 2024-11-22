@@ -83,3 +83,24 @@ function markNotificationAsRead($notificationId) {
     return $db->query($sql, [$notificationId]);
 } 
 
+
+// function getCompletedQuizzes($studentId) {
+//     global $conn;
+    
+//     $query = "SELECT 
+//                 q.title,
+//                 qr.score,
+//                 qr.submitted_at,
+//                 qr.result_id
+//               FROM quiz_results qr
+//               JOIN quizzes q ON q.quiz_id = qr.quiz_id
+//               WHERE qr.student_id = ?
+//               ORDER BY qr.submitted_at DESC";
+              
+//     $stmt = $conn->prepare($query);
+//     $stmt->bind_param("i", $studentId);
+//     $stmt->execute();
+//     $result = $stmt->get_result();
+    
+//     return $result->fetch_all(MYSQLI_ASSOC);
+// } 
