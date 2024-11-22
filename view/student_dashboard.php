@@ -15,9 +15,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 
 $studentId = $_SESSION['user_id'];
 $availableQuizzes = getAvailableQuizzes($studentId);
-$completedQuizzes = getCompletedQuizzes($studentId);
-$progress = getStudentProgress($studentId);
-$upcomingDeadlines = getUpcomingDeadlines($studentId);
+// $completedQuizzes = getCompletedQuizzes($studentId);
+// $progress = getStudentProgress($studentId);
+// $upcomingDeadlines = getUpcomingDeadlines($studentId);
 
 // Get only recent completed quizzes (last 5)
 $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
