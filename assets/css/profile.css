@@ -129,6 +129,7 @@
 
 .form-group {
     margin-bottom: 1.5rem;
+    position: relative;
 }
 
 .form-group label {
@@ -232,4 +233,15 @@
     .stats-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.form-group input.invalid {
+    border-color: #dc3545;
 } 
