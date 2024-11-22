@@ -68,5 +68,30 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     </template>
 
     <script src="../assets/js/quiz.js"></script>
+
+    <!-- Debug script to verify JavaScript is loading -->
+    <script>
+        console.log('Document loaded');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+            const addQuestionBtn = document.getElementById('addQuestionBtn');
+            const saveQuizBtn = document.getElementById('saveQuizBtn');
+            
+            if (addQuestionBtn) {
+                console.log('Add Question button found');
+                addQuestionBtn.addEventListener('click', function() {
+                    console.log('Add Question button clicked');
+                });
+            } else {
+                console.error('Add Question button not found');
+            }
+            
+            if (saveQuizBtn) {
+                console.log('Save Quiz button found');
+            } else {
+                console.error('Save Quiz button not found');
+            }
+        });
+    </script>
 </body>
 </html>
