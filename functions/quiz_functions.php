@@ -188,13 +188,26 @@ function getCorrectAnswer($questionId) {
 }
 
 function validateMultipleChoice($questionId, $answerId) {
-    global $conn;
-    $stmt = $conn->prepare("SELECT is_correct FROM answers WHERE question_id = ? AND answer_id = ?");
-    $stmt->bind_param("ii", $questionId, $answerId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    return $row['is_correct'] ?? false;
+    try {
+        $db = Database::getInstance();
+        
+        $sql = "SELECT is_correct 
+                FROM Answers 
+                WHERE question_id = ? 
+                AND answer_id = ?";
+                
+        $result = $db->query($sql, [$questionId, $answerId]);
+        
+        if ($row = $result->fetch_assoc()) {
+            return (bool)$row['is_correct'];
+        }
+        
+        return false;
+        
+    } catch (Exception $e) {
+        error_log("Error validating multiple choice answer: " . $e->getMessage());
+        return false;
+    }
 }
 
 function validateTextAnswer($questionId, $response) {
