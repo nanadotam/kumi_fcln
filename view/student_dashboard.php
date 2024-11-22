@@ -16,13 +16,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 $studentId = $_SESSION['user_id'];
 
 // Fetch all required data
-$availableQuizzes = getAvailableQuizzes($studentId);
-$completedQuizzes = getCompletedQuizzes($studentId);
-$progress = getStudentProgress($studentId);
-$upcomingDeadlines = getUpcomingDeadlines($studentId);
+// $availableQuizzes = getAvailableQuizzes($studentId);
+// $completedQuizzes = getCompletedQuizzes($studentId);
+// $progress = getStudentProgress($studentId);
+// $upcomingDeadlines = getUpcomingDeadlines($studentId);
 
 // Get only recent completed quizzes (last 5)
-$recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
+// $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
 
 // Calculate additional stats for display
 $totalQuizzes = $progress['total_quizzes'] ?? 0;
