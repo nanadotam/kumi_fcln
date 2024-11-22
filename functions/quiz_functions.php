@@ -254,15 +254,20 @@ function saveQuizResults($userId, $quizId, $score, $responses) {
 }
 
 function canAccessQuiz($userId, $quizId) {
-    global $conn;
-    $stmt = $conn->prepare("
-        SELECT 1 FROM quizzes q
-        LEFT JOIN quiz_results qr ON q.quiz_id = qr.quiz_id AND qr.user_id = ?
-        WHERE q.quiz_id = ? 
-        AND (q.deadline IS NULL OR q.deadline > NOW())
-        AND qr.result_id IS NULL
-    ");
-    $stmt->bind_param("ii", $userId, $quizId);
-    $stmt->execute();
-    return $stmt->get_result()->num_rows > 0;
+    try {
+        $db = Database::getInstance();
+        
+        $sql = "SELECT 1 FROM Quizzes q
+                LEFT JOIN QuizResults qr ON q.quiz_id = qr.quiz_id AND qr.user_id = ?
+                WHERE q.quiz_id = ? 
+                AND (q.deadline IS NULL OR q.deadline > NOW())
+                AND qr.result_id IS NULL";
+                
+        $result = $db->query($sql, [$userId, $quizId]);
+        return $result->num_rows > 0;
+        
+    } catch (Exception $e) {
+        error_log("Error checking quiz access: " . $e->getMessage());
+        return false;
+    }
 }
