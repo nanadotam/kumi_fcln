@@ -4,10 +4,10 @@ class Database {
     private $connection;
     
     private function __construct() {
-        $this->connection = require_once '../db/config.php';
+        $this->connection = new mysqli("localhost", "root", "", "kumidb");
         
-        if (!$this->connection) {
-            throw new Exception("Database connection failed");
+        if ($this->connection->connect_error) {
+            throw new Exception("Database connection failed: " . $this->connection->connect_error);
         }
     }
     
@@ -16,6 +16,18 @@ class Database {
             self::$instance = new self();
         }
         return self::$instance;
+    }
+    
+    public function begin_transaction() {
+        return $this->connection->begin_transaction();
+    }
+    
+    public function commit() {
+        return $this->connection->commit();
+    }
+    
+    public function rollback() {
+        return $this->connection->rollback();
     }
     
     public function query($sql, $params = []) {
@@ -35,5 +47,13 @@ class Database {
         }
         
         return $stmt->get_result();
+    }
+    
+    public function insert_id() {
+        return $this->connection->insert_id;
+    }
+    
+    public function error() {
+        return $this->connection->error;
     }
 }

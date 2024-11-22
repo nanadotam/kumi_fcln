@@ -44,18 +44,14 @@ try {
     error_log("Responses: " . print_r($responses, true));
     
     $db = Database::getInstance();
-    $db->getConnection()->begin_transaction();
+    $db->begin_transaction();
     
     // Create quiz result
     $sql = "INSERT INTO QuizResults (quiz_id, user_id, score, submitted_at) 
             VALUES (?, ?, 0, NOW())";
-    $stmt = $db->query($sql, [$quizId, $userId]);
+    $result = $db->query($sql, [$quizId, $userId]);
     
-    if (!$stmt) {
-        throw new Exception("Failed to create quiz result: " . $db->getConnection()->error);
-    }
-    
-    $resultId = $db->getConnection()->insert_id;
+    $resultId = $db->insert_id();
     error_log("Created result ID: $resultId");
     
     $totalScore = 0;
@@ -65,19 +61,20 @@ try {
     foreach ($responses as $questionId => $answerId) {
         error_log("Processing question $questionId with answer $answerId");
         
-        // Validate the answer
-        $sql = "SELECT correct_answer_id, points 
-                FROM Questions 
-                WHERE question_id = ?";
-        $result = $db->query($sql, [$questionId]);
-        $question = $result->fetch_assoc();
+        // Validate the answer using the Answers table
+        $sql = "SELECT a.is_correct, q.points 
+                FROM Answers a
+                JOIN Questions q ON a.question_id = q.question_id
+                WHERE a.question_id = ? AND a.answer_id = ?";
+        $result = $db->query($sql, [$questionId, $answerId]);
+        $answer = $result->fetch_assoc();
         
-        if (!$question) {
-            throw new Exception("Invalid question ID: $questionId");
+        if (!$answer) {
+            throw new Exception("Invalid question or answer ID: $questionId, $answerId");
         }
         
-        $isCorrect = ($answerId == $question['correct_answer_id']);
-        $points = $question['points'] ?? 1;
+        $isCorrect = (bool)$answer['is_correct'];
+        $points = $answer['points'] ?? 1;
         $totalPoints += $points;
         
         if ($isCorrect) {
@@ -97,7 +94,7 @@ try {
     $sql = "UPDATE QuizResults SET score = ? WHERE result_id = ?";
     $db->query($sql, [$percentageScore, $resultId]);
     
-    $db->getConnection()->commit();
+    $db->commit();
     
     echo json_encode([
         'success' => true,
@@ -108,7 +105,7 @@ try {
     
 } catch (Exception $e) {
     if (isset($db)) {
-        $db->getConnection()->rollback();
+        $db->rollback();
     }
     
     error_log("Quiz submission error: " . $e->getMessage());
