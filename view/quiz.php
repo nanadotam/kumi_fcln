@@ -94,7 +94,7 @@ if ($userRole === 'student') {
             </div>
 
             <div class="quiz-sections">
-                <section class="available-quizzes">
+                <!-- <section class="available-quizzes">
                     <h2>Ready to Take</h2>
                     <div class="quiz-grid">
                         <?php foreach ($availableQuizzes as $quiz): ?>
@@ -118,7 +118,7 @@ if ($userRole === 'student') {
                             </div>
                         <?php endforeach; ?>
                     </div>
-                </section>
+                </section> -->
 
                 <section class="completed-quizzes">
                     <h2>Completed Quizzes</h2>

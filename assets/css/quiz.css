@@ -138,9 +138,9 @@ button {
 }
 
 .quiz-page {
-    margin-left: 250px;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 2rem;
-    width: 100%;
 }
 
 .page-header {
@@ -150,25 +150,52 @@ button {
     margin-bottom: 2rem;
 }
 
-.create-btn, 
-.start-btn, 
-.view-result-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.8rem 1.5rem;
-    background-color: var(--color-primary);
-    color: var(--color-light);
-    border: none;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
+.page-header h1 {
+    font-size: 2rem;
+    color: var(--color-dark);
 }
 
-.create-btn:hover, 
-.start-btn:hover {
-    background-color: var(--color-secondary);
+.create-btn {
+    background: var(--color-primary);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.create-btn:hover {
+    background: #166339;
+    transform: translateY(-2px);
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.filters input,
+.filters select {
+    padding: 0.8rem;
+    border: 1px solid #eef2f6;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.filters input {
+    width: 300px;
+}
+
+.filters input:focus,
+.filters select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(24, 112, 69, 0.1);
 }
 
 .quiz-grid {
