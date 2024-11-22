@@ -22,7 +22,7 @@ $completedQuizzes = getCompletedQuizzes($studentId);
 // $upcomingDeadlines = getUpcomingDeadlines($studentId);
 
 // Get only recent completed quizzes (last 5)
-// $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
+  // $recentCompletedQuizzes = array_slice($completedQuizzes, 0, 5);
 
 // Calculate additional stats for display
 $totalQuizzes = $progress['total_quizzes'] ?? 0;
