@@ -186,3 +186,83 @@ function getCorrectAnswer($questionId) {
         return 'Not available';
     }
 }
+
+function validateMultipleChoice($questionId, $answerId) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT is_correct FROM answers WHERE question_id = ? AND answer_id = ?");
+    $stmt->bind_param("ii", $questionId, $answerId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['is_correct'] ?? false;
+}
+
+function validateTextAnswer($questionId, $response) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT correct_answer, points FROM text_answers WHERE question_id = ?");
+    $stmt->bind_param("i", $questionId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    
+    if (!$row) return 0;
+    
+    // Simple string comparison - you might want to implement more sophisticated matching
+    $similarity = similar_text(
+        strtolower(trim($response)), 
+        strtolower(trim($row['correct_answer'])), 
+        $percent
+    );
+    
+    return $percent >= 80 ? $row['points'] : 0;
+}
+
+function saveQuizResults($userId, $quizId, $score, $responses) {
+    global $conn;
+    
+    // Start transaction
+    $conn->begin_transaction();
+    
+    try {
+        // Insert quiz result
+        $stmt = $conn->prepare("INSERT INTO quiz_results (user_id, quiz_id, score) VALUES (?, ?, ?)");
+        $stmt->bind_param("iid", $userId, $quizId, $score);
+        $stmt->execute();
+        $resultId = $conn->insert_id;
+        
+        // Insert individual responses
+        $stmt = $conn->prepare("INSERT INTO quiz_responses (result_id, question_id, response, is_correct, points) VALUES (?, ?, ?, ?, ?)");
+        
+        foreach ($responses as $response) {
+            $stmt->bind_param("iisid", 
+                $resultId,
+                $response['question_id'],
+                $response['response'],
+                $response['is_correct'],
+                $response['points']
+            );
+            $stmt->execute();
+        }
+        
+        $conn->commit();
+        return $resultId;
+        
+    } catch (Exception $e) {
+        $conn->rollback();
+        throw $e;
+    }
+}
+
+function canAccessQuiz($userId, $quizId) {
+    global $conn;
+    $stmt = $conn->prepare("
+        SELECT 1 FROM quizzes q
+        LEFT JOIN quiz_results qr ON q.quiz_id = qr.quiz_id AND qr.user_id = ?
+        WHERE q.quiz_id = ? 
+        AND (q.deadline IS NULL OR q.deadline > NOW())
+        AND qr.result_id IS NULL
+    ");
+    $stmt->bind_param("ii", $userId, $quizId);
+    $stmt->execute();
+    return $stmt->get_result()->num_rows > 0;
+}
