@@ -43,6 +43,14 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
 </head>
 <body>
     <div class="dashboard-container">
+
+    <div class = "quizcode-container"> 
+        <h2>Ready for your next quiz?</h2>
+        <p>Enter the quiz code to start </p> 
+        <input type="text" name="quizcode" id="quizcode" placeholder="Enter Quiz Code">
+        <button>Start Quiz</button>
+
+    </div> 
         <div class="welcome-container">
             <h1>Welcome Back, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Student') ?>!</h1>
             <p>Here's your learning progress:</p>
@@ -83,7 +91,7 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
                 </div>
             </div>
 
-            <div class="section-card">
+            <!-- <div class="section-card">
                 <h2>Upcoming Quizzes</h2>
                 <div class="quiz-list">
                     <?php if (!empty($upcomingDeadlines)): ?>
@@ -100,9 +108,9 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
                         <p>No upcoming quizzes at the moment.</p>
                     <?php endif; ?>
                 </div>
-            </div>
+            </div> -->
 
-            <section class="completed-quizzes">
+            <!-- <section class="completed-quizzes">
                 <h2>Completed Quizzes</h2>
                 <?php if (empty($completedQuizzes)): ?>
                     <p class="no-quizzes">You haven't completed any quizzes yet.</p>
@@ -133,8 +141,51 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-            </section>
+            </section> -->
         </div>
     </div>
+
+    <script>
+    document.getElementById('quizCodeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('../actions/validate_quiz_code.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.redirect;
+        } else {
+            // Show error message
+            const input = document.getElementById('quizcode');
+            input.classList.add('error');
+            
+            // Create or update error message
+            let errorMsg = document.querySelector('.error-message');
+            if (!errorMsg) {
+                errorMsg = document.createElement('p');
+                errorMsg.className = 'error-message';
+                input.parentNode.insertBefore(errorMsg, input.nextSibling);
+            }
+            errorMsg.textContent = data.message;
+            
+            // Clear error state after 3 seconds
+            setTimeout(() => {
+                input.classList.remove('error');
+                errorMsg.remove();
+            }, 3000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+</script>
+
 </body>
+
 </html>
