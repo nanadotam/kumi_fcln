@@ -31,20 +31,21 @@ CREATE TABLE `Answers` (
   `answer_id` int(11) NOT NULL,
   `question_id` int(11) NOT NULL,
   `answer_text` text NOT NULL,
-  `is_correct` tinyint(1) NOT NULL
+  `is_correct` tinyint(1) NOT NULL,
+  `model_answer` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Answers`
 --
 
-INSERT INTO `Answers` (`answer_id`, `question_id`, `answer_text`, `is_correct`) VALUES
-(1, 1, '4', 1),
-(2, 1, '5', 0),
-(3, 1, '6', 0),
-(4, 2, '15', 1),
-(5, 2, '10', 0),
-(6, 2, '20', 0);
+INSERT INTO `Answers` (`answer_id`, `question_id`, `answer_text`, `is_correct`, `model_answer`) VALUES
+(1, 1, '4', 1, NULL),
+(2, 1, '5', 0, NULL),
+(3, 1, '6', 0, NULL),
+(4, 2, '15', 1, NULL),
+(5, 2, '10', 0, NULL),
+(6, 2, '20', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -198,20 +199,21 @@ CREATE TABLE `Responses` (
   `result_id` int(11) NOT NULL,
   `question_id` int(11) NOT NULL,
   `selected_answer_id` int(11) DEFAULT NULL,
-  `is_correct` tinyint(1) DEFAULT 0
+  `is_correct` tinyint(1) DEFAULT 0,
+  `text_response` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Responses`
 --
 
-INSERT INTO `Responses` (`response_id`, `result_id`, `question_id`, `selected_answer_id`, `is_correct`) VALUES
-(1, 1, 1, 1, 1),
-(2, 1, 2, 4, 1),
-(3, 2, 1, 2, 0),
-(4, 2, 2, 5, 0),
-(5, 3, 3, NULL, 1),
-(6, 4, 3, NULL, 1);
+INSERT INTO `Responses` (`response_id`, `result_id`, `question_id`, `selected_answer_id`, `is_correct`, `text_response`) VALUES
+(1, 1, 1, 1, 1, NULL),
+(2, 1, 2, 4, 1, NULL),
+(3, 2, 1, 2, 0, NULL),
+(4, 2, 2, 5, 0, NULL),
+(5, 3, 3, NULL, 1, NULL),
+(6, 4, 3, NULL, 1, NULL);
 
 -- --------------------------------------------------------
 

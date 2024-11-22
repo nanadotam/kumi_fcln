@@ -31,7 +31,7 @@ try {
     }
     
     // Get responses with question and answer details
-    $sql = "SELECT r.*, q.question_text, q.points, a.answer_text
+    $sql = "SELECT r.*, q.question_text, q.points, a.answer_text, q.type
             FROM Responses r
             JOIN Questions q ON r.question_id = q.question_id
             LEFT JOIN Answers a ON r.selected_answer_id = a.answer_id
@@ -100,6 +100,28 @@ try {
                             <i class='bx bx-x-circle'></i> Incorrect
                         <?php endif; ?>
                     </div>
+                    
+                    <?php if ($response['type'] === 'text'): ?>
+                        <div class="text-response">
+                            <h4>Student's Answer:</h4>
+                            <div class="response-text">
+                                <?= nl2br(htmlspecialchars($response['text_response'])) ?>
+                            </div>
+                            <?php if ($_SESSION['role'] === 'teacher'): ?>
+                                <div class="grading-section">
+                                    <label for="points_<?= $response['question_id'] ?>">Points:</label>
+                                    <input type="number" 
+                                           id="points_<?= $response['question_id'] ?>"
+                                           class="points-input"
+                                           min="0"
+                                           max="<?= $response['max_points'] ?>"
+                                           value="<?= $response['awarded_points'] ?? 0 ?>"
+                                           onchange="updatePoints(<?= $response['question_id'] ?>, this.value)">
+                                    <span class="max-points">/ <?= $response['max_points'] ?></span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         </div>

@@ -1,130 +1,103 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const quizForm = document.getElementById('quiz-form');
+    const form = document.getElementById('quiz-form');
+    const progressFill = document.getElementById('progressFill');
+    const currentQuestionSpan = document.getElementById('currentQuestion');
+    const totalQuestions = document.querySelectorAll('.question-card').length;
     
-    if (quizForm) {
-        quizForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (validateQuizResponses()) {
-                submitQuiz(this);
+    function updateProgress() {
+        const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked, textarea:not(:placeholder-shown)').length;
+        const progress = (answeredQuestions / totalQuestions) * 100;
+        progressFill.style.width = `${progress}%`;
+        currentQuestionSpan.textContent = answeredQuestions;
+    }
+    
+    // Listen for changes in radio buttons and textareas
+    form.addEventListener('change', updateProgress);
+    form.addEventListener('input', updateProgress);
+    
+    // Initial progress update
+    updateProgress();
+    
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const quizId = form.dataset.quizId;
+        if (!quizId) {
+            alert('Error: Quiz ID not found');
+            return;
+        }
+        
+        const formData = new FormData(form);
+        const responses = {};
+        
+        formData.forEach((value, key) => {
+            if (key.startsWith('q_')) {
+                const questionId = key.split('_')[1];
+                responses[questionId] = value;
             }
         });
-    }
-});
+        
+        // Submit quiz with validation
+        fetch('../actions/submit_quiz.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                quiz_id: parseInt(quizId),
+                responses: responses
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `quiz_result.php?id=${data.result_id}`;
+            } else {
+                alert('Error submitting quiz: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error submitting quiz. Please try again.');
+        });
+    });
+    
+    // Add scroll behavior for progress bar
+    const progressBar = document.querySelector('.quiz-progress-floating');
+    let lastScrollTop = 0;
+    let scrollTimeout;
 
-function validateQuizResponses() {
-    const questions = document.querySelectorAll('.question-card');
-    let isValid = true;
-    let firstError = null;
-
-    questions.forEach(question => {
-        // Clear previous error states
-        question.classList.remove('error');
-        const errorMsg = question.querySelector('.error-message');
-        if (errorMsg) errorMsg.remove();
-
-        // Get question inputs
-        const inputs = question.querySelectorAll('input[type="radio"]');
-        const required = inputs[0]?.hasAttribute('required');
-
-        // Check if any option is selected for required questions
-        if (required && ![...inputs].some(input => input.checked)) {
-            isValid = false;
-            question.classList.add('error');
-            
-            // Add error message
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = 'Please select an answer for this question';
-            question.appendChild(errorDiv);
-
-            // Store first error for scrolling
-            if (!firstError) firstError = question;
+    window.addEventListener('scroll', function() {
+        clearTimeout(scrollTimeout);
+        
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Show/hide based on scroll direction
+        if (scrollTop > lastScrollTop) {
+            // Scrolling down
+            progressBar.classList.remove('hidden');
+            progressBar.style.animation = 'slideDown 0.3s ease forwards';
+        } else if (scrollTop < 50) {
+            // At the top
+            progressBar.classList.add('hidden');
         }
+        
+        lastScrollTop = scrollTop;
+        
+        // Hide after 2 seconds of no scrolling
+        scrollTimeout = setTimeout(() => {
+            if (scrollTop > 50) {
+                progressBar.classList.remove('hidden');
+            }
+        }, 2000);
     });
 
-    // Scroll to first error if any exist 
-    if (firstError) {
-        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    return isValid;
-}
-
-async function submitQuiz(form) {
-    const submitButton = form.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
-    submitButton.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Submitting...';
-
-    try {
-        // Debug data being sent
-        const formData = new FormData();
-        formData.append('quiz_id', form.dataset.quizId);
-        
-        // Add each question response
-        const questions = form.querySelectorAll('.question-card');
-        let responseCount = 0;
-        
-        questions.forEach(question => {
-            const questionId = question.querySelector('input[type="radio"]')?.name.replace('q_', '');
-            if (questionId) {
-                const selectedAnswer = question.querySelector('input[type="radio"]:checked')?.value;
-                if (selectedAnswer) {
-                    formData.append(`responses[${questionId}]`, selectedAnswer);
-                    responseCount++;
-                }
-            }
-        });
-
-        console.log('Submitting quiz:', {
-            quizId: form.dataset.quizId,
-            responseCount: responseCount
-        });
-
-        const response = await fetch('../actions/submit_quiz.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        console.log('Response status:', response.status);
-        const responseText = await response.text();
-        console.log('Raw response:', responseText);
-
-        let result;
-        try {
-            result = JSON.parse(responseText);
-        } catch (e) {
-            console.error('Failed to parse JSON response:', e);
-            throw new Error('Server returned invalid JSON response');
+    // Show progress bar on mouse move
+    document.addEventListener('mousemove', function(e) {
+        if (e.clientY < 100) {
+            progressBar.classList.remove('hidden');
+            progressBar.style.animation = 'slideDown 0.3s ease forwards';
         }
-
-        if (result.success) {
-            showNotification('Quiz submitted successfully!', 'success');
-            // Redirect to results page after a brief delay
-            setTimeout(() => {
-                window.location.href = `quiz_result.php?id=${result.result_id}`;
-            }, 1500);
-        } else {
-            throw new Error(result.message || 'Failed to submit quiz');
-        }
-    } catch (error) {
-        console.error('Submission error:', error);
-        showNotification(
-            `Error submitting quiz: ${error.message}. Please try again or contact support if the problem persists.`,
-            'error'
-        );
-        submitButton.disabled = false;
-        submitButton.textContent = 'Submit Quiz';
-    }
-}
-
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}  
+    });
+});  
