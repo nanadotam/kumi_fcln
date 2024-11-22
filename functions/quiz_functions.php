@@ -264,15 +264,29 @@ function saveQuizResults($userId, $quizId, $score, $responses) {
                     $response['is_correct'] ? 1 : 0
                 ]);
             } else {
-                // For multiple choice answers
-                $sql = "INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct) 
-                        VALUES (?, ?, ?, ?)";
-                $db->query($sql, [
-                    $resultId,
-                    $response['question_id'],
-                    $response['response'],
-                    $response['is_correct'] ? 1 : 0
-                ]);
+                // For multiple choice answers - verify answer_id exists first
+                $verifySQL = "SELECT 1 FROM Answers WHERE answer_id = ?";
+                $result = $db->query($verifySQL, [$response['response']]);
+                
+                if ($result->num_rows > 0) {
+                    $sql = "INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct) 
+                            VALUES (?, ?, ?, ?)";
+                    $db->query($sql, [
+                        $resultId,
+                        $response['question_id'],
+                        $response['response'],
+                        $response['is_correct'] ? 1 : 0
+                    ]);
+                } else {
+                    // If answer doesn't exist, store without selected_answer_id
+                    $sql = "INSERT INTO Responses (result_id, question_id, is_correct) 
+                            VALUES (?, ?, ?)";
+                    $db->query($sql, [
+                        $resultId,
+                        $response['question_id'],
+                        $response['is_correct'] ? 1 : 0
+                    ]);
+                }
             }
         }
         
