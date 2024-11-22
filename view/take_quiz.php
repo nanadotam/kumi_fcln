@@ -146,22 +146,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     
     <script>
-        // Simple progress tracking
+        // Progress tracking
         const questionCards = document.querySelectorAll('.question-card');
         const currentQuestionSpan = document.getElementById('currentQuestion');
         const progressFill = document.getElementById('progressFill');
         const totalQuestions = questionCards.length;
 
-        questionCards.forEach(card => {
-            const inputs = card.querySelectorAll('input, textarea');
-            inputs.forEach(input => {
-                input.addEventListener('focus', () => {
-                    const questionNumber = card.dataset.question;
-                    currentQuestionSpan.textContent = questionNumber;
-                    progressFill.style.width = (questionNumber / totalQuestions * 100) + '%';
-                });
+        function updateProgress() {
+            let answeredQuestions = 0;
+            
+            // Check multiple choice answers
+            const radioInputs = document.querySelectorAll('input[type="radio"]');
+            const radioGroups = {};
+            
+            radioInputs.forEach(input => {
+                const name = input.getAttribute('name');
+                if (!radioGroups[name]) {
+                    radioGroups[name] = false;
+                }
+                if (input.checked) {
+                    radioGroups[name] = true;
+                }
             });
+            
+            // Count answered radio groups
+            answeredQuestions += Object.values(radioGroups).filter(Boolean).length;
+            
+            // Check text answers
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                if (textarea.value.trim() !== '') {
+                    answeredQuestions++;
+                }
+            });
+            
+            // Update progress bar and counter
+            const progress = (answeredQuestions / totalQuestions) * 100;
+            progressFill.style.width = `${progress}%`;
+            currentQuestionSpan.textContent = Math.min(answeredQuestions + 1, totalQuestions);
+        }
+
+        // Add event listeners for both radio buttons and textareas
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', updateProgress);
         });
+
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', updateProgress);
+        });
+
+        // Initial progress check
+        updateProgress();
     </script>
 </body>
 </html> 

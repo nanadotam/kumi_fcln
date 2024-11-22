@@ -2,6 +2,8 @@
 session_start();
 require_once '../functions/auth_functions.php';
 
+include_once '../components/sidebar.php';
+
 // Ensure only teachers can access this page
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header('Location: login.php');

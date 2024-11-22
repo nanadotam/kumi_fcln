@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Nov 22, 2024 at 11:27 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Host: 127.0.0.1
+-- Generation Time: Nov 23, 2024 at 12:34 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Answers`
+-- Table structure for table `answers`
 --
 
-CREATE TABLE `Answers` (
+CREATE TABLE `answers` (
   `answer_id` int(11) NOT NULL,
   `question_id` int(11) NOT NULL,
   `answer_text` text NOT NULL,
@@ -36,43 +36,31 @@ CREATE TABLE `Answers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Answers`
+-- Dumping data for table `answers`
 --
 
-INSERT INTO `Answers` (`answer_id`, `question_id`, `answer_text`, `is_correct`, `model_answer`) VALUES
+INSERT INTO `answers` (`answer_id`, `question_id`, `answer_text`, `is_correct`, `model_answer`) VALUES
 (1, 1, '4', 1, NULL),
 (2, 1, '5', 0, NULL),
 (3, 1, '6', 0, NULL),
 (4, 2, '15', 1, NULL),
 (5, 2, '10', 0, NULL),
 (6, 2, '20', 0, NULL),
-(7, 5, 'x = -4 and x = 1.5', 1, 'The correct solution using quadratic formula'),
-(8, 5, 'x = 4 and x = -1.5', 0, NULL),
-(9, 5, 'x = 2 and x = -3', 0, NULL),
-(10, 5, 'x = 3 and x = -2', 0, NULL),
-(11, 8, 'Newton (N)', 1, 'The SI unit of force is Newton'),
-(12, 8, 'Kilogram (kg)', 0, NULL),
-(13, 8, 'Joule (J)', 0, NULL),
-(14, 8, 'Pascal (Pa)', 0, NULL),
-(15, 11, 'TypeError', 1, 'Cannot concatenate string and integer'),
-(16, 11, '22', 0, NULL),
-(17, 11, '4', 0, NULL),
-(18, 11, 'undefined', 0, NULL),
-(19, 14, 'Jane Austen', 1, NULL),
-(20, 14, 'Emily Bronte', 0, NULL),
-(21, 14, 'Charlotte Bronte', 0, NULL),
-(22, 14, 'Virginia Woolf', 0, NULL),
-(23, 5, 'Placeholder for missing answer 17', 0, NULL),
-(24, 8, 'Placeholder for missing answer 21', 0, NULL),
-(25, 11, 'Placeholder for missing answer 25', 0, NULL);
+(7, 5, 'True', 0, NULL),
+(8, 5, 'False', 0, NULL),
+(9, 8, 'forest', 0, NULL),
+(10, 8, 'Newtons House', 0, NULL),
+(11, 9, 'A frog', 0, NULL),
+(12, 9, 'A dog', 0, NULL),
+(13, 9, 'because God said so', 0, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Events`
+-- Table structure for table `events`
 --
 
-CREATE TABLE `Events` (
+CREATE TABLE `events` (
   `event_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
@@ -81,10 +69,10 @@ CREATE TABLE `Events` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Events`
+-- Dumping data for table `events`
 --
 
-INSERT INTO `Events` (`event_id`, `name`, `description`, `date`, `created_at`) VALUES
+INSERT INTO `events` (`event_id`, `name`, `description`, `date`, `created_at`) VALUES
 (1, 'Midterm Deadline', 'Submission for midterm quizzes.', '2024-11-30', '2024-11-21 18:36:26'),
 (2, 'Quiz Reminder', 'Reminder for upcoming quizzes.', '2024-12-01', '2024-11-21 18:36:26'),
 (3, 'Group Quiz Reminder', 'Reminder for group quiz submission.', '2024-12-09', '2024-11-21 18:36:26'),
@@ -93,20 +81,20 @@ INSERT INTO `Events` (`event_id`, `name`, `description`, `date`, `created_at`) V
 -- --------------------------------------------------------
 
 --
--- Table structure for table `GroupMembers`
+-- Table structure for table `groupmembers`
 --
 
-CREATE TABLE `GroupMembers` (
+CREATE TABLE `groupmembers` (
   `group_member_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `GroupMembers`
+-- Dumping data for table `groupmembers`
 --
 
-INSERT INTO `GroupMembers` (`group_member_id`, `group_id`, `user_id`) VALUES
+INSERT INTO `groupmembers` (`group_member_id`, `group_id`, `user_id`) VALUES
 (1, 1, 2),
 (2, 1, 5),
 (3, 2, 5),
@@ -115,30 +103,30 @@ INSERT INTO `GroupMembers` (`group_member_id`, `group_id`, `user_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Groups`
+-- Table structure for table `groups`
 --
 
-CREATE TABLE `Groups` (
+CREATE TABLE `groups` (
   `group_id` int(11) NOT NULL,
   `group_name` varchar(100) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Groups`
+-- Dumping data for table `groups`
 --
 
-INSERT INTO `Groups` (`group_id`, `group_name`, `created_at`) VALUES
+INSERT INTO `groups` (`group_id`, `group_name`, `created_at`) VALUES
 (1, 'Math Enthusiasts', '2024-11-21 18:02:15'),
 (2, 'Science Wizards', '2024-11-21 18:02:15');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Questions`
+-- Table structure for table `questions`
 --
 
-CREATE TABLE `Questions` (
+CREATE TABLE `questions` (
   `question_id` int(11) NOT NULL,
   `quiz_id` int(11) NOT NULL,
   `question_text` text NOT NULL,
@@ -148,34 +136,27 @@ CREATE TABLE `Questions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Questions`
+-- Dumping data for table `questions`
 --
 
-INSERT INTO `Questions` (`question_id`, `quiz_id`, `question_text`, `type`, `points`, `created_at`) VALUES
+INSERT INTO `questions` (`question_id`, `quiz_id`, `question_text`, `type`, `points`, `created_at`) VALUES
 (1, 1, 'What is 2 + 2?', 'multiple_choice', 1.00, '2024-11-21 18:00:49'),
 (2, 1, 'What is 5 * 3?', 'multiple_choice', 1.00, '2024-11-21 18:00:49'),
 (3, 2, 'Name a state of matter.', 'short_answer', 2.00, '2024-11-21 18:00:49'),
 (4, 3, 'Who was the first president of the US?', 'short_answer', 2.00, '2024-11-21 18:00:49'),
-(5, 4, 'Solve for x: 2x² + 5x - 12 = 0', 'multiple_choice', 2.50, '2024-11-22 21:42:40'),
-(6, 4, 'Is the square root of a negative number a real number?', 'true_false', 1.00, '2024-11-22 21:42:40'),
-(7, 4, 'Explain the concept of logarithms', 'short_answer', 3.00, '2024-11-22 21:42:40'),
-(8, 5, 'What is the SI unit of force?', 'multiple_choice', 1.00, '2024-11-22 21:42:40'),
-(9, 5, 'Calculate the acceleration of an object with mass 10kg under 20N force', 'short_answer', 2.50, '2024-11-22 21:42:40'),
-(10, 5, 'True or False: Weight and mass are the same thing', 'true_false', 1.00, '2024-11-22 21:42:40'),
-(11, 6, 'What is the output of: print(2 + \"2\")?', 'multiple_choice', 1.50, '2024-11-22 21:42:40'),
-(12, 6, 'Write a function to check if a string is palindrome', 'short_answer', 3.00, '2024-11-22 21:42:40'),
-(13, 6, 'Explain the difference between == and === in JavaScript', 'short_answer', 2.00, '2024-11-22 21:42:40'),
-(14, 7, 'Who wrote \"Pride and Prejudice\"?', 'multiple_choice', 1.00, '2024-11-22 21:42:40'),
-(15, 7, 'Analyze the main theme of \"1984\" by George Orwell', 'short_answer', 3.50, '2024-11-22 21:42:40'),
-(16, 7, 'Is \"The Great Gatsby\" set in the 1920s?', 'true_false', 1.00, '2024-11-22 21:42:40');
+(5, 5, 'DFS or BFS', 'multiple_choice', 1.00, '2024-11-22 22:58:53'),
+(6, 5, 'Who created DFS', 'short_answer', 1.00, '2024-11-22 22:58:53'),
+(7, 7, 'Who is Albert', 'short_answer', 1.00, '2024-11-22 23:12:45'),
+(8, 7, 'Where was Albert', 'multiple_choice', 1.00, '2024-11-22 23:12:45'),
+(9, 7, 'Why is Albert', 'multiple_choice', 1.00, '2024-11-22 23:12:45');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `QuizResults`
+-- Table structure for table `quizresults`
 --
 
-CREATE TABLE `QuizResults` (
+CREATE TABLE `quizresults` (
   `result_id` int(11) NOT NULL,
   `quiz_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
@@ -185,64 +166,52 @@ CREATE TABLE `QuizResults` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `QuizResults`
+-- Dumping data for table `quizresults`
 --
 
-INSERT INTO `QuizResults` (`result_id`, `quiz_id`, `user_id`, `group_id`, `score`, `submitted_at`) VALUES
+INSERT INTO `quizresults` (`result_id`, `quiz_id`, `user_id`, `group_id`, `score`, `submitted_at`) VALUES
 (1, 1, 2, NULL, 95.00, '2024-11-21 18:02:25'),
 (2, 1, 5, NULL, 88.00, '2024-11-21 18:02:25'),
 (3, 2, NULL, 1, 85.00, '2024-11-21 18:02:25'),
-(4, 2, NULL, 2, 90.00, '2024-11-21 18:02:25'),
-(5, 1, 6, NULL, 0.00, '2024-11-22 15:26:56'),
-(6, 2, 6, NULL, 0.00, '2024-11-22 15:31:34'),
-(8, 1, 13, NULL, 50.00, '2024-11-22 22:10:39'),
-(9, 2, 13, NULL, 0.00, '2024-11-22 22:11:16'),
-(10, 3, 13, NULL, 0.00, '2024-11-22 22:11:37'),
-(11, 4, 2, NULL, 85.50, '2024-11-22 22:18:43'),
-(12, 5, NULL, 1, 92.00, '2024-11-22 22:18:43'),
-(13, 6, 5, NULL, 78.25, '2024-11-22 22:18:43'),
-(14, 7, 7, NULL, 88.00, '2024-11-22 22:18:43'),
-(15, 4, 2, NULL, 85.50, '2024-11-22 22:19:08'),
-(16, 5, NULL, 1, 92.00, '2024-11-22 22:19:08'),
-(17, 6, 5, NULL, 78.25, '2024-11-22 22:19:08'),
-(18, 7, 7, NULL, 88.00, '2024-11-22 22:19:08');
+(4, 2, NULL, 2, 90.00, '2024-11-21 18:02:25');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Quizzes`
+-- Table structure for table `quizzes`
 --
 
-CREATE TABLE `Quizzes` (
+CREATE TABLE `quizzes` (
   `quiz_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
   `created_by` int(11) NOT NULL,
   `mode` enum('individual','group','live','asynchronous') NOT NULL,
   `deadline` datetime DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `quiz_code` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Quizzes`
+-- Dumping data for table `quizzes`
 --
 
-INSERT INTO `Quizzes` (`quiz_id`, `title`, `description`, `created_by`, `mode`, `deadline`, `created_at`) VALUES
-(1, 'Math Basics', 'A basic math quiz.', 8, 'individual', '2024-12-01 23:59:59', '2024-11-21 17:57:01'),
-(2, 'Science Quiz', 'Test your science knowledge.', 8, 'group', '2024-12-10 23:59:59', '2024-11-21 17:57:01'),
-(3, 'History Quiz', 'Explore historical events.', 11, 'asynchronous', '2024-12-15 23:59:59', '2024-11-21 17:57:01'),
-(4, 'Advanced Mathematics', 'Complex math problems for senior students', 8, 'individual', '2024-12-20 23:59:59', '2024-11-22 21:39:13'),
-(5, 'Physics Fundamentals', 'Group quiz on basic physics concepts', 11, 'group', '2024-12-25 23:59:59', '2024-11-22 21:39:13'),
-(6, 'Live Programming Test', 'Real-time coding assessment', 12, 'live', '2024-12-15 14:00:00', '2024-11-22 21:39:13'),
-(7, 'Literature Review', 'Analysis of classic literature', 8, 'asynchronous', '2024-12-30 23:59:59', '2024-11-22 21:39:13');
+INSERT INTO `quizzes` (`quiz_id`, `title`, `description`, `created_by`, `mode`, `deadline`, `created_at`, `quiz_code`) VALUES
+(1, 'Math Basics', 'A basic math quiz.', 8, 'individual', '2024-12-01 23:59:59', '2024-11-21 17:57:01', NULL),
+(2, 'Science Quiz', 'Test your science knowledge.', 8, 'group', '2024-12-10 23:59:59', '2024-11-21 17:57:01', NULL),
+(3, 'History Quiz', 'Explore historical events.', 11, 'asynchronous', '2024-12-15 23:59:59', '2024-11-21 17:57:01', NULL),
+(5, 'Quiz- DFS', 'This is a quiz to test students knowledge on DFS', 13, 'asynchronous', '2024-11-30 22:58:00', '2024-11-22 22:58:53', NULL),
+(6, 'Quiz- DFS', 'This is a quiz to test students knowledge on DFS', 13, 'asynchronous', '2024-11-30 22:58:00', '2024-11-22 23:01:30', NULL),
+(7, 'HISTORY 101 - Quiz 2 ', 'Basic Historic quiz to test basic historical concepts and data realities', 13, 'asynchronous', '2024-11-29 23:11:00', '2024-11-22 23:12:45', NULL),
+(10, 'Untitled Quiz', '', 13, 'asynchronous', '0000-00-00 00:00:00', '2024-11-22 23:22:41', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Responses`
+-- Table structure for table `responses`
 --
 
-CREATE TABLE `Responses` (
+CREATE TABLE `responses` (
   `response_id` int(11) NOT NULL,
   `result_id` int(11) NOT NULL,
   `question_id` int(11) NOT NULL,
@@ -252,37 +221,24 @@ CREATE TABLE `Responses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Responses`
+-- Dumping data for table `responses`
 --
 
-INSERT INTO `Responses` (`response_id`, `result_id`, `question_id`, `selected_answer_id`, `is_correct`, `text_response`) VALUES
+INSERT INTO `responses` (`response_id`, `result_id`, `question_id`, `selected_answer_id`, `is_correct`, `text_response`) VALUES
 (1, 1, 1, 1, 1, NULL),
 (2, 1, 2, 4, 1, NULL),
 (3, 2, 1, 2, 0, NULL),
 (4, 2, 2, 5, 0, NULL),
 (5, 3, 3, NULL, 1, NULL),
-(6, 4, 3, NULL, 1, NULL),
-(7, 5, 1, 1, 0, NULL),
-(8, 5, 2, 4, 0, NULL),
-(9, 8, 1, 1, 1, NULL),
-(10, 8, 2, 5, 0, NULL),
-(11, 9, 3, NULL, 0, 'Gas'),
-(12, 10, 4, NULL, 0, 'George Washington'),
-(34, 9, 5, 17, 1, NULL),
-(35, 9, 6, NULL, 1, 'No, it is an imaginary number'),
-(36, 9, 7, NULL, NULL, 'Logarithms are the inverse of exponential functions...'),
-(37, 10, 8, 21, 1, NULL),
-(38, 10, 9, NULL, NULL, 'a = F/m = 20N/10kg = 2 m/s²'),
-(39, 11, 11, 25, 1, NULL),
-(40, 11, 12, NULL, NULL, 'function isPalindrome(str) { return str === str.split(\"\").reverse().join(\"\"); }');
+(6, 4, 3, NULL, 1, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Users`
+-- Table structure for table `users`
 --
 
-CREATE TABLE `Users` (
+CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
@@ -294,10 +250,10 @@ CREATE TABLE `Users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Users`
+-- Dumping data for table `users`
 --
 
-INSERT INTO `Users` (`user_id`, `first_name`, `last_name`, `email`, `password`, `role`, `created_at`, `updated_at`) VALUES
+INSERT INTO `users` (`user_id`, `first_name`, `last_name`, `email`, `password`, `role`, `created_at`, `updated_at`) VALUES
 (2, 'nana', 'amoako', 'nana@amoako.com', '$2y$10$Y4UkGkmv8XsIkGkQdCuKdOeHEOx8pyYPhf92GE4p1ZURE5n38McMW', 'student', '2024-11-21 16:14:02', '2024-11-21 16:14:02'),
 (5, 'Alice', 'Brown', 'alice.brown@example.com', 'password123', 'student', '2024-11-21 17:52:27', '2024-11-21 17:52:27'),
 (6, 'nana', 'amo', 'nan@amo.co', '$2y$10$bmA.cH9IWlMG6m4Llvveqe2wP333gywJOSb2rgYw0OrIciOGa.AcG', 'student', '2024-11-21 16:24:45', '2024-11-21 16:24:45'),
@@ -306,75 +262,76 @@ INSERT INTO `Users` (`user_id`, `first_name`, `last_name`, `email`, `password`, 
 (9, 'Jane', 'Smith', 'jane.smith@example.com', 'password123', 'student', '2024-11-21 17:52:27', '2024-11-21 17:52:27'),
 (11, 'Bob', 'Johnson', 'bob.johnson@example.com', 'password123', 'teacher', '2024-11-21 17:52:27', '2024-11-21 17:52:27'),
 (12, 'teacher', 'nana', 'teacher@nana.com', '$2y$10$0ECLN5pCJ9.kaGmhgT76N.Vbnx.h9sZNeTMnxdhVVs6Y.NZmErzKG', 'teacher', '2024-11-21 18:58:17', '2024-11-21 18:58:17'),
-(13, 'nana', 'test4', 'nanatest4@gmail.com', '$2y$10$SGEOeLsyhUTKqG4GDAghwOXiliPtqYSiEOJf8hivY9aXT/tDR1Zzq', 'student', '2024-11-22 22:10:12', '2024-11-22 22:10:12');
+(13, 'Caleb', 'Arthur', 'arthurcaleb12@gmail.com', '$2y$10$rdMsLGN0mTWPrKP.seJe0espj2cPjyd2D8PW7jdrisGMLuODWfMbm', 'teacher', '2024-11-22 21:13:10', '2024-11-22 21:13:10'),
+(15, 'Caleb', 'Arthur', 'calebokwesiearthur@gmail.com', '$2y$10$nYIYxUc4MuGMyx1m4XFMAuJn36rkhXFoTHEKjKHbU/KvktHIizk6i', 'student', '2024-11-22 21:18:06', '2024-11-22 21:18:06');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `Answers`
+-- Indexes for table `answers`
 --
-ALTER TABLE `Answers`
+ALTER TABLE `answers`
   ADD PRIMARY KEY (`answer_id`),
   ADD KEY `question_id` (`question_id`);
 
 --
--- Indexes for table `Events`
+-- Indexes for table `events`
 --
-ALTER TABLE `Events`
+ALTER TABLE `events`
   ADD PRIMARY KEY (`event_id`);
 
 --
--- Indexes for table `GroupMembers`
+-- Indexes for table `groupmembers`
 --
-ALTER TABLE `GroupMembers`
+ALTER TABLE `groupmembers`
   ADD PRIMARY KEY (`group_member_id`),
   ADD KEY `group_id` (`group_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `Groups`
+-- Indexes for table `groups`
 --
-ALTER TABLE `Groups`
+ALTER TABLE `groups`
   ADD PRIMARY KEY (`group_id`);
 
 --
--- Indexes for table `Questions`
+-- Indexes for table `questions`
 --
-ALTER TABLE `Questions`
+ALTER TABLE `questions`
   ADD PRIMARY KEY (`question_id`),
   ADD KEY `quiz_id` (`quiz_id`);
 
 --
--- Indexes for table `QuizResults`
+-- Indexes for table `quizresults`
 --
-ALTER TABLE `QuizResults`
+ALTER TABLE `quizresults`
   ADD PRIMARY KEY (`result_id`),
   ADD KEY `quiz_id` (`quiz_id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `group_id` (`group_id`);
 
 --
--- Indexes for table `Quizzes`
+-- Indexes for table `quizzes`
 --
-ALTER TABLE `Quizzes`
+ALTER TABLE `quizzes`
   ADD PRIMARY KEY (`quiz_id`),
   ADD KEY `created_by` (`created_by`);
 
 --
--- Indexes for table `Responses`
+-- Indexes for table `responses`
 --
-ALTER TABLE `Responses`
+ALTER TABLE `responses`
   ADD PRIMARY KEY (`response_id`),
   ADD KEY `result_id` (`result_id`),
   ADD KEY `question_id` (`question_id`),
   ADD KEY `selected_answer_id` (`selected_answer_id`);
 
 --
--- Indexes for table `Users`
+-- Indexes for table `users`
 --
-ALTER TABLE `Users`
+ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `email` (`email`);
 
@@ -383,103 +340,103 @@ ALTER TABLE `Users`
 --
 
 --
--- AUTO_INCREMENT for table `Answers`
+-- AUTO_INCREMENT for table `answers`
 --
-ALTER TABLE `Answers`
-  MODIFY `answer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+ALTER TABLE `answers`
+  MODIFY `answer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `Events`
+-- AUTO_INCREMENT for table `events`
 --
-ALTER TABLE `Events`
+ALTER TABLE `events`
   MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `GroupMembers`
+-- AUTO_INCREMENT for table `groupmembers`
 --
-ALTER TABLE `GroupMembers`
+ALTER TABLE `groupmembers`
   MODIFY `group_member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `Groups`
+-- AUTO_INCREMENT for table `groups`
 --
-ALTER TABLE `Groups`
+ALTER TABLE `groups`
   MODIFY `group_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `Questions`
+-- AUTO_INCREMENT for table `questions`
 --
-ALTER TABLE `Questions`
-  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+ALTER TABLE `questions`
+  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `QuizResults`
+-- AUTO_INCREMENT for table `quizresults`
 --
-ALTER TABLE `QuizResults`
-  MODIFY `result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+ALTER TABLE `quizresults`
+  MODIFY `result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `Quizzes`
+-- AUTO_INCREMENT for table `quizzes`
 --
-ALTER TABLE `Quizzes`
-  MODIFY `quiz_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+ALTER TABLE `quizzes`
+  MODIFY `quiz_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `Responses`
+-- AUTO_INCREMENT for table `responses`
 --
-ALTER TABLE `Responses`
-  MODIFY `response_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+ALTER TABLE `responses`
+  MODIFY `response_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `Users`
+-- AUTO_INCREMENT for table `users`
 --
-ALTER TABLE `Users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+ALTER TABLE `users`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `Answers`
+-- Constraints for table `answers`
 --
-ALTER TABLE `Answers`
-  ADD CONSTRAINT `answers_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `Questions` (`question_id`) ON DELETE CASCADE;
+ALTER TABLE `answers`
+  ADD CONSTRAINT `answers_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `questions` (`question_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `GroupMembers`
+-- Constraints for table `groupmembers`
 --
-ALTER TABLE `GroupMembers`
-  ADD CONSTRAINT `groupmembers_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `Groups` (`group_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `groupmembers_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `Users` (`user_id`) ON DELETE CASCADE;
+ALTER TABLE `groupmembers`
+  ADD CONSTRAINT `groupmembers_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `groupmembers_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `Questions`
+-- Constraints for table `questions`
 --
-ALTER TABLE `Questions`
-  ADD CONSTRAINT `questions_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `Quizzes` (`quiz_id`) ON DELETE CASCADE;
+ALTER TABLE `questions`
+  ADD CONSTRAINT `questions_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`quiz_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `QuizResults`
+-- Constraints for table `quizresults`
 --
-ALTER TABLE `QuizResults`
-  ADD CONSTRAINT `quizresults_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `Quizzes` (`quiz_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `quizresults_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `Users` (`user_id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `quizresults_ibfk_3` FOREIGN KEY (`group_id`) REFERENCES `Groups` (`group_id`) ON DELETE SET NULL;
+ALTER TABLE `quizresults`
+  ADD CONSTRAINT `quizresults_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`quiz_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `quizresults_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `quizresults_ibfk_3` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `Quizzes`
+-- Constraints for table `quizzes`
 --
-ALTER TABLE `Quizzes`
-  ADD CONSTRAINT `quizzes_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `Users` (`user_id`) ON DELETE CASCADE;
+ALTER TABLE `quizzes`
+  ADD CONSTRAINT `quizzes_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `Responses`
+-- Constraints for table `responses`
 --
-ALTER TABLE `Responses`
-  ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`result_id`) REFERENCES `QuizResults` (`result_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `Questions` (`question_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `responses_ibfk_3` FOREIGN KEY (`selected_answer_id`) REFERENCES `Answers` (`answer_id`) ON DELETE SET NULL;
+ALTER TABLE `responses`
+  ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`result_id`) REFERENCES `quizresults` (`result_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `questions` (`question_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `responses_ibfk_3` FOREIGN KEY (`selected_answer_id`) REFERENCES `answers` (`answer_id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
