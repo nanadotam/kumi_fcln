@@ -66,7 +66,7 @@ if ($userRole === 'student') {
                         </div>
                         <div class="quiz-meta">
                             <span><i class='bx bx-calendar'></i> <?= date('M d, Y', strtotime($quiz['created_at'])) ?></span>
-                            <span><i class='bx bx-time'></i> <?= $quiz['duration'] ?> mins</span>
+                            <!--<span><i class='bx bx-time'></i> <?= $quiz['duration'] ?> mins</span>-->
                         </div>
                         <div class="quiz-actions">
                             <?php if ($userRole === 'student'): ?>

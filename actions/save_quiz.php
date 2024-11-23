@@ -28,7 +28,7 @@ try {
 
     // Insert quiz
     $insertQuizQuery = "
-        INSERT INTO Quizzes (title, description, deadline, quiz_code, teacher_id, created_at)
+        INSERT INTO Quizzes (title, description, deadline, quiz_code, created_by, created_at)
         VALUES (?, ?, ?, ?, ?, NOW())
     ";
     
