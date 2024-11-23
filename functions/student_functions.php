@@ -8,7 +8,7 @@ function getStudentProgress($studentId) {
             COUNT(DISTINCT q.quiz_id) as total_quizzes,
             COUNT(DISTINCT qr.quiz_id) as completed_quizzes,
             AVG(qr.score) as average_score,
-            SUM(CASE WHEN qr.score >= 70 THEN 1 ELSE 0 END) as quizzes_passed
+            SUM(CASE WHEN qr.score >= 55 THEN 1 ELSE 0 END) as quizzes_passed
             FROM Quizzes q
             LEFT JOIN QuizResults qr ON q.quiz_id = qr.quiz_id AND qr.user_id = ?
             WHERE q.deadline >= CURDATE() OR q.deadline IS NULL";
