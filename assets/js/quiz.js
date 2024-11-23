@@ -166,32 +166,22 @@ function handleQuestionTypeChange(select) {
 
 function createMultipleChoiceOptions(container) {
     container.innerHTML = `
-        <div class="option-item">
-            <input type="radio" disabled>
-            <input type="text" class="option-input" placeholder="Option 1">
-            <button class="btn-delete" onclick="deleteOption(this)">
-                <i class='bx bx-trash'></i>
-            </button>
-        </div>
         <button class="btn-add" onclick="addOption(this.parentElement, 'radio')">
             <i class='bx bx-plus'></i> Add Option
         </button>
     `;
+    // Add the first option automatically using the same format
+    addOption(container.querySelector('.btn-add'), 'radio');
 }
 
 function createCheckboxOptions(container) {
     container.innerHTML = `
-        <div class="option-item">
-            <input type="checkbox" disabled>
-            <input type="text" class="option-input" placeholder="Option 1">
-            <button class="btn-delete" onclick="deleteOption(this)">
-                <i class='bx bx-trash'></i>
-            </button>
-        </div>
         <button class="btn-add" onclick="addOption(this.parentElement, 'checkbox')">
             <i class='bx bx-plus'></i> Add Option
         </button>
     `;
+    // Add the first option automatically using the same format
+    addOption(container.querySelector('.btn-add'), 'checkbox');
 }
 
 function createParagraphOption(container) {
@@ -208,20 +198,26 @@ function createParagraphOption(container) {
     `;
 }
 
-function addOption(container, type) {
-    const optionCount = container.querySelectorAll('.option-item').length + 1;
-    const newOption = document.createElement('div');
-    newOption.className = 'option-item';
-    newOption.innerHTML = `
-        <input type="${type}" disabled>
-        <input type="text" class="option-input" placeholder="Option ${optionCount}">
-        <button class="btn-delete" onclick="deleteOption(this)">
-            <i class='bx bx-trash'></i>
+function addOption(button, type) {
+    const container = button.parentElement;
+    const optionCount = container.querySelectorAll('.option').length;
+    const questionNumber = button.closest('.question-card').querySelector('.question-header h3').textContent.split(' ')[1];
+    
+    const optionDiv = document.createElement('div');
+    optionDiv.className = 'option';
+    optionDiv.innerHTML = `
+        <input type="${type}" name="correct_${questionNumber}" value="${optionCount}">
+        <input type="text" class="option-input" placeholder="Option ${optionCount + 1}" required>
+        <label class="correct-label">
+            <input type="checkbox" class="is-correct" /> Correct Answer
+        </label>
+        <button type="button" class="delete-option" onclick="deleteOption(this)">
+            <i class='bx bx-x'></i>
         </button>
     `;
     
     // Insert before the "Add Option" button
-    container.insertBefore(newOption, container.lastElementChild);
+    container.insertBefore(optionDiv, button);
 }
 
 function deleteOption(button) {
