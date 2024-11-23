@@ -337,3 +337,27 @@
     gap: 10px;
     margin-bottom: 10px;
 }
+
+.model-answer-container {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.model-answer-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #495057;
+}
+
+.model-answer {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    resize: vertical;
+}

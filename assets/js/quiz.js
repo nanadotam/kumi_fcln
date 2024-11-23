@@ -285,7 +285,10 @@ function saveQuiz() {
             options: []
         };
 
-        if (question.type !== 'paragraph') {
+        if (questionType === 'paragraph') {
+            const modelAnswer = card.querySelector('.model-answer')?.value.trim();
+            question.model_answer = modelAnswer;
+        } else {
             card.querySelectorAll('.option').forEach(optionDiv => {
                 const optionInput = optionDiv.querySelector('.option-input');
                 const isCorrect = optionDiv.querySelector('.is-correct').checked;

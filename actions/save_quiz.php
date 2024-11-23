@@ -65,8 +65,19 @@ try {
 
         $question_id = $db->insert_id();
 
-        // Insert options/answers if not a paragraph question
-        if ($question['type'] !== 'paragraph' && !empty($question['options'])) {
+        if ($questionType === 'short_answer') {
+            // Insert model answer for paragraph questions
+            $insertAnswerQuery = "
+                INSERT INTO Answers (question_id, answer_text, is_correct, model_answer)
+                VALUES (?, '', 1, ?)
+            ";
+            
+            $db->query($insertAnswerQuery, [
+                $question_id,
+                $question['model_answer'] ?? ''
+            ]);
+        } else if (!empty($question['options'])) {
+            // Insert options for multiple choice questions
             foreach ($question['options'] as $option) {
                 $insertAnswerQuery = "
                     INSERT INTO Answers (question_id, answer_text, is_correct)
