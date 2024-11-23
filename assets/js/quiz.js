@@ -14,43 +14,42 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function addNewQuestion() {
-    const questionsContainer = document.getElementById('questionsContainer');
     const questionHTML = `
-        <div class="question-card">
+        <div class="question-card" data-question-id="${Date.now()}">
             <div class="question-header">
-                <input type="text" class="question-text" placeholder="Question">
-                <select class="question-type" onchange="handleQuestionTypeChange(this)">
-                    <option value="multiple_choice">Multiple Choice</option>
-                    <option value="paragraph">Paragraph</option>
-                    <option value="checkbox">Select All That Apply</option>
-                </select>
-                <button class="btn-delete" onclick="deleteQuestion(this)">
+                <div class="question-main">
+                    <input type="text" class="question-text" placeholder="Enter your question">
+                    <div class="question-settings">
+                        <select class="question-type" onchange="handleQuestionTypeChange(this)">
+                            <option value="multiple_choice">Multiple Choice</option>
+                            <option value="checkbox">Multiple Select</option>
+                            <option value="text">Short Answer</option>
+                        </select>
+                        <input type="number" class="points-input" placeholder="Points" min="1" value="1">
+                    </div>
+                </div>
+                <button class="btn-delete" onclick="deleteQuestion(this)" title="Delete Question">
                     <i class='bx bx-trash'></i>
                 </button>
             </div>
+            
             <div class="options-container">
-                <div class="option-item">
-                    <input type="radio" disabled>
+                <div class="option-container">
+                    <div class="correct-answer-toggle" onclick="toggleCorrectAnswer(this)" title="Mark as correct answer"></div>
                     <input type="text" class="option-input" placeholder="Option 1">
-                    <button class="btn-delete" onclick="deleteOption(this)">
-                        <i class='bx bx-trash'></i>
+                    <span class="correct-answer-label">Correct Answer</span>
+                    <button class="btn-delete" onclick="deleteOption(this)" title="Delete Option">
+                        <i class='bx bx-x'></i>
                     </button>
                 </div>
-                <div class="option-item">
-                    <input type="radio" disabled>
-                    <input type="text" class="option-input" placeholder="Option 2">
-                    <button class="btn-delete" onclick="deleteOption(this)">
-                        <i class='bx bx-trash'></i>
-                    </button>
-                </div>
-                <button class="btn-add" onclick="addOption(this.parentElement, 'radio')">
+                <button class="btn-add-option" onclick="addOption(this)">
                     <i class='bx bx-plus'></i> Add Option
                 </button>
             </div>
         </div>
     `;
     
-    questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+    document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
 }
 
 function handleQuestionTypeChange(select) {

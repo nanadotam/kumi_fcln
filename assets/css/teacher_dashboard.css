@@ -70,6 +70,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    margin-left: 250px;
 }
 
 /* Welcome Section */
@@ -80,6 +81,7 @@ body {
     margin-bottom: 2.5rem;
     color: white;
     box-shadow: 0 4px 15px rgba(24, 112, 69, 0.2);
+    width: calc(100% - 20px);
 }
 
 .welcome-section h1 {
@@ -97,9 +99,9 @@ body {
 
 .stats-overview {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
 }
 
 .stat-card {
@@ -107,6 +109,7 @@ body {
     backdrop-filter: blur(10px);
     padding: 1.5rem;
     border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -118,7 +121,7 @@ body {
 }
 
 .stat-card i {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: rgba(255, 255, 255, 0.9);
 }
 
@@ -230,4 +233,33 @@ footer {
     color: #FFD700;
     margin-top: 3rem;
     font-size: 1rem;
+}
+
+.create-quiz-button {
+    text-align: right;
+    margin-top: 1rem;
+}
+
+.create-quiz-button a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-light);
+    color: var(--color-primary);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.create-quiz-button a:before {
+    content: '+';
+    font-size: 1.2rem;
+}
+
+.create-quiz-button a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }

@@ -320,3 +320,53 @@ function canAccessQuiz($userId, $quizId) {
         return false;
     }
 }
+
+function saveQuizWithAnswers($quizData) {
+    try {
+        $db = Database::getConnection();
+        $conn = $db->getConnection();
+        
+        $conn->begin_transaction();
+        
+        // Insert quiz
+        $sql = "INSERT INTO Quizzes (title, description, created_by, deadline) 
+                VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssis", $quizData['title'], $quizData['description'], 
+                         $quizData['created_by'], $quizData['deadline']);
+        $stmt->execute();
+        $quizId = $conn->insert_id;
+        
+        // Insert questions and answers
+        foreach ($quizData['questions'] as $question) {
+            $sql = "INSERT INTO Questions (quiz_id, question_text, question_type, points) 
+                    VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("issi", $quizId, $question['text'], 
+                            $question['type'], $question['points']);
+            $stmt->execute();
+            $questionId = $conn->insert_id;
+            
+            // Insert options and mark correct answers
+            if (isset($question['options'])) {
+                foreach ($question['options'] as $option) {
+                    $sql = "INSERT INTO Options (question_id, option_text, is_correct) 
+                            VALUES (?, ?, ?)";
+                    $stmt = $conn->prepare($sql);
+                    $isCorrect = $option['is_correct'] ? 1 : 0;
+                    $stmt->bind_param("isi", $questionId, $option['text'], $isCorrect);
+                    $stmt->execute();
+                }
+            }
+        }
+        
+        $conn->commit();
+        return $quizId;
+        
+    } catch (Exception $e) {
+        if (isset($conn)) {
+            $conn->rollback();
+        }
+        throw $e;
+    }
+}
