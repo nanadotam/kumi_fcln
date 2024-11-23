@@ -101,7 +101,7 @@ function getQuizQuestions($quizId) {
 function getAvailableQuizzes($studentId) {
     $db = Database::getInstance();
     
-    $sql = "SELECT q.* 
+    $sql = "SELECT q.quiz_id, q.title, q.description, q.mode, q.deadline, q.created_at 
             FROM Quizzes q 
             LEFT JOIN QuizResults qr ON q.quiz_id = qr.quiz_id AND qr.user_id = ?
             WHERE qr.result_id IS NULL 
@@ -117,7 +117,8 @@ function getAvailableQuizzes($studentId) {
             'title' => htmlspecialchars($row['title']),
             'description' => htmlspecialchars($row['description']),
             'mode' => $row['mode'],
-            'deadline' => $row['deadline']
+            'deadline' => $row['deadline'],
+            'created_at' => $row['created_at']
         ];
     }
     
