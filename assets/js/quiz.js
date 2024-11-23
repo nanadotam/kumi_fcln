@@ -220,6 +220,7 @@ function saveQuiz() {
             if (data.success) {
                 alert(`Quiz saved successfully! Quiz Code: ${quiz.quiz_code}`);
                 window.location.href = '../view/quiz.php';
+                
             } else {
                 alert('Error saving quiz: ' + data.message);
             }
