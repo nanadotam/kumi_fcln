@@ -200,14 +200,14 @@ function createParagraphOption(container) {
 
 function addOption(button, type) {
     const container = button.parentElement;
-    const optionCount = container.querySelectorAll('.option').length + 1;
+    const optionCount = container.querySelectorAll('.option').length;
     const questionNumber = button.closest('.question-card').querySelector('.question-header h3').textContent.split(' ')[1];
     
     const optionDiv = document.createElement('div');
     optionDiv.className = 'option';
     optionDiv.innerHTML = `
-        <input type="${type}" name="correct_${questionNumber}" value="${optionCount - 1}">
-        <input type="text" class="option-input" placeholder="Option ${optionCount}" required>
+        <input type="${type}" name="correct_${questionNumber}" value="${optionCount}">
+        <input type="text" class="option-input" placeholder="Option ${optionCount + 1}" required>
         <label class="correct-label">
             <input type="checkbox" class="is-correct" /> Correct Answer
         </label>
