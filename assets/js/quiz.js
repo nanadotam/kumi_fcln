@@ -158,8 +158,8 @@ function deleteQuestion(button) {
 }
 
 function saveQuiz() {
-     // Generate a random 6-character alphanumeric code
-     const generateQuizCode = () => {
+    // Generate a random 6-character alphanumeric code
+    const generateQuizCode = () => {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let code = '';
         for (let i = 0; i < 6; i++) {
@@ -172,6 +172,7 @@ function saveQuiz() {
         title: document.getElementById('quizTitle')?.value || 'Untitled Quiz',
         description: document.getElementById('quizDescription')?.value || '',
         dueDate: document.getElementById('quizDueDate')?.value || '',
+        quiz_code: generateQuizCode(),
         questions: []
     };
 
@@ -217,7 +218,7 @@ function saveQuiz() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Quiz saved successfully!');
+                alert(`Quiz saved successfully! Quiz Code: ${quiz.quiz_code}`);
                 window.location.href = '../view/quiz.php';
             } else {
                 alert('Error saving quiz: ' + data.message);
