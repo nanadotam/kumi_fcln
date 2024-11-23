@@ -22,6 +22,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <textarea class="question-text" placeholder="Enter your question here..." required></textarea>
             </div>
             <div class="form-group">
+                <label>Question Type</label>
+                <select class="question-type" onchange="handleQuestionTypeChange(this)">
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="checkbox">Multiple Answer</option>
+                    <option value="paragraph">Short Answer</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label>Points</label>
                 <input type="number" class="question-points" min="1" value="1" required>
             </div>
@@ -51,6 +59,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <i class='bx bx-plus'></i> Add Option
             </button>
         `;
+        
+        // Initialize as multiple choice by default
+        const select = questionDiv.querySelector('.question-type');
+        handleQuestionTypeChange(select);
+        
         questionsContainer.appendChild(questionDiv);
     }
 
@@ -273,6 +286,7 @@ function saveQuiz() {
     document.querySelectorAll('.question-card').forEach(card => {
         const questionText = card.querySelector('.question-text')?.value.trim();
         const questionType = card.querySelector('.question-type')?.value;
+        const points = card.querySelector('.question-points')?.value || 1;
 
         if (!questionText) {
             alert('All questions must have text.');
@@ -282,25 +296,31 @@ function saveQuiz() {
         const question = {
             text: questionText,
             type: questionType,
+            points: points,
             options: []
         };
 
-        if (questionType === 'paragraph') {
-            const modelAnswer = card.querySelector('.model-answer')?.value.trim();
-            question.model_answer = modelAnswer;
-        } else {
-            card.querySelectorAll('.option').forEach(optionDiv => {
-                const optionInput = optionDiv.querySelector('.option-input');
-                const isCorrect = optionDiv.querySelector('.is-correct').checked;
+        switch(questionType) {
+            case 'paragraph':
+                const modelAnswer = card.querySelector('.model-answer')?.value.trim();
+                question.model_answer = modelAnswer;
+                break;
                 
-                const optionValue = optionInput.value.trim();
-                if (optionValue) {
-                    question.options.push({
-                        text: optionValue,
-                        is_correct: isCorrect
-                    });
-                }
-            });
+            case 'multiple_choice':
+            case 'checkbox':
+                card.querySelectorAll('.option-item').forEach(optionDiv => {
+                    const optionInput = optionDiv.querySelector('.option-input');
+                    const isCorrect = optionDiv.querySelector('.is-correct')?.checked || false;
+                    
+                    const optionValue = optionInput.value.trim();
+                    if (optionValue) {
+                        question.options.push({
+                            text: optionValue,
+                            is_correct: isCorrect
+                        });
+                    }
+                });
+                break;
         }
 
         quiz.questions.push(question);

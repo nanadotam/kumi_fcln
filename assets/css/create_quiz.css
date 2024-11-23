@@ -361,3 +361,17 @@
     border-radius: 4px;
     resize: vertical;
 }
+
+.question-type {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    background-color: white;
+}
+
+.question-type:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
