@@ -28,16 +28,16 @@ try {
 
     // Insert quiz
     $insertQuizQuery = "
-        INSERT INTO Quizzes (title, description, created_by, mode, deadline, quiz_code)
-        VALUES (?, ?, ?, 'asynchronous', ?, ?, ?)
+        INSERT INTO Quizzes (title, description, due_date, quiz_code, teacher_id, created_at)
+        VALUES (?, ?, ?, ?, ?, NOW())
     ";
     
     $quizResult = $db->query($insertQuizQuery, [
         $data['title'],
         $data['description'],
-        $_SESSION['user_id'],
         $data['dueDate'],
-        $data['quiz_code']
+        $data['quiz_code'],
+        $_SESSION['user_id']
     ]);
 
     $quiz_id = $db->insert_id();
