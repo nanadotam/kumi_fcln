@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const optionDiv = document.createElement('div');
         optionDiv.className = 'option';
         optionDiv.innerHTML = `
-            <input type="radio" name="correct_${questionNumber}" value="${optionCount}">
-            <input type="text" class="option-input" placeholder="Option ${optionCount + 1}" required>
+            <input type="radio" name="correct_${questionNumber}" value="${optionCount - 1}">
+            <input type="text" class="option-input" placeholder="Option ${optionCount}" required>
             <label class="correct-label">
                 <input type="checkbox" class="is-correct" /> Correct Answer
             </label>
@@ -200,17 +200,14 @@ function createParagraphOption(container) {
 
 function addOption(button, type) {
     const container = button.parentElement;
-    // Get all existing options
-    const existingOptions = container.querySelectorAll('.option');
-    // New option will be number of existing options + 1
-    const newOptionNumber = existingOptions.length + 1;
+    const optionCount = container.querySelectorAll('.option').length + 1;
     const questionNumber = button.closest('.question-card').querySelector('.question-header h3').textContent.split(' ')[1];
     
     const optionDiv = document.createElement('div');
     optionDiv.className = 'option';
     optionDiv.innerHTML = `
-        <input type="${type}" name="correct_${questionNumber}" value="${newOptionNumber}">
-        <input type="text" class="option-input" placeholder="Option ${newOptionNumber}" required>
+        <input type="${type}" name="correct_${questionNumber}" value="${optionCount - 1}">
+        <input type="text" class="option-input" placeholder="Option ${optionCount}" required>
         <label class="correct-label">
             <input type="checkbox" class="is-correct" /> Correct Answer
         </label>
@@ -224,28 +221,16 @@ function addOption(button, type) {
 }
 
 function deleteOption(button) {
-    const option = button.closest('.option');
-    const container = option.parentElement;
-    const questionCard = option.closest('.question-card');
-    const questionType = questionCard.querySelector('.question-type').value;
-    
-    if ((questionType === 'multiple_choice' || questionType === 'checkbox') && 
-        container.querySelectorAll('.option').length <= 2) {
-        alert('Multiple choice questions must have at least 2 options');
-        return;
-    }
-    
-    option.remove();
+    const optionItem = button.closest('.option-item');
+    const container = optionItem.parentElement;
+    optionItem.remove();
     
     // Renumber remaining options
-    container.querySelectorAll('.option').forEach((optionDiv, index) => {
-        const optionInput = optionDiv.querySelector('.option-input');
-        const radioOrCheckbox = optionDiv.querySelector('input[type="radio"], input[type="checkbox"]');
-        
-        // Update placeholder text
-        optionInput.placeholder = `Option ${index + 1}`;
-        // Update value attribute
-        radioOrCheckbox.value = index + 1;
+    container.querySelectorAll('.option-item').forEach((item, index) => {
+        const input = item.querySelector('.option-input');
+        if (input) {
+            input.placeholder = `Option ${index + 1}`;
+        }
     });
 }
 
