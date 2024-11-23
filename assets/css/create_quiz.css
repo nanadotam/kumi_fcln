@@ -317,3 +317,23 @@
     background: var(--color-secondary);
     transform: translateY(-2px);
 }
+
+.correct-label {
+    margin-left: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #666;
+}
+
+.is-correct {
+    margin: 0;
+    cursor: pointer;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}

@@ -67,15 +67,16 @@ try {
 
         // Insert options/answers if not a paragraph question
         if ($question['type'] !== 'paragraph' && !empty($question['options'])) {
-            foreach ($question['options'] as $index => $optionText) {
+            foreach ($question['options'] as $option) {
                 $insertAnswerQuery = "
                     INSERT INTO Answers (question_id, answer_text, is_correct)
-                    VALUES (?, ?, 0)
+                    VALUES (?, ?, ?)
                 ";
                 
                 $db->query($insertAnswerQuery, [
                     $question_id,
-                    $optionText
+                    $option['text'],
+                    $option['is_correct'] ? 1 : 0
                 ]);
             }
         }

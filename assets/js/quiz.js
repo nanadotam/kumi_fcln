@@ -28,14 +28,20 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="options-container">
                 <div class="option">
                     <input type="radio" name="correct_${questionCount}" value="0" checked>
-                    <input type="text" placeholder="Enter option 1..." required>
+                    <input type="text" class="option-input" placeholder="Enter option 1..." required>
+                    <label class="correct-label">
+                        <input type="checkbox" class="is-correct" /> Correct Answer
+                    </label>
                     <button type="button" class="delete-option" onclick="deleteOption(this)">
                         <i class='bx bx-x'></i>
                     </button>
                 </div>
                 <div class="option">
                     <input type="radio" name="correct_${questionCount}" value="1">
-                    <input type="text" placeholder="Enter option 2..." required>
+                    <input type="text" class="option-input" placeholder="Enter option 2..." required>
+                    <label class="correct-label">
+                        <input type="checkbox" class="is-correct" /> Correct Answer
+                    </label>
                     <button type="button" class="delete-option" onclick="deleteOption(this)">
                         <i class='bx bx-x'></i>
                     </button>
@@ -58,7 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
         optionDiv.className = 'option';
         optionDiv.innerHTML = `
             <input type="radio" name="correct_${questionNumber}" value="${optionCount - 1}">
-            <input type="text" placeholder="Option ${optionCount}" required>
+            <input type="text" class="option-input" placeholder="Option ${optionCount}" required>
+            <label class="correct-label">
+                <input type="checkbox" class="is-correct" /> Correct Answer
+            </label>
             <button type="button" class="delete-option" onclick="deleteOption(this)">
                 <i class='bx bx-x'></i>
             </button>
@@ -194,6 +203,11 @@ function createParagraphOption(container) {
         <div class="option-item">
             <textarea disabled placeholder="Students will type their answer here" 
                       style="width: 100%; min-height: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+            <div class="model-answer-container">
+                <label>Model Answer (for grading reference):</label>
+                <textarea class="model-answer" placeholder="Enter the correct answer here..."
+                          style="width: 100%; min-height: 80px;"></textarea>
+            </div>
         </div>
     `;
 }
@@ -272,10 +286,16 @@ function saveQuiz() {
         };
 
         if (question.type !== 'paragraph') {
-            card.querySelectorAll('.option-input').forEach(option => {
-                const optionValue = option.value.trim();
+            card.querySelectorAll('.option').forEach(optionDiv => {
+                const optionInput = optionDiv.querySelector('.option-input');
+                const isCorrect = optionDiv.querySelector('.is-correct').checked;
+                
+                const optionValue = optionInput.value.trim();
                 if (optionValue) {
-                    question.options.push(optionValue);
+                    question.options.push({
+                        text: optionValue,
+                        is_correct: isCorrect
+                    });
                 }
             });
         }
