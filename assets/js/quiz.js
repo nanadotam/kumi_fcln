@@ -172,9 +172,12 @@ function saveQuiz() {
         title: document.getElementById('quizTitle')?.value || 'Untitled Quiz',
         description: document.getElementById('quizDescription')?.value || '',
         dueDate: document.getElementById('quizDueDate')?.value || '',
+            quiz_code: generateQuizCode(), // Add this line
         questions: []
     };
 
+        // ... rest of the function remains the same ...
+    }
     if (!quiz.title.trim()) {
         alert('Quiz title is required.');
         return;
@@ -219,6 +222,7 @@ function saveQuiz() {
             if (data.success) {
                 alert('Quiz saved successfully!');
                 window.location.href = '../view/quiz.php';
+                
             } else {
                 alert('Error saving quiz: ' + data.message);
             }
