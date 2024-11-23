@@ -12,6 +12,10 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $userRole = $_SESSION['role'];
 
+// At the top of the file, after session_start()
+$currentPage = 'profile';
+include_once '../components/sidebar.php';
+
 // Get user data and statistics
 try {
     $db = Database::getInstance();
