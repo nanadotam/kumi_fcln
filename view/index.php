@@ -40,7 +40,8 @@
   <!-- About Section -->
   <section id="about" class="section">
     <h2>About Us</h2>
-    <p>Kumi is a platform designed to foster learning, creativity, and collaboration through engaging activities and interactions.</p>
+    <p>Kumi is a platform that brings a new dimension to learning through flexible and interactive quizzes. 
+      It supports both individual and group modes, making it easy to learn at your own pace or collaborate with others.</p>
   </section>
 
   <!-- Meet the Team Section -->
@@ -70,11 +71,11 @@
     </div>
   </section>
 
-  <!-- Join the Waitlist Section -->
+  <!-- Join the Waitlist Section
   <section id="waitlist" class="section">
     <h2>Join the Waitlist</h2>
     <a href="../view/waitlist.html" class="btn btn-primary">Join Now</a>
-  </section>
+  </section> -->
 
   <!-- Footer -->
   <footer>
