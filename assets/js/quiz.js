@@ -1,11 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded');
+    const questionsContainer = document.getElementById('questionsContainer');
     const addQuestionBtn = document.getElementById('addQuestionBtn');
     const saveQuizBtn = document.getElementById('saveQuizBtn');
     
+    let questionCount = 0;  // Add question counter
+
     addQuestionBtn.addEventListener('click', function() {
         console.log('Add Question Button Clicked');
+        questionCount++;    // Increment counter
         addNewQuestion();
+    });
+    
+    // Add event delegation for the entire questions container
+    questionsContainer.addEventListener('click', function(e) {
+        // Handle delete option button clicks
+        if (e.target.classList.contains('btn-delete')) {
+            const optionContainer = e.target.closest('.option-container');
+            if (optionContainer) {
+                deleteOption(e.target);
+                // Renumber remaining options after deletion
+                const questionCard = optionContainer.closest('.question-card');
+                renumberOptions(questionCard);
+            }
+        }
+        
+        // Handle add option button clicks
+        if (e.target.classList.contains('btn-add-option') || 
+            e.target.closest('.btn-add-option')) {
+            const questionCard = e.target.closest('.question-card');
+            addOption(questionCard.querySelector('.btn-add-option'));
+        }
     });
     
     if (saveQuizBtn) {
@@ -18,7 +43,7 @@ function addNewQuestion() {
         <div class="question-card" data-question-id="${Date.now()}">
             <div class="question-header">
                 <div class="question-main">
-                    <input type="text" class="question-text" placeholder="Enter your question">
+                    <input type="text" class="question-text" placeholder="Question ${questionCount}">
                     <div class="question-settings">
                         <select class="question-type" onchange="handleQuestionTypeChange(this)">
                             <option value="multiple_choice">Multiple Choice</option>
@@ -228,4 +253,41 @@ function saveQuiz() {
             console.error('Error:', error);
             alert('Error saving quiz. Please try again.');
         });
+}
+
+function editQuiz(quizId) {
+    window.location.href = `edit_quiz.php?id=${quizId}`;
+}
+
+function deleteQuiz(quizId) {
+    if (confirm('Are you sure you want to delete this quiz?')) {
+        fetch('../actions/delete_quiz.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ quiz_id: quizId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const quizCard = document.querySelector(`[data-quiz-id="${quizId}"]`);
+                quizCard.remove();
+                showNotification('Quiz deleted successfully', 'success');
+            } else {
+                showNotification('Error deleting quiz', 'error');
+            }
+        });
+    }
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }

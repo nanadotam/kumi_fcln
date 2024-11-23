@@ -18,7 +18,7 @@ $quizId = $_GET['id'] ?? null;
 
 // Get appropriate quizzes based on user role
 if ($userRole === 'student') {
-    $availableQuizzes = getAvailableQuizzes($userId);
+    $quizzes = getAvailableQuizzes($userId);
 } else {
     $quizzes = getQuizzesByTeacher($userId);
 }
@@ -38,118 +38,57 @@ if ($userRole === 'student') {
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/quiz.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../assets/css/variables.css">
 </head>
 <body>
+    <?php include_once '../components/sidebar.php'; ?>
+    
     <main class="quiz-page">
-        <?php if ($userRole === 'teacher'): ?>
-            <!-- Teacher View -->
+        <div class="quiz-sections">
             <div class="page-header">
                 <h1>My Quizzes</h1>
-                <a href="create_quiz.php" class="create-btn">
-                    <i class='bx bx-plus'></i>
-                    Create Quiz
-                </a>
+                <?php if ($userRole === 'teacher'): ?>
+                    <a href="create_quiz.php" class="create-btn">
+                        <i class='bx bx-plus'></i> Create Quiz
+                    </a>
+                <?php endif; ?>
             </div>
-
-            <div class="filters">
-                <input type="text" id="search-quiz" placeholder="Search quizzes...">
-                <select id="filter-mode">
-                    <option value="">All Modes</option>
-                    <option value="individual">Individual</option>
-                    <option value="group">Group</option>
-                </select>
-            </div>
-
+            
             <div class="quiz-grid">
                 <?php foreach ($quizzes as $quiz): ?>
                     <div class="quiz-card" data-mode="<?= $quiz['mode'] ?>">
                         <div class="quiz-card-header">
                             <h3><?= htmlspecialchars($quiz['title']) ?></h3>
-                            <span class="mode-badge <?= $quiz['mode'] ?>">
-                                <?= ucfirst($quiz['mode']) ?>
-                            </span>
+                            <?php if (isset($quiz['score'])): ?>
+                                <span class="score-badge <?= $quiz['score'] >= 70 ? 'passing' : 'failing' ?>">
+                                    <?= $quiz['score'] ?>%
+                                </span>
+                            <?php endif; ?>
                         </div>
-                        <p class="quiz-description"><?= htmlspecialchars($quiz['description']) ?></p>
                         <div class="quiz-meta">
-                            <span><i class='bx bx-user'></i> <?= $quiz['attempt_count'] ?> attempts</span>
                             <span><i class='bx bx-calendar'></i> <?= date('M d, Y', strtotime($quiz['created_at'])) ?></span>
+                            <span><i class='bx bx-time'></i> <?= $quiz['duration'] ?> mins</span>
                         </div>
                         <div class="quiz-actions">
-                            <a href="quiz_results.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
-                            <button onclick="editQuiz(<?= $quiz['quiz_id'] ?>)" class="edit-btn">
-                                <i class='bx bxs-edit'></i>
-                            </button>
-                            <button onclick="deleteQuiz(<?= $quiz['quiz_id'] ?>)" class="delete-btn">
-                                <i class='bx bx-trash'></i>
-                            </button>
+                            <?php if ($userRole === 'student'): ?>
+                                <?php if (in_array($quiz['quiz_id'], $completedQuizIds)): ?>
+                                    <a href="quiz_result.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
+                                <?php else: ?>
+                                    <a href="take_quiz.php?id=<?= $quiz['quiz_id'] ?>" class="take-btn">Take Quiz</a>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <a href="quiz_results.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
+                                <button class="edit-btn" onclick="editQuiz(<?= $quiz['quiz_id'] ?>)">
+                                    <i class='bx bxs-edit'></i>
+                                </button>
+                                <button class="delete-btn" onclick="deleteQuiz(<?= $quiz['quiz_id'] ?>)">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
-
-        <?php else: ?>
-            <!-- Student View -->
-            <div class="page-header">
-                <h1>My Quizzes</h1>
-            </div>
-
-            <div class="quiz-sections">
-                <!-- Temporarily hidden available quizzes section -->
-                <!--
-                <section class="available-quizzes">
-                    <h2>Ready to Take</h2>
-                    <div class="quiz-grid">
-                        <?php foreach ($availableQuizzes as $quiz): ?>
-                            <div class="quiz-card">
-                                <div class="quiz-card-header">
-                                    <h3><?= htmlspecialchars($quiz['title']) ?></h3>
-                                    <span class="mode-badge <?= $quiz['mode'] ?>">
-                                        <?= ucfirst($quiz['mode']) ?>
-                                    </span>
-                                </div>
-                                <p class="quiz-description"><?= htmlspecialchars($quiz['description']) ?></p>
-                                <?php if ($quiz['deadline']): ?>
-                                    <div class="deadline-info">
-                                        <i class='bx bx-time-five'></i>
-                                        <span>Due: <?= date('M d, Y', strtotime($quiz['deadline'])) ?></span>
-                                    </div>
-                                <?php endif; ?>
-                                <a href="take_quiz.php?id=<?= $quiz['quiz_id'] ?>" class="start-btn">
-                                    Start Quiz
-                                </a>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </section>
-                -->
-
-                <section class="completed-quizzes">
-                    <h2>Completed Quizzes</h2>
-                    <div class="quiz-grid">
-                        <?php foreach ($completedQuizzes as $quiz): ?>
-                            <div class="quiz-card completed">
-                                <div class="quiz-card-header">
-                                    <h3><?= htmlspecialchars($quiz['title']) ?></h3>
-                                    <span class="score-badge">
-                                        <?= $quiz['score'] ?>%
-                                    </span>
-                                </div>
-                                <div class="quiz-meta">
-                                    <span>
-                                        <i class='bx bx-calendar'></i>
-                                        Completed: <?= date('M d, Y', strtotime($quiz['submitted_at'])) ?>
-                                    </span>
-                                </div>
-                                <a href="quiz_result.php?id=<?= $quiz['result_id'] ?>" class="view-result-btn">
-                                    View Results
-                                </a>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </section>
-            </div>
-        <?php endif; ?>
+        </div>
     </main>
 
     <script src="../assets/js/quiz.js"></script>

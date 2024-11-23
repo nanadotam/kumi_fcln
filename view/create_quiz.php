@@ -32,6 +32,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
                     <label>Due Date:</label>
                     <input type="datetime-local" id="quizDueDate">
                 </div>
+                <div class="setting-group">
+                    <label>Quiz Mode:</label>
+                    <select id="quizMode">
+                        <option value="individual">Individual</option>
+                        <option value="group">Group</option>
+                    </select>
+                </div>
             </div>
         </div>
 

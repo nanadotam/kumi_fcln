@@ -37,52 +37,56 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard - Kumi</title>
-
     <link rel="stylesheet" href="../assets/css/student_dashboard.css">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
+    <?php include_once '../components/sidebar.php'; ?>
+    
     <div class="dashboard-container">
-
-    <div class = "quizcode-container"> 
-        <h2>Ready for your next quiz?</h2>
-        <p>Enter the quiz code to start </p> 
-        <input type="text" name="quizcode" id="quizcode" placeholder="Enter Quiz Code">
-        <button>Start Quiz</button>
-
-    </div> 
-        <div class="welcome-container">
+        <section class="welcome-section">
             <h1>Welcome Back, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Student') ?>!</h1>
-            <p>Here's your learning progress:</p>
-            
-            <div class="dashboard-stats">
-                <div class="stat-box">
-                    <h3> Completion Rate </h3>
-                    <p class="stat-number">
-                        <?= $completionRate ?>%
-                    </p>
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <i class='bx bx-book-open'></i>
+                    <div class="stat-info">
+                        <h3>Completion Rate</h3>
+                        <p><?= $completionRate ?>%</p>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <h3>Average Score</h3>
-                    <p class="stat-number"><?= $averageScore ?>%</p>
+                <div class="stat-card">
+                    <i class='bx bx-task'></i>
+                    <div class="stat-info">
+                        <h3>Average Score</h3>
+                        <p><?= $averageScore ?>%</p>
+                    </div>
                 </div>
             </div>
+        </section>
+
+        <div class="quizcode-container">
+            <h2>Ready for your next quiz?</h2>
+            <p>Enter the quiz code to start</p>
+            <input type="text" name="quizcode" id="quizcode" placeholder="Enter Quiz Code">
+            <button class="start-btn">Start Quiz</button>
         </div>
 
         <div class="dashboard-sections">
             <div class="section-card">
                 <h2>Recent Scores</h2>
-                <div class="quiz-list">
+                <div class="quiz-grid">
                     <?php if (!empty($recentCompletedQuizzes)): ?>
                         <?php foreach ($recentCompletedQuizzes as $quiz): ?>
-                            <div class="quiz-item">
-                                <div>
-                                    <h4><?= htmlspecialchars($quiz['title']) ?></h4>
-                                    <small><?= date('M d, Y', strtotime($quiz['submitted_at'])) ?></small>
+                            <div class="quiz-card">
+                                <div class="quiz-card-header">
+                                    <h3><?= htmlspecialchars($quiz['title']) ?></h3>
+                                    <span class="score-badge <?= $quiz['score'] >= 70 ? 'passing' : 'failing' ?>">
+                                        <?= $quiz['score'] ?>%
+                                    </span>
                                 </div>
-                                <span class="score-badge <?= $quiz['score'] >= 70 ? 'passing' : 'failing' ?>">
-                                    <?= $quiz['score'] ?>%
-                                </span>
+                                <div class="quiz-meta">
+                                    <span><i class='bx bx-calendar'></i> <?= date('M d, Y', strtotime($quiz['submitted_at'])) ?></span>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -90,102 +94,7 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
                     <?php endif; ?>
                 </div>
             </div>
-
-            <!-- <div class="section-card">
-                <h2>Upcoming Quizzes</h2>
-                <div class="quiz-list">
-                    <?php if (!empty($upcomingDeadlines)): ?>
-                        <?php foreach ($upcomingDeadlines as $deadline): ?>
-                            <div class="quiz-item">
-                                <div>
-                                    <h4><?= htmlspecialchars($deadline['title']) ?></h4>
-                                    <small>Due: <?= date('M d, Y', strtotime($deadline['deadline'])) ?></small>
-                                </div>
-                                <a href="take_quiz.php?id=<?= $deadline['quiz_id'] ?>" class="start-quiz-btn">Start Quiz</a>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <p>No upcoming quizzes at the moment.</p>
-                    <?php endif; ?>
-                </div>
-            </div> -->
-
-            <!-- <section class="completed-quizzes">
-                <h2>Completed Quizzes</h2>
-                <?php if (empty($completedQuizzes)): ?>
-                    <p class="no-quizzes">You haven't completed any quizzes yet.</p>
-                <?php else: ?>
-                    <div class="quiz-grid">
-                        <?php foreach ($completedQuizzes as $quiz): ?>
-                            <div class="quiz-card <?= $quiz['performance'] ?>">
-                                <div class="quiz-header">
-                                    <h3><?= $quiz['title'] ?></h3>
-                                    <span class="score-badge">
-                                        <?= number_format($quiz['score'], 1) ?>%
-                                    </span>
-                                </div>
-                                <div class="quiz-stats">
-                                    <span>
-                                        <i class='bx bx-check-circle'></i>
-                                        <?= $quiz['correct_answers'] ?>/<?= $quiz['total_questions'] ?> Correct
-                                    </span>
-                                    <span>
-                                        <i class='bx bx-time'></i>
-                                        <?= date('M d, Y', strtotime($quiz['submitted_at'])) ?>
-                                    </span>
-                                </div>
-                                <a href="quiz_result.php?id=<?= $quiz['result_id'] ?>" class="view-result-btn">
-                                    View Details
-                                </a>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </section> -->
         </div>
     </div>
-
-    <script>
-    document.getElementById('quizCodeForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    
-    fetch('../actions/validate_quiz_code.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            window.location.href = data.redirect;
-        } else {
-            // Show error message
-            const input = document.getElementById('quizcode');
-            input.classList.add('error');
-            
-            // Create or update error message
-            let errorMsg = document.querySelector('.error-message');
-            if (!errorMsg) {
-                errorMsg = document.createElement('p');
-                errorMsg.className = 'error-message';
-                input.parentNode.insertBefore(errorMsg, input.nextSibling);
-            }
-            errorMsg.textContent = data.message;
-            
-            // Clear error state after 3 seconds
-            setTimeout(() => {
-                input.classList.remove('error');
-                errorMsg.remove();
-            }, 3000);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-});
-</script>
-
 </body>
-
 </html>

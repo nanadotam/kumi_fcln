@@ -3,7 +3,6 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
     header('Location: login.php');
     exit();
 }
-echo 'Sidebar loaded!';
 
 $userRole = $_SESSION['role'];
 ?>
