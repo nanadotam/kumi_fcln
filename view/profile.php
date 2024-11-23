@@ -12,6 +12,10 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $userRole = $_SESSION['role'];
 
+// At the top of the file, after session_start()
+$currentPage = 'profile';
+include_once '../components/sidebar.php';
+
 // Get user data and statistics
 try {
     $db = Database::getInstance();
@@ -96,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/profile.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../assets/css/variables.css">
 </head>
 <body>
     <?php include_once '../components/sidebar.php'; ?>
