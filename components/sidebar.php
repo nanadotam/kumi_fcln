@@ -91,9 +91,18 @@ $userRole = $_SESSION['role'];
             <i class='bx bx-user'></i>
             <span>Profile</span>
         </a>
-        <a href="../actions/logout.php">
+        <a href="#" onclick="confirmLogout(event)">
             <i class='bx bx-log-out'></i>
             <span>Logout</span>
         </a>
     </nav>
-</div> 
+</div>
+
+<script>
+function confirmLogout(event) {
+    event.preventDefault();
+    if (confirm('Are you sure you want to logout?')) {
+        window.location.href = '../actions/logout.php';
+    }
+}
+</script> 
