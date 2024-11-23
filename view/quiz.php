@@ -55,7 +55,7 @@ if ($userRole === 'student') {
             
             <div class="quiz-grid">
                 <?php foreach ($quizzes as $quiz): ?>
-                    <div class="quiz-card" data-mode="<?= $quiz['mode'] ?>">
+                    <div class="quiz-card" data-quiz-id="<?= $quiz['quiz_id'] ?>" data-mode="<?= $quiz['mode'] ?>">
                         <div class="quiz-card-header">
                             <h3><?= htmlspecialchars($quiz['title']) ?></h3>
                             <?php if (isset($quiz['score'])): ?>
@@ -80,7 +80,7 @@ if ($userRole === 'student') {
                                 <button class="edit-btn" onclick="editQuiz(<?= $quiz['quiz_id'] ?>)">
                                     <i class='bx bxs-edit'></i>
                                 </button>
-                                <button class="delete-btn" onclick="deleteQuiz(<?= $quiz['quiz_id'] ?>)">
+                                <button class="delete-btn" onclick="deleteQuiz(<?= $quiz['quiz_id'] ?>)" title="Delete Quiz">
                                     <i class='bx bx-trash'></i>
                                 </button>
                             <?php endif; ?>
