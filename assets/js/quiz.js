@@ -6,11 +6,101 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let questionCount = 0;  // Add question counter
 
-    addQuestionBtn.addEventListener('click', function() {
-        console.log('Add Question Button Clicked');
-        questionCount++;    // Increment counter
-        addNewQuestion();
-    });
+    function createQuestion() {
+        questionCount++;
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question-card';
+        questionDiv.innerHTML = `
+            <div class="question-header">
+                <h3>Question ${questionCount}</h3>
+                <button type="button" class="delete-question" onclick="deleteQuestion(this)">
+                    <i class='bx bx-trash'></i> Delete
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Question Text</label>
+                <textarea class="question-text" placeholder="Enter your question here..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Points</label>
+                <input type="number" class="question-points" min="1" value="1" required>
+            </div>
+            <div class="options-container">
+                <div class="option">
+                    <input type="radio" name="correct_${questionCount}" value="0" checked>
+                    <input type="text" placeholder="Enter option 1..." required>
+                    <button type="button" class="delete-option" onclick="deleteOption(this)">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <div class="option">
+                    <input type="radio" name="correct_${questionCount}" value="1">
+                    <input type="text" placeholder="Enter option 2..." required>
+                    <button type="button" class="delete-option" onclick="deleteOption(this)">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+            </div>
+            <button type="button" class="add-option" onclick="addOption(this)">
+                <i class='bx bx-plus'></i> Add Option
+            </button>
+        `;
+        questionsContainer.appendChild(questionDiv);
+    }
+
+    // Add option to a question
+    window.addOption = function(button) {
+        const optionsContainer = button.previousElementSibling;
+        const optionCount = optionsContainer.children.length + 1;
+        const questionNumber = button.parentElement.querySelector('.question-header h3').textContent.split(' ')[1];
+        
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'option';
+        optionDiv.innerHTML = `
+            <input type="radio" name="correct_${questionNumber}" value="${optionCount - 1}">
+            <input type="text" placeholder="Option ${optionCount}" required>
+            <button type="button" class="delete-option" onclick="deleteOption(this)">
+                <i class='bx bx-x'></i>
+            </button>
+        `;
+        optionsContainer.appendChild(optionDiv);
+    };
+
+    // Delete option
+    window.deleteOption = function(button) {
+        const option = button.parentElement;
+        const optionsContainer = option.parentElement;
+        if (optionsContainer.children.length > 2) {
+            option.remove();
+        } else {
+            alert('A question must have at least 2 options');
+        }
+    };
+
+    // Delete question
+    window.deleteQuestion = function(button) {
+        const question = button.closest('.question-card');
+        question.remove();
+        updateQuestionNumbers();
+    };
+
+    // Update question numbers after deletion
+    function updateQuestionNumbers() {
+        const questions = document.querySelectorAll('.question-card');
+        questions.forEach((question, index) => {
+            question.querySelector('.question-header h3').textContent = `Question ${index + 1}`;
+            const options = question.querySelectorAll('.option input[type="radio"]');
+            options.forEach(option => {
+                option.name = `correct_${index + 1}`;
+            });
+        });
+        questionCount = questions.length;
+    }
+
+    // Add click event listener to the Add Question button
+    if (addQuestionBtn) {
+        addQuestionBtn.addEventListener('click', createQuestion);
+    }
     
     // Add event delegation for the entire questions container
     questionsContainer.addEventListener('click', function(e) {
@@ -37,45 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
         saveQuizBtn.addEventListener('click', saveQuiz);
     }
 });
-
-function addNewQuestion() {
-    const questionHTML = `
-        <div class="question-card" data-question-id="${Date.now()}">
-            <div class="question-header">
-                <div class="question-main">
-                    <input type="text" class="question-text" placeholder="Question ${questionCount}">
-                    <div class="question-settings">
-                        <select class="question-type" onchange="handleQuestionTypeChange(this)">
-                            <option value="multiple_choice">Multiple Choice</option>
-                            <option value="checkbox">Multiple Select</option>
-                            <option value="text">Short Answer</option>
-                        </select>
-                        <input type="number" class="points-input" placeholder="Points" min="1" value="1">
-                    </div>
-                </div>
-                <button class="btn-delete" onclick="deleteQuestion(this)" title="Delete Question">
-                    <i class='bx bx-trash'></i>
-                </button>
-            </div>
-            
-            <div class="options-container">
-                <div class="option-container">
-                    <div class="correct-answer-toggle" onclick="toggleCorrectAnswer(this)" title="Mark as correct answer"></div>
-                    <input type="text" class="option-input" placeholder="Option 1">
-                    <span class="correct-answer-label">Correct Answer</span>
-                    <button class="btn-delete" onclick="deleteOption(this)" title="Delete Option">
-                        <i class='bx bx-x'></i>
-                    </button>
-                </div>
-                <button class="btn-add-option" onclick="addOption(this)">
-                    <i class='bx bx-plus'></i> Add Option
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
-}
 
 function handleQuestionTypeChange(select) {
     const optionsContainer = select.closest('.question-card').querySelector('.options-container');

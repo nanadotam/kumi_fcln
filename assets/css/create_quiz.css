@@ -1,4 +1,4 @@
-.quiz-creator {
+ .quiz-creator {
     max-width: 800px;
     margin: 2rem auto;
     padding: 2rem;
@@ -17,10 +17,10 @@
     width: 100%;
     font-size: 2rem;
     font-weight: 600;
-    border: none;
+    border: 2px solid var(--border-color);
     padding: 0.8rem;
     margin-bottom: 1rem;
-    background: transparent;
+    background: var(--color-light);
     border-radius: 8px;
     transition: all 0.3s ease;
 }
@@ -33,10 +33,10 @@
 .quiz-description {
     width: 100%;
     font-size: 1.1rem;
-    border: none;
+    border: 2px solid var(--border-color);
     padding: 0.8rem;
     margin-bottom: 1.5rem;
-    background: transparent;
+    background: var(--color-light);
     border-radius: 8px;
     color: #666;
     transition: all 0.3s ease;
@@ -48,8 +48,9 @@
     gap: 1.5rem;
     margin-top: 2rem;
     padding: 1.5rem;
-    background: #f8f9fa;
+    background: var(--color-light);
     border-radius: 12px;
+    border: 2px solid var(--border-color);
 }
 
 .setting-group {
@@ -66,11 +67,29 @@
 .setting-group select,
 .setting-group input {
     padding: 0.8rem;
-    border: 1px solid #eef2f6;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 0.95rem;
     transition: all 0.3s ease;
     background-color: white;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.setting-group select:focus,
+.setting-group input:focus,
+.quiz-title:focus,
+.quiz-description:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03),
+                0 0 0 3px rgba(24, 112, 69, 0.1);
+}
+
+.setting-group select:hover,
+.setting-group input:hover,
+.quiz-title:hover,
+.quiz-description:hover {
+    border-color: var(--color-primary);
 }
 
 .action-buttons {
@@ -112,5 +131,189 @@
 
 .btn-save:hover {
     background: #166339;
+    transform: translateY(-2px);
+}
+
+.question-card {
+    background: var(--color-light);
+    padding: 2.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.question-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.question-header {
+    background: linear-gradient(135deg, var(--color-primary), #1a8550);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    color: white;
+    box-shadow: 0 4px 15px rgba(24, 112, 69, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.question-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: linear-gradient(to bottom right, var(--color-light), #f8fafc);
+    border: 1px solid var(--border-color);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.form-group::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-highlight));
+    border-radius: 12px 12px 0 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.form-group:hover::before {
+    opacity: 1;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.question-text {
+    width: 100%;
+    padding: 1.2rem;
+    font-size: 1.1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    background: linear-gradient(to bottom, var(--color-light) 0%, #f8fafc 100%);
+    transition: all 0.3s ease;
+    resize: vertical;
+    min-height: 100px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.question-text:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: linear-gradient(to bottom, var(--color-light) 0%, rgba(24, 112, 69, 0.05) 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05),
+                0 0 0 3px rgba(24, 112, 69, 0.1);
+}
+
+.question-points {
+    width: 120px;
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: linear-gradient(to right, var(--color-light) 0%, #f8fafc 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.question-points:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: linear-gradient(to right, var(--color-light) 0%, rgba(24, 112, 69, 0.05) 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03),
+                0 0 0 3px rgba(24, 112, 69, 0.1);
+}
+
+.options-container {
+    display: grid;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.option {
+    background: rgba(24, 112, 69, 0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.option:hover {
+    transform: translateY(-2px);
+    background: #f0f9ff;
+    border-color: var(--color-primary);
+}
+
+.option input[type="text"] {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    background: var(--color-light);
+    transition: all 0.3s ease;
+}
+
+.option input[type="text"]:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(24, 112, 69, 0.1);
+}
+
+.delete-question {
+    background: var(--error-bg);
+    color: var(--error-color);
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.delete-question:hover {
+    background: #fecaca;
+    transform: translateY(-2px);
+}
+
+.add-option {
+    align-self: flex-start;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.add-option:hover {
+    background: var(--color-secondary);
     transform: translateY(-2px);
 }
