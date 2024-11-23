@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="form-group">
                 <label>Question Type</label>
                 <select class="question-type" onchange="handleQuestionTypeChange(this)">
+                    <option value="">Select question type...</option>
                     <option value="multiple_choice">Multiple Choice</option>
                     <option value="checkbox">Multiple Answer</option>
                     <option value="paragraph">Short Answer</option>
@@ -34,35 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <input type="number" class="question-points" min="1" value="1" required>
             </div>
             <div class="options-container">
-                <div class="option">
-                    <input type="radio" name="correct_${questionCount}" value="0" checked>
-                    <input type="text" class="option-input" placeholder="Enter option 1..." required>
-                    <label class="correct-label">
-                        <input type="checkbox" class="is-correct" /> Correct Answer
-                    </label>
-                    <button type="button" class="delete-option" onclick="deleteOption(this)">
-                        <i class='bx bx-x'></i>
-                    </button>
-                </div>
-                <div class="option">
-                    <input type="radio" name="correct_${questionCount}" value="1">
-                    <input type="text" class="option-input" placeholder="Enter option 2..." required>
-                    <label class="correct-label">
-                        <input type="checkbox" class="is-correct" /> Correct Answer
-                    </label>
-                    <button type="button" class="delete-option" onclick="deleteOption(this)">
-                        <i class='bx bx-x'></i>
-                    </button>
-                </div>
+                <!-- Options will be added here based on question type -->
             </div>
-            <button type="button" class="add-option" onclick="addOption(this)">
-                <i class='bx bx-plus'></i> Add Option
-            </button>
         `;
-        
-        // Initialize as multiple choice by default
-        const select = questionDiv.querySelector('.question-type');
-        handleQuestionTypeChange(select);
         
         questionsContainer.appendChild(questionDiv);
     }
@@ -92,12 +67,28 @@ document.addEventListener('DOMContentLoaded', function() {
     window.deleteOption = function(button) {
         const option = button.parentElement;
         const optionsContainer = option.parentElement;
-        if (optionsContainer.children.length > 2) {
-            option.remove();
-        } else {
-            alert('A question must have at least 2 options');
+        const questionCard = option.closest('.question-card');
+        const questionType = questionCard.querySelector('.question-type').value;
+        
+        if ((questionType === 'multiple_choice' || questionType === 'checkbox') && 
+            optionsContainer.children.length <= 2) {
+            alert('Multiple choice questions must have at least 2 options');
+            return;
         }
+        
+        option.remove();
+        // Update option numbers if needed
+        updateOptionNumbers(optionsContainer);
     };
+
+    function updateOptionNumbers(container) {
+        container.querySelectorAll('.option-item').forEach((item, index) => {
+            const input = item.querySelector('.option-input');
+            if (input) {
+                input.placeholder = `Option ${index + 1}`;
+            }
+        });
+    }
 
     // Delete question
     window.deleteQuestion = function(button) {
@@ -154,6 +145,12 @@ function handleQuestionTypeChange(select) {
     const optionsContainer = select.closest('.question-card').querySelector('.options-container');
     const type = select.value;
     
+    // Clear existing options
+    optionsContainer.innerHTML = '';
+    
+    // Only create options if a type is selected
+    if (!type) return;
+    
     switch(type) {
         case 'multiple_choice':
             createMultipleChoiceOptions(optionsContainer);
@@ -176,13 +173,6 @@ function createMultipleChoiceOptions(container) {
                 <i class='bx bx-trash'></i>
             </button>
         </div>
-        <div class="option-item">
-            <input type="radio" disabled>
-            <input type="text" class="option-input" placeholder="Option 2">
-            <button class="btn-delete" onclick="deleteOption(this)">
-                <i class='bx bx-trash'></i>
-            </button>
-        </div>
         <button class="btn-add" onclick="addOption(this.parentElement, 'radio')">
             <i class='bx bx-plus'></i> Add Option
         </button>
@@ -194,13 +184,6 @@ function createCheckboxOptions(container) {
         <div class="option-item">
             <input type="checkbox" disabled>
             <input type="text" class="option-input" placeholder="Option 1">
-            <button class="btn-delete" onclick="deleteOption(this)">
-                <i class='bx bx-trash'></i>
-            </button>
-        </div>
-        <div class="option-item">
-            <input type="checkbox" disabled>
-            <input type="text" class="option-input" placeholder="Option 2">
             <button class="btn-delete" onclick="deleteOption(this)">
                 <i class='bx bx-trash'></i>
             </button>
@@ -282,6 +265,27 @@ function saveQuiz() {
         alert('Quiz title is required.');
         return;
     }
+
+    let isValid = true;
+    document.querySelectorAll('.question-card').forEach(card => {
+        const questionType = card.querySelector('.question-type')?.value;
+        const optionsContainer = card.querySelector('.options-container');
+        
+        if (!questionType) {
+            alert('Please select a question type for all questions');
+            isValid = false;
+            return;
+        }
+
+        if ((questionType === 'multiple_choice' || questionType === 'checkbox') && 
+            optionsContainer.querySelectorAll('.option-item').length < 2) {
+            alert('Multiple choice questions must have at least 2 options');
+            isValid = false;
+            return;
+        }
+    });
+
+    if (!isValid) return;
 
     document.querySelectorAll('.question-card').forEach(card => {
         const questionText = card.querySelector('.question-text')?.value.trim();
