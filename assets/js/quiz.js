@@ -77,12 +77,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         option.remove();
-        // Update option numbers if needed
+        // Update option numbers
         updateOptionNumbers(optionsContainer);
     };
 
     function updateOptionNumbers(container) {
-        container.querySelectorAll('.option-item').forEach((item, index) => {
+        container.querySelectorAll('.option').forEach((item, index) => {
             const input = item.querySelector('.option-input');
             if (input) {
                 input.placeholder = `Option ${index + 1}`;
