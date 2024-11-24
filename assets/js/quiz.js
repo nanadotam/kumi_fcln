@@ -293,51 +293,28 @@ function deleteQuestion(button) {
 }
 
 function saveQuiz() {
-    // Generate a random 6-character alphanumeric code
-    const generateQuizCode = () => {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let code = '';
-        for (let i = 0; i < 6; i++) {
-            code += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return code;
-    };
-
-    const quiz = {
+    // Get all form data
+    const quizData = {
         title: document.getElementById('quizTitle')?.value || 'Untitled Quiz',
         description: document.getElementById('quizDescription')?.value || '',
-        dueDate: document.getElementById('quizDueDate')?.value || '',
-        quiz_code: generateQuizCode(),
+        deadline: document.getElementById('quizDueDate')?.value || '',
+        mode: document.getElementById('quizMode')?.value || 'individual',
         questions: []
     };
 
-    if (!quiz.title.trim()) {
+    // Add quiz_id if we're updating
+    if (window.quizId) {
+        quizData.quiz_id = window.quizId;
+    }
+
+    if (!quizData.title.trim()) {
         alert('Quiz title is required.');
         return;
     }
 
-    let isValid = true;
-    document.querySelectorAll('.question-card').forEach(card => {
-        const questionType = card.querySelector('.question-type')?.value;
-        const optionsContainer = card.querySelector('.options-container');
-        
-        if (!questionType) {
-            alert('Please select a question type for all questions');
-            isValid = false;
-            return;
-        }
-
-        if ((questionType === 'multiple_choice' || questionType === 'checkbox') && 
-            optionsContainer.querySelectorAll('.option-item').length < 2) {
-            alert('Multiple choice questions must have at least 2 options');
-            isValid = false;
-            return;
-        }
-    });
-
-    if (!isValid) return;
-
-    document.querySelectorAll('.question-card').forEach(card => {
+    // Gather questions data
+    document.querySelectorAll('.question-card').forEach((card, index) => {
+        const questionId = card.dataset.questionId; // For existing questions
         const questionText = card.querySelector('.question-text')?.value.trim();
         const questionType = card.querySelector('.question-type')?.value;
         const points = card.querySelector('.question-points')?.value || 1;
@@ -348,59 +325,74 @@ function saveQuiz() {
         }
 
         const question = {
+            question_id: questionId, // Will be undefined for new questions
             text: questionText,
             type: questionType,
             points: points,
             options: []
         };
 
-        switch(questionType) {
-            case 'paragraph':
-                const modelAnswer = card.querySelector('.model-answer')?.value.trim();
-                question.model_answer = modelAnswer;
-                break;
+        // Handle different question types
+        if (questionType === 'multiple_choice') {
+            const options = card.querySelectorAll('.option');
+            if (options.length < 2) {
+                alert('Multiple choice questions must have at least 2 options.');
+                return;
+            }
+
+            options.forEach((option, optionIndex) => {
+                const optionText = option.querySelector('.option-input').value.trim();
+                const isCorrect = option.querySelector('input[type="radio"]').checked;
                 
-            case 'multiple_choice':
-            case 'checkbox':
-                card.querySelectorAll('.option-item').forEach(optionDiv => {
-                    const optionInput = optionDiv.querySelector('.option-input');
-                    const isCorrect = optionDiv.querySelector('.is-correct')?.checked || false;
-                    
-                    const optionValue = optionInput.value.trim();
-                    if (optionValue) {
-                        question.options.push({
-                            text: optionValue,
-                            is_correct: isCorrect
-                        });
-                    }
+                if (optionText) {
+                    question.options.push({
+                        text: optionText,
+                        is_correct: isCorrect
+                    });
+                }
+            });
+        } else if (questionType === 'short_answer') {
+            const correctAnswer = card.querySelector('.correct-answer')?.value.trim();
+            if (correctAnswer) {
+                question.options.push({
+                    text: correctAnswer,
+                    is_correct: true
                 });
-                break;
+            }
         }
 
-        quiz.questions.push(question);
+        quizData.questions.push(question);
     });
 
-    fetch('../actions/save_quiz.php', {
+    // Determine if we're creating or updating
+    const endpoint = window.quizId ? '../functions/update_quiz.php' : '../functions/save_quiz.php';
+
+    // Send data to server
+    fetch(endpoint, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify(quiz)
+        body: JSON.stringify(quizData)
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(`Quiz saved successfully! Quiz Code: ${quiz.quiz_code}`);
-                window.location.href = '../view/quiz.php';
-                
-            } else {
-                alert('Error saving quiz: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error saving quiz. Please try again.');
-        });
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert(window.quizId ? 'Quiz updated successfully!' : 'Quiz created successfully!');
+            window.location.href = 'quiz.php';
+        } else {
+            alert('Failed to save quiz: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving the quiz. Please try again.');
+    });
 }
 
 function editQuiz(quizId) {
