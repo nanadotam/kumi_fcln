@@ -140,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function() {
         saveQuizBtn.addEventListener('click', saveQuiz);
     }
 });
-
 function handleQuestionTypeChange(select) {
     const optionsContainer = select.closest('.question-card').querySelector('.options-container');
     const type = select.value;
@@ -354,23 +353,35 @@ function editQuiz(quizId) {
 }
 
 function deleteQuiz(quizId) {
-    if (confirm('Are you sure you want to delete this quiz?')) {
+    if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
         fetch('../actions/delete_quiz.php', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({ quiz_id: quizId })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                const quizCard = document.querySelector(`[data-quiz-id="${quizId}"]`);
-                quizCard.remove();
-                showNotification('Quiz deleted successfully', 'success');
+                // Find and remove the quiz element
+                const quizElement = document.querySelector(`a[href*="${quizId}"]`);
+                if (quizElement) {
+                    quizElement.remove();
+                }
+                alert('Quiz deleted successfully!');
             } else {
-                showNotification('Error deleting quiz', 'error');
+                alert('Error deleting quiz: ' + (data.message || 'Unknown error'));
             }
+        })
+        .catch(error => {
+            console.error('Error details:', error);
+            alert('Error deleting quiz. Please try again.');
         });
     }
 }
@@ -385,3 +396,4 @@ function showNotification(message, type) {
         notification.remove();
     }, 3000);
 }
+
