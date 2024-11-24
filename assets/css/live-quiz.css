@@ -1,0 +1,113 @@
+.leaderboard {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-highlight));
+    border-radius: 16px;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 4px 15px rgba(24, 112, 69, 0.2);
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.player-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    margin: 0.5rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.player-rank {
+    font-size: 1.2rem;
+    font-weight: 600;
+    min-width: 2rem;
+}
+
+.player-info {
+    flex: 1;
+}
+
+.player-score {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--color-highlight);
+}
+
+.top-3 {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.quiz-test-page {
+    margin-left: 270px;
+    padding: 2rem;
+}
+
+.test-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.test-controls {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--color-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.test-controls button {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-simulate {
+    background: var(--color-primary);
+    color: white;
+}
+
+.btn-start {
+    background: var(--success-bg);
+    color: var(--success-color);
+}
+
+.btn-next {
+    background: var(--color-bg);
+    color: var(--color-dark);
+    border: 1px solid var(--border-color) !important;
+}
+
+.simulation-status, .live-leaderboard {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--color-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.student-list, .leaderboard-list {
+    margin-top: 1rem;
+} 
