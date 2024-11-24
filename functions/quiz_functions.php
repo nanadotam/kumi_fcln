@@ -371,3 +371,43 @@ function saveQuizWithAnswers($quizData) {
         throw $e;
     }
 }
+
+function verifyQuizOwnership($quizId, $teacherId) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT teacher_id FROM quizzes WHERE quiz_id = ?");
+    $stmt->bind_param("i", $quizId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $quiz = $result->fetch_assoc();
+    return $quiz && $quiz['teacher_id'] == $teacherId;
+}
+
+function deleteQuiz($quizId) {
+    global $conn;
+    
+    // Start transaction
+    $conn->begin_transaction();
+    
+    try {
+        // Delete related records first (assuming you have these tables)
+        $tables = [
+            'quiz_responses',
+            'quiz_questions',
+            'quizzes'
+        ];
+        
+        foreach ($tables as $table) {
+            $stmt = $conn->prepare("DELETE FROM $table WHERE quiz_id = ?");
+            $stmt->bind_param("i", $quizId);
+            $stmt->execute();
+        }
+        
+        // Commit transaction
+        $conn->commit();
+        return true;
+    } catch (Exception $e) {
+        // Rollback on error
+        $conn->rollback();
+        return false;
+    }
+}

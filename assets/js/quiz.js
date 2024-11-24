@@ -140,6 +140,38 @@ document.addEventListener('DOMContentLoaded', function() {
         saveQuizBtn.addEventListener('click', saveQuiz);
     }
 });
+
+// Move deleteQuiz outside of DOMContentLoaded
+window.deleteQuiz = function(quizId) {
+    if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
+        fetch('../actions/delete_quiz.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quiz_id: quizId })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const quizCard = document.querySelector(`.quiz-card[data-quiz-id="${quizId}"]`);
+                quizCard.remove();
+            } else {
+                alert('Failed to delete quiz: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error details:', error);
+            alert('An error occurred while deleting the quiz. Please try again.');
+        });
+    }
+};
+
 function handleQuestionTypeChange(select) {
     const optionsContainer = select.closest('.question-card').querySelector('.options-container');
     const type = select.value;
@@ -365,40 +397,6 @@ function saveQuiz() {
 
 function editQuiz(quizId) {
     window.location.href = `edit_quiz.php?id=${quizId}`;
-}
-
-function deleteQuiz(quizId) {
-    if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
-        fetch('../actions/delete_quiz.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ quiz_id: quizId })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Find and remove the quiz element
-                const quizElement = document.querySelector(`a[href*="${quizId}"]`);
-                if (quizElement) {
-                    quizElement.remove();
-                }
-                alert('Quiz deleted successfully!');
-            } else {
-                alert('Error deleting quiz: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error details:', error);
-            alert('Error deleting quiz. Please try again.');
-        });
-    }
 }
 
 function showNotification(message, type) {
