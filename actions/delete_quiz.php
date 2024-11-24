@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../utils/Database.php';
-require_once 'quiz_functions.php';
+require_once '../functions/quiz_functions.php';
 
 // Set JSON content type header
 header('Content-Type: application/json');
