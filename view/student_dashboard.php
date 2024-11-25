@@ -15,6 +15,33 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 
 $studentId = $_SESSION['user_id'];
 
+// Get user data and statistics
+try {
+    $db = Database::getInstance();
+    
+    // Get statistics using the same query as profile.php
+    $sql = "SELECT 
+            COUNT(DISTINCT qr.quiz_id) as total_quizzes,
+            ROUND(AVG(qr.score), 1) as average_score,
+            COUNT(CASE WHEN qr.score >= 70 THEN 1 END) as quizzes_passed
+            FROM Users u
+            LEFT JOIN QuizResults qr ON u.user_id = qr.user_id
+            WHERE u.user_id = ?
+            GROUP BY u.user_id";
+            
+    $result = $db->query($sql, [$studentId]);
+    $stats = $result->fetch_assoc();
+
+    // Set the variables using the new query results
+    $totalQuizzes = $stats['total_quizzes'] ?? 0;
+    $averageScore = $stats['average_score'] ?? 0;
+    $quizzesPassed = $stats['quizzes_passed'] ?? 0;
+
+} catch(Exception $e) {
+    $_SESSION['error'] = "Error fetching statistics: " . $e->getMessage();
+    $stats = [];
+}
+
 // Fetch all required data
 // $availableQuizzes = getAvailableQuizzes($studentId);
 $completedQuizzes = getCompletedQuizzes($studentId);
