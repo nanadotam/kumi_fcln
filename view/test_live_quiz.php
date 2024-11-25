@@ -1,11 +1,34 @@
 <?php
-require_once '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../utils/Database.php';
 requireTeacher(); // Only teachers can access this test interface
 
-$quizId = $_GET['quiz_id'] ?? null;
-if (!$quizId) {
-    header('Location: dashboard.php');
-    exit;
+// Create a test quiz if no quiz_id is provided
+if (!isset($_GET['quiz_id'])) {
+    // Generate a random quiz code for testing
+    $testQuizCode = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6);
+    
+    try {
+        $db = Database::getInstance();
+        
+        // Create a test quiz in the database
+        $sql = "INSERT INTO Quizzes (title, description, created_by, mode, quiz_code) 
+                VALUES (?, ?, ?, 'live', ?)";
+        
+        $db->query($sql, [
+            'Test Live Quiz',
+            'This is a test quiz for the live quiz feature',
+            $_SESSION['user_id'],
+            $testQuizCode
+        ]);
+        
+        $quizId = $db->insert_id();
+    } catch (Exception $e) {
+        // For testing purposes, use a dummy quiz ID if database insert fails
+        $quizId = 'TEST_' . time();
+    }
+} else {
+    $quizId = $_GET['quiz_id'];
 }
 ?>
 
@@ -15,7 +38,6 @@ if (!$quizId) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Quiz Test Interface - Kumi</title>
-    <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/css/live-quiz.css">
 </head>
 <body>

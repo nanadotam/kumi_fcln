@@ -1,56 +1,19 @@
-.leaderboard {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-highlight));
-    border-radius: 16px;
-    padding: 2rem;
-    color: white;
-    box-shadow: 0 4px 15px rgba(24, 112, 69, 0.2);
-    max-width: 600px;
-    margin: 2rem auto;
-}
-
-.leaderboard-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.player-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    margin: 0.5rem 0;
-    padding: 1rem;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: transform 0.3s ease;
-}
-
-.player-rank {
-    font-size: 1.2rem;
-    font-weight: 600;
-    min-width: 2rem;
-}
-
-.player-info {
-    flex: 1;
-}
-
-.player-score {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--color-highlight);
-}
-
-.top-3 {
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.2);
+:root {
+    --color-primary: #187045;
+    --color-secondary: #2a9d8f;
+    --color-highlight: #34d399;
+    --color-bg: #f8f9fa;
+    --color-dark: #333;
+    --border-color: #e0e0e0;
+    --success-bg: #d1fae5;
+    --success-color: #059669;
 }
 
 .quiz-test-page {
     margin-left: 270px;
     padding: 2rem;
+    background: var(--color-bg);
+    min-height: 100vh;
 }
 
 .test-container {
@@ -62,18 +25,30 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
+.quiz-info {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.quiz-info h2 {
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
 .test-controls {
     display: flex;
     gap: 1rem;
     margin: 2rem 0;
     padding: 1.5rem;
-    background: var(--color-bg);
+    background: white;
     border-radius: 12px;
     border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .test-controls button {
-    padding: 1rem 1.5rem;
+    padding: 0.8rem 1.5rem;
     border-radius: 8px;
     border: none;
     cursor: pointer;
@@ -89,25 +64,97 @@
     color: white;
 }
 
+.btn-simulate:hover {
+    background: #145e3a;
+}
+
 .btn-start {
     background: var(--success-bg);
     color: var(--success-color);
 }
 
+.btn-start:hover {
+    background: #baf1d9;
+}
+
 .btn-next {
-    background: var(--color-bg);
+    background: white;
     color: var(--color-dark);
     border: 1px solid var(--border-color) !important;
+}
+
+.btn-next:hover {
+    background: var(--color-bg);
 }
 
 .simulation-status, .live-leaderboard {
     margin-top: 2rem;
     padding: 1.5rem;
-    background: var(--color-bg);
+    background: white;
     border-radius: 12px;
     border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.simulation-status h3, .live-leaderboard h3 {
+    color: var(--color-dark);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
 }
 
 .student-list, .leaderboard-list {
     margin-top: 1rem;
+}
+
+.student-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--color-bg);
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--color-bg);
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease;
+}
+
+.top-3 {
+    transform: scale(1.02);
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    color: white;
+    border: none;
+}
+
+.student-name, .name {
+    font-weight: 500;
+    color: var(--color-dark);
+}
+
+.student-score, .score {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.rank {
+    font-weight: bold;
+    min-width: 2rem;
+    color: var(--color-primary);
+}
+
+.top-3 .student-score,
+.top-3 .score,
+.top-3 .rank,
+.top-3 .student-name,
+.top-3 .name {
+    color: white;
 } 
