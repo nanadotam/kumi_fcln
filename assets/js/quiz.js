@@ -198,7 +198,7 @@ function createParagraphOption(container) {
 }
 
 function addOption(button, type) {
-    const container = button.parentElement;
+    const container = button.parentElement.querySelector('.options-container');
     const optionCount = container.querySelectorAll('.option').length + 1;
     const questionNumber = button.closest('.question-card').querySelector('.question-header h3').textContent.split(' ')[1];
     
@@ -262,68 +262,63 @@ function saveQuiz() {
     }
 
     let isValid = true;
-    document.querySelectorAll('.question-card').forEach(card => {
+    document.querySelectorAll('.question-card').forEach((card, questionIndex) => {
+        const questionText = card.querySelector('.question-text')?.value.trim();
         const questionType = card.querySelector('.question-type')?.value;
         const optionsContainer = card.querySelector('.options-container');
         
-        if (!questionType) {
-            alert('Please select a question type for all questions');
+        if (!questionText || !questionType) {
+            alert(`Question ${questionIndex + 1}: Text and type are required`);
             isValid = false;
             return;
         }
 
-        if ((questionType === 'multiple_choice' || questionType === 'checkbox') && 
-            optionsContainer.querySelectorAll('.option-item').length < 2) {
-            alert('Multiple choice questions must have at least 2 options');
+        if (questionType === 'multiple_choice' || questionType === 'checkbox') {
+            const options = optionsContainer.querySelectorAll('.option');
+            
+            if (options.length < 2) {
+                alert(`Question ${questionIndex + 1}: Multiple choice questions must have at least 2 options`);
             isValid = false;
             return;
         }
-    });
 
-    if (!isValid) return;
+            let hasCorrectAnswer = false;
+            options.forEach(option => {
+                if (option.querySelector('.is-correct').checked) {
+                    hasCorrectAnswer = true;
+                }
+            });
 
-    document.querySelectorAll('.question-card').forEach(card => {
-        const questionText = card.querySelector('.question-text')?.value.trim();
-        const questionType = card.querySelector('.question-type')?.value;
-        const points = card.querySelector('.question-points')?.value || 1;
-
-        if (!questionText) {
-            alert('All questions must have text.');
+            if (!hasCorrectAnswer) {
+                alert(`Question ${questionIndex + 1}: Please select at least one correct answer`);
+                isValid = false;
             return;
+        }
         }
 
         const question = {
             text: questionText,
             type: questionType,
-            points: points,
+            points: card.querySelector('.question-points')?.value || 1,
             options: []
         };
 
-        switch(questionType) {
-            case 'paragraph':
+        if (questionType === 'paragraph') {
                 const modelAnswer = card.querySelector('.model-answer')?.value.trim();
                 question.model_answer = modelAnswer;
-                break;
-                
-            case 'multiple_choice':
-            case 'checkbox':
-                card.querySelectorAll('.option-item').forEach(optionDiv => {
-                    const optionInput = optionDiv.querySelector('.option-input');
-                    const isCorrect = optionDiv.querySelector('.is-correct')?.checked || false;
-                    
-                    const optionValue = optionInput.value.trim();
-                    if (optionValue) {
+        } else {
+            optionsContainer.querySelectorAll('.option').forEach(option => {
                         question.options.push({
-                            text: optionValue,
-                            is_correct: isCorrect
+                    text: option.querySelector('.option-input').value.trim(),
+                    is_correct: option.querySelector('.is-correct').checked
                         });
-                    }
                 });
-                break;
         }
 
         quiz.questions.push(question);
     });
+
+    if (!isValid) return;
 
     fetch('../actions/save_quiz.php', {
         method: 'POST',
@@ -337,7 +332,6 @@ function saveQuiz() {
             if (data.success) {
                 alert(`Quiz saved successfully! Quiz Code: ${quiz.quiz_code}`);
                 window.location.href = '../view/quiz.php';
-                
             } else {
                 alert('Error saving quiz: ' + data.message);
             }
@@ -347,7 +341,6 @@ function saveQuiz() {
             alert('Error saving quiz. Please try again.');
         });
 }
-
 function editQuiz(quizId) {
     window.location.href = `edit_quiz.php?id=${quizId}`;
 }
