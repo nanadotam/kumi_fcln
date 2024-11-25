@@ -1,33 +1,48 @@
 <?php
 session_start();
-require_once '../functions/db_connect.php';
+require_once '../utils/Database.php';
+require_once '../functions/quiz_functions.php';
 
+// Set JSON content type header
 header('Content-Type: application/json');
 
+// Ensure request is POST and user is logged in
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
+    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+    exit();
+}
+
+// Get the JSON data from the request
+$data = json_decode(file_get_contents('php://input'), true);
+$quizId = $data['quiz_id'] ?? null;
+
+if (!$quizId) {
+    echo json_encode(['success' => false, 'message' => 'Quiz ID is required']);
+    exit();
+}
+
 try {
-    // Get the JSON data
-    $data = json_decode(file_get_contents('php://input'), true);
-    $quizId = $data['quiz_id'] ?? null;
-
-    if (!$quizId) {
-        throw new Exception('Quiz ID is required');
-    }
-
     $db = Database::getInstance();
     
-    // Delete the quiz
-    $sql = "DELETE FROM Quizzes WHERE quiz_id = ?";
-    $result = $db->query($sql, [$quizId]);
+    // Start transaction
+    $db->begin_transaction();
     
-    if ($result) {
-        echo json_encode(['success' => true]);
-    } else {
-        throw new Exception('Failed to delete quiz');
+    // Delete related records first
+    $tables = ['QuizResults', 'Questions', 'Quizzes'];
+    
+    foreach ($tables as $table) {
+        $sql = "DELETE FROM $table WHERE quiz_id = ?";
+        $db->query($sql, [$quizId]);
     }
     
+    // Commit transaction
+    $db->commit();
+    
+    echo json_encode(['success' => true]);
 } catch (Exception $e) {
-    echo json_encode([
-        'success' => false,
-        'message' => $e->getMessage()
-    ]);
+    if (isset($db)) {
+        $db->rollback();
+    }
+    error_log("Error deleting quiz: " . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Database error occurred']);
 } 

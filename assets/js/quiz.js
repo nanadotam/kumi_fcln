@@ -77,18 +77,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         option.remove();
-        // Update option numbers if needed
+        // Update option numbers
         updateOptionNumbers(optionsContainer);
     };
 
     function updateOptionNumbers(container) {
-        container.querySelectorAll('.option-item').forEach((item, index) => {
-            const input = item.querySelector('.option-input');
+        const options = container.querySelectorAll('.option'); // Select only `.option` elements
+        options.forEach((option, index) => {
+            const input = option.querySelector('.option-input');
             if (input) {
                 input.placeholder = `Option ${index + 1}`;
             }
+    
+            // Update the radio button value as well
+            const radio = option.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.value = index + 1;
+            }
         });
     }
+    
 
     // Delete question
     window.deleteQuestion = function(button) {
@@ -140,6 +148,38 @@ document.addEventListener('DOMContentLoaded', function() {
         saveQuizBtn.addEventListener('click', saveQuiz);
     }
 });
+
+// Move deleteQuiz outside of DOMContentLoaded
+window.deleteQuiz = function(quizId) {
+    if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
+        fetch('../actions/delete_quiz.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quiz_id: quizId })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const quizCard = document.querySelector(`.quiz-card[data-quiz-id="${quizId}"]`);
+                quizCard.remove();
+            } else {
+                alert('Failed to delete quiz: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error details:', error);
+            alert('An error occurred while deleting the quiz. Please try again.');
+        });
+    }
+};
+
 function handleQuestionTypeChange(select) {
     const optionsContainer = select.closest('.question-card').querySelector('.options-container');
     const type = select.value;
@@ -198,15 +238,15 @@ function createParagraphOption(container) {
 }
 
 function addOption(button, type) {
-    const container = button.parentElement.querySelector('.options-container');
+    const container = button.parentElement;
     const optionCount = container.querySelectorAll('.option').length + 1;
     const questionNumber = button.closest('.question-card').querySelector('.question-header h3').textContent.split(' ')[1];
     
     const optionDiv = document.createElement('div');
     optionDiv.className = 'option';
     optionDiv.innerHTML = `
-        <input type="${type}" name="correct_${questionNumber}" value="${optionCount - 1}">
-        <input type="text" class="option-input" placeholder="Option ${optionCount}" required>
+        <input type="radio" name="correct_${questionNumber}" value="${currentOptionCount}">
+        <input type="text" class="option-input" placeholder="Option ${currentOptionCount}" required>
         <label class="correct-label">
             <input type="checkbox" class="is-correct" /> Correct Answer
         </label>
@@ -214,80 +254,83 @@ function addOption(button, type) {
             <i class='bx bx-x'></i>
         </button>
     `;
-    
-    // Insert before the "Add Option" button
-    container.insertBefore(optionDiv, button);
+
+    optionsContainer.appendChild(optionDiv);
+
+    // Recalculate numbers after adding
+    updateOptionNumbers(optionsContainer);
 }
 
+
+
 function deleteOption(button) {
-    const optionItem = button.closest('.option-item');
-    const container = optionItem.parentElement;
-    optionItem.remove();
-    
-    // Renumber remaining options
-    container.querySelectorAll('.option-item').forEach((item, index) => {
-        const input = item.querySelector('.option-input');
-        if (input) {
-            input.placeholder = `Option ${index + 1}`;
-        }
-    });
+    const option = button.closest('.option');
+    const optionsContainer = option.parentElement;
+
+    // Prevent deletion if fewer than 2 options remain
+    if (optionsContainer.querySelectorAll('.option').length <= 2) {
+        alert('Multiple choice questions must have at least 2 options');
+        return;
+    }
+
+    option.remove();
+
+    // Recalculate numbering after deletion
+    updateOptionNumbers(optionsContainer);
 }
+
+
+
 
 function deleteQuestion(button) {
     button.closest('.question-card').remove();
 }
 
 function saveQuiz() {
-    // Generate a random 6-character alphanumeric code
-    const generateQuizCode = () => {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let code = '';
-        for (let i = 0; i < 6; i++) {
-            code += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return code;
-    };
-
-    const quiz = {
+    // Get all form data
+    const quizData = {
         title: document.getElementById('quizTitle')?.value || 'Untitled Quiz',
         description: document.getElementById('quizDescription')?.value || '',
-        dueDate: document.getElementById('quizDueDate')?.value || '',
-        quiz_code: generateQuizCode(),
+        deadline: document.getElementById('quizDueDate')?.value || '',
+        mode: document.getElementById('quizMode')?.value || 'individual',
         questions: []
     };
 
-    if (!quiz.title.trim()) {
+    // Add quiz_id if we're updating
+    if (window.quizId) {
+        quizData.quiz_id = window.quizId;
+    }
+
+    if (!quizData.title.trim()) {
         alert('Quiz title is required.');
         return;
     }
 
     let isValid = true;
-    document.querySelectorAll('.question-card').forEach((card, questionIndex) => {
-        const questionText = card.querySelector('.question-text')?.value.trim();
+    document.querySelectorAll('.question-card').forEach(card => {
         const questionType = card.querySelector('.question-type')?.value;
         const optionsContainer = card.querySelector('.options-container');
         
-        if (!questionText || !questionType) {
-            alert(`Question ${questionIndex + 1}: Text and type are required`);
+        if (!questionType) {
+            alert('Please select a question type for all questions');
             isValid = false;
             return;
         }
 
-        if (questionType === 'multiple_choice' || questionType === 'checkbox') {
-            const options = optionsContainer.querySelectorAll('.option');
-            
-            if (options.length < 2) {
-                alert(`Question ${questionIndex + 1}: Multiple choice questions must have at least 2 options`);
-                isValid = false;
-                return;
-            }
+        if ((questionType === 'multiple_choice' || questionType === 'checkbox') && 
+            optionsContainer.querySelectorAll('.option-item').length < 2) {
+            alert('Multiple choice questions must have at least 2 options');
+            isValid = false;
+            return;
+        }
+    });
 
-            let hasCorrectAnswer = false;
-            options.forEach(option => {
-                if (option.querySelector('.is-correct').checked) {
-                    hasCorrectAnswer = true;
-                }
-            });
+    if (!isValid) return;
+
+    document.querySelectorAll('.question-card').forEach(card => {
+        const questionText = card.querySelector('.question-text')?.value.trim();
+        const questionType = card.querySelector('.question-type')?.value;
+        const points = card.querySelector('.question-points')?.value || 1;
 
             if (!hasCorrectAnswer) {
                 alert(`Question ${questionIndex + 1}: Please select at least one correct answer`);
@@ -297,86 +340,69 @@ function saveQuiz() {
         }
 
         const question = {
+            question_id: questionId, // Will be undefined for new questions
             text: questionText,
             type: questionType,
             points: card.querySelector('.question-points')?.value || 1,
             options: []
         };
 
-        if (questionType === 'paragraph') {
-            const modelAnswer = card.querySelector('.model-answer')?.value.trim();
-            question.model_answer = modelAnswer;
-        } else {
-            optionsContainer.querySelectorAll('.option').forEach(option => {
-                question.options.push({
-                    text: option.querySelector('.option-input').value.trim(),
-                    is_correct: option.querySelector('.is-correct').checked
+        switch(questionType) {
+            case 'paragraph':
+                const modelAnswer = card.querySelector('.model-answer')?.value.trim();
+                question.model_answer = modelAnswer;
+                break;
+                
+            case 'multiple_choice':
+            case 'checkbox':
+                card.querySelectorAll('.option-item').forEach(optionDiv => {
+                    const optionInput = optionDiv.querySelector('.option-input');
+                    const isCorrect = optionDiv.querySelector('.is-correct')?.checked || false;
+                    
+                    const optionValue = optionInput.value.trim();
+                    if (optionValue) {
+                        question.options.push({
+                            text: optionValue,
+                            is_correct: isCorrect
+                        });
+                    }
                 });
-            });
+                break;
         }
 
-        quiz.questions.push(question);
+        quizData.questions.push(question);
     });
 
     if (!isValid) return;
 
-    fetch('../actions/save_quiz.php', {
+    // Determine if we're creating or updating
+    const endpoint = window.quizId ? '../functions/update_quiz.php' : '../functions/save_quiz.php';
+
+    // Send data to server
+    fetch(endpoint, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify(quiz)
+        body: JSON.stringify(quizData)
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(`Quiz saved successfully! Quiz Code: ${quiz.quiz_code}`);
-            window.location.href = '../view/quiz.php';
-        } else {
-            alert('Error saving quiz: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error saving quiz. Please try again.');
-    });
-}
-function editQuiz(quizId) {
-    window.location.href = `edit_quiz.php?id=${quizId}`;
-}
-
-function deleteQuiz(quizId) {
-    if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
-        fetch('../actions/delete_quiz.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ quiz_id: quizId })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Find and remove the quiz element
-                const quizElement = document.querySelector(`a[href*="${quizId}"]`);
-                if (quizElement) {
-                    quizElement.remove();
-                }
-                alert('Quiz deleted successfully!');
+                alert(`Quiz saved successfully! Quiz Code: ${quiz.quiz_code}`);
+                window.location.href = '../view/quiz.php';
+                
             } else {
-                alert('Error deleting quiz: ' + (data.message || 'Unknown error'));
+                alert('Error saving quiz: ' + data.message);
             }
         })
         .catch(error => {
-            console.error('Error details:', error);
-            alert('Error deleting quiz. Please try again.');
+            console.error('Error:', error);
+            alert('Error saving quiz. Please try again.');
         });
-    }
+}
+function editQuiz(quizId) {
+    window.location.href = `edit_quiz.php?id=${quizId}`;
 }
 
 function showNotification(message, type) {
