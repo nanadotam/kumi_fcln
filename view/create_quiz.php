@@ -28,21 +28,28 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
             <input type="text" id="quizDescription" class="quiz-description" placeholder="Quiz description">
             
             <div class="quiz-settings">
-                <div class="setting-group">
-                    <label>Due Date:</label>
-                    <input type="datetime-local" id="quizDueDate">
+                <div class="date-time-picker">
+                    <div class="setting-group">
+                        <label>Due Date:</label>
+                        <input type="date" id="quizDueDate" class="date-picker">
+                    </div>
+                    <div class="setting-group">
+                        <label>Due Time:</label>
+                        <input type="time" id="quizDueTime" class="time-picker">
+                    </div>
                 </div>
                 <div class="setting-group">
                     <label>Quiz Mode:</label>
                     <select id="quizMode">
                         <option value="individual">Individual</option>
                         <option value="group">Group</option>
+                        <option value="live">Live Quiz</option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <div id="questionsContainer">
+        <div id="questionsContainer" class="questions-container">
             <!-- Questions will be added here dynamically -->
         </div>
 

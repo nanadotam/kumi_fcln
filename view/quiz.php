@@ -78,7 +78,7 @@ if ($userRole === 'student') {
                             <?php else: ?>
                                 <a href="quiz_results.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
                                 <button class="edit-btn" onclick="editQuiz(<?= $quiz['quiz_id'] ?>)">
-                                    <i class='bx bxs-edit'></i>
+                                    <i class='bx bxs-edit'></i> Edit
                                 </button>
                                 <button class="delete-btn" onclick="deleteQuiz(<?= $quiz['quiz_id'] ?>)" title="Delete Quiz">
                                     <i class='bx bx-trash'></i>

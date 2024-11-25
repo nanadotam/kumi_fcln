@@ -11,29 +11,15 @@ function createQuiz($title, $description, $createdBy, $mode, $deadline = null) {
 }
 
 function getQuizzesByTeacher($teacherId) {
-    $db = Database::getInstance();
-    
-    $sql = "SELECT q.*, COUNT(qr.result_id) as attempt_count 
-            FROM Quizzes q 
-            LEFT JOIN QuizResults qr ON q.quiz_id = qr.quiz_id 
-            WHERE q.created_by = ? 
-            GROUP BY q.quiz_id";
-            
-    $result = $db->query($sql, [$teacherId]);
-    
-    $quizzes = [];
-    while ($row = $result->fetch_assoc()) {
-        $quizzes[] = [
-            'quiz_id' => (int)$row['quiz_id'],
-            'title' => htmlspecialchars($row['title']),
-            'description' => htmlspecialchars($row['description']),
-            'mode' => $row['mode'],
-            'attempt_count' => (int)$row['attempt_count'],
-            'created_at' => $row['created_at']
-        ];
+    try {
+        $db = Database::getInstance();
+        $sql = "SELECT * FROM Quizzes WHERE created_by = ? ORDER BY created_at DESC";
+        $result = $db->query($sql, [$teacherId]);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } catch (Exception $e) {
+        error_log("Error getting quizzes: " . $e->getMessage());
+        return [];
     }
-    
-    return $quizzes;
 }
 
 function getQuizById($quizId) {
@@ -241,8 +227,6 @@ function validateTextAnswer($questionId, $response) {
 function saveQuizResults($userId, $quizId, $score, $responses) {
     try {
         $db = Database::getInstance();
-        
-        // Start transaction
         $db->begin_transaction();
         
         // Insert quiz result
@@ -250,12 +234,11 @@ function saveQuizResults($userId, $quizId, $score, $responses) {
                 VALUES (?, ?, ?, NOW())";
         $db->query($sql, [$userId, $quizId, $score]);
         
-        $resultId = $db->insert_id();
+        $resultId = $db->lastInsertId();
         
-        // Insert individual responses
+        // Insert responses
         foreach ($responses as $response) {
             if ($response['type'] === 'short_answer') {
-                // For text/short answers
                 $sql = "INSERT INTO Responses (result_id, question_id, text_response, is_correct) 
                         VALUES (?, ?, ?, ?)";
                 $db->query($sql, [
@@ -265,39 +248,21 @@ function saveQuizResults($userId, $quizId, $score, $responses) {
                     $response['is_correct'] ? 1 : 0
                 ]);
             } else {
-                // For multiple choice answers - verify answer_id exists first
-                $verifySQL = "SELECT 1 FROM Answers WHERE answer_id = ?";
-                $result = $db->query($verifySQL, [$response['response']]);
-                
-                if ($result->num_rows > 0) {
-                    $sql = "INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct) 
-                            VALUES (?, ?, ?, ?)";
-                    $db->query($sql, [
-                        $resultId,
-                        $response['question_id'],
-                        $response['response'],
-                        $response['is_correct'] ? 1 : 0
-                    ]);
-                } else {
-                    // If answer doesn't exist, store without selected_answer_id
-                    $sql = "INSERT INTO Responses (result_id, question_id, is_correct) 
-                            VALUES (?, ?, ?)";
-                    $db->query($sql, [
-                        $resultId,
-                        $response['question_id'],
-                        $response['is_correct'] ? 1 : 0
-                    ]);
-                }
+                $sql = "INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct) 
+                        VALUES (?, ?, ?, ?)";
+                $db->query($sql, [
+                    $resultId,
+                    $response['question_id'],
+                    $response['selected_answer_id'],
+                    $response['is_correct'] ? 1 : 0
+                ]);
             }
         }
         
         $db->commit();
         return $resultId;
-        
     } catch (Exception $e) {
-        if (isset($db)) {
-            $db->rollback();
-        }
+        $db->rollback();
         error_log("Error saving quiz results: " . $e->getMessage());
         throw $e;
     }
@@ -373,41 +338,32 @@ function saveQuizWithAnswers($quizData) {
 }
 
 function verifyQuizOwnership($quizId, $teacherId) {
-    global $conn;
-    $stmt = $conn->prepare("SELECT teacher_id FROM quizzes WHERE quiz_id = ?");
-    $stmt->bind_param("i", $quizId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $quiz = $result->fetch_assoc();
-    return $quiz && $quiz['teacher_id'] == $teacherId;
+    try {
+        $db = Database::getInstance();
+        $sql = "SELECT created_by FROM Quizzes WHERE quiz_id = ?";
+        $result = $db->query($sql, [$quizId]);
+        $quiz = $result->fetch_assoc();
+        return $quiz && $quiz['created_by'] == $teacherId;
+    } catch (Exception $e) {
+        error_log("Error verifying quiz ownership: " . $e->getMessage());
+        return false;
+    }
 }
 
 function deleteQuiz($quizId) {
-    global $conn;
-    
-    // Start transaction
-    $conn->begin_transaction();
-    
     try {
-        // Delete related records first (assuming you have these tables)
-        $tables = [
-            'quiz_responses',
-            'quiz_questions',
-            'quizzes'
-        ];
+        $db = Database::getInstance();
+        $db->begin_transaction();
         
-        foreach ($tables as $table) {
-            $stmt = $conn->prepare("DELETE FROM $table WHERE quiz_id = ?");
-            $stmt->bind_param("i", $quizId);
-            $stmt->execute();
-        }
+        // Delete related records using foreign key cascading
+        $sql = "DELETE FROM Quizzes WHERE quiz_id = ?";
+        $db->query($sql, [$quizId]);
         
-        // Commit transaction
-        $conn->commit();
+        $db->commit();
         return true;
     } catch (Exception $e) {
-        // Rollback on error
-        $conn->rollback();
+        $db->rollback();
+        error_log("Error deleting quiz: " . $e->getMessage());
         return false;
     }
 }

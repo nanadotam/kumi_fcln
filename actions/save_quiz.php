@@ -1,110 +1,98 @@
 <?php
 session_start();
-include('../utils/Database.php');
+require_once '../utils/Database.php';
+require_once '../functions/auth_functions.php';
 
-// Set headers for JSON response
-header('Content-Type: application/json');
-
-// Verify user is logged in and is a teacher
+// Ensure only teachers can access this endpoint
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Unauthorized access'
-    ]);
-    exit;
+    exit(json_encode(['success' => false, 'message' => 'Unauthorized access']));
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    exit(json_encode(['success' => false, 'message' => 'Invalid request method']));
 }
 
 try {
-    // Get JSON input
-    $jsonData = file_get_contents('php://input');
-    $data = json_decode($jsonData, true);
-
-    if (!$data) {
-        throw new Exception('Invalid JSON data received');
-    }
-
+    $data = json_decode(file_get_contents('php://input'), true);
     $db = Database::getInstance();
-    $db->begin_transaction();
-
-    // Insert quiz
-    $insertQuizQuery = "
-        INSERT INTO Quizzes (title, description, deadline, quiz_code, created_by, created_at)
-        VALUES (?, ?, ?, ?, ?, NOW())
-    ";
     
-    $quizResult = $db->query($insertQuizQuery, [
+    $db->begin_transaction();
+    
+    // Validate required fields
+    if (empty($data['title']) || empty($data['questions'])) {
+        throw new Exception('Missing required fields');
+    }
+    
+    // Format due date and time
+    $dueDateTime = null;
+    if (!empty($data['due_date']) && !empty($data['due_time'])) {
+        $dueDateTime = date('Y-m-d H:i:s', strtotime($data['due_date'] . ' ' . $data['due_time']));
+    }
+    
+    // Save quiz details
+    $stmt = $db->query("
+        INSERT INTO Quizzes (title, description, deadline, created_by)
+        VALUES (?, ?, ?, ?)
+    ", [
         $data['title'],
-        $data['description'],
-        $data['dueDate'],
-        $data['quiz_code'],
+        $data['description'] ?? '',
+        $dueDateTime,
         $_SESSION['user_id']
     ]);
-
-    $quiz_id = $db->insert_id();
-
-    // Process questions
+    
+    $quizId = $db->lastInsertId();
+    
+    // Save questions
     foreach ($data['questions'] as $question) {
-        // Convert frontend question type to database type
-        $questionType = match($question['type']) {
-            'paragraph' => 'short_answer',
-            'multiple_choice', 'checkbox' => 'multiple_choice',
-            default => 'multiple_choice'
-        };
-
         // Insert question
-        $insertQuestionQuery = "
-            INSERT INTO Questions (quiz_id, question_text, type, points)
-            VALUES (?, ?, ?, 1.00)
-        ";
-        
-        $db->query($insertQuestionQuery, [
-            $quiz_id,
+        $stmt = $db->query("
+            INSERT INTO Questions (quiz_id, question_text, question_type, points)
+            VALUES (?, ?, ?, ?)
+        ", [
+            $quizId,
             $question['text'],
-            $questionType
+            $question['type'],
+            $question['points'] ?? 1
         ]);
-
-        $question_id = $db->insert_id();
-
-        if ($questionType === 'short_answer') {
-            // Insert model answer for paragraph questions
-            $insertAnswerQuery = "
-                INSERT INTO Answers (question_id, answer_text, is_correct, model_answer)
-                VALUES (?, '', 1, ?)
-            ";
-            
-            $db->query($insertAnswerQuery, [
-                $question_id,
-                $question['model_answer'] ?? ''
-            ]);
-        } else if (!empty($question['options'])) {
-            // Insert options for multiple choice questions
-            foreach ($question['options'] as $option) {
-                $insertAnswerQuery = "
-                    INSERT INTO Answers (question_id, answer_text, is_correct)
-                    VALUES (?, ?, ?)
-                ";
+        
+        $questionId = $db->lastInsertId();
+        
+        // Handle different question types
+        switch ($question['type']) {
+            case 'true_false':
+            case 'multiple_choice':
+                foreach ($question['options'] as $option) {
+                    $stmt = $db->query("
+                        INSERT INTO Answers (question_id, answer_text, is_correct)
+                        VALUES (?, ?, ?)
+                    ", [
+                        $questionId,
+                        $option['text'],
+                        $option['is_correct']
+                    ]);
+                }
+                break;
                 
-                $db->query($insertAnswerQuery, [
-                    $question_id,
-                    $option['text'],
-                    $option['is_correct'] ? 1 : 0
+            case 'short_answer':
+                $stmt = $db->query("
+                    INSERT INTO Answers (question_id, answer_text, is_correct, model_answer)
+                    VALUES (?, ?, 1, ?)
+                ", [
+                    $questionId,
+                    $question['model_answer'],
+                    $question['model_answer']
                 ]);
-            }
+                break;
         }
     }
-
+    
     $db->commit();
-
-    echo json_encode([
-        'success' => true,
-        'message' => 'Quiz saved successfully'
-    ]);
-
+    echo json_encode(['success' => true, 'quiz_id' => $quizId]);
+    
 } catch (Exception $e) {
-    $db->rollback();
-    echo json_encode([
-        'success' => false,
-        'message' => $e->getMessage()
-    ]);
+    if (isset($db)) {
+        $db->rollback();
+    }
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 ?>

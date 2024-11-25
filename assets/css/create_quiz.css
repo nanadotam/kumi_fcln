@@ -1,4 +1,16 @@
- .quiz-creator {
+:root {
+    --bg-slate: #f8fafc;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+}
+
+body {
+    background-color: var(--bg-slate);
+}
+
+.quiz-creator {
     max-width: 800px;
     margin: 2rem auto;
     padding: 2rem;
@@ -6,11 +18,144 @@
 }
 
 .quiz-header {
-    background: white;
+    background: var(--card-bg);
     padding: 2rem;
     border-radius: 15px;
     margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    border: 1px solid var(--border);
+}
+
+.date-time-picker {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    background: var(--bg-slate);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.question-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    border: 1px solid var(--border);
+}
+
+.question-type {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-slate);
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+/* Additional styling for options based on question type */
+.true-false-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.option-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: var(--bg-slate);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-card:hover {
+    border-color: var(--color-primary);
+    background: var(--bg-slate);
+}
+
+.option-card input[type="radio"],
+.option-card input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.option-card .checkmark {
+    position: absolute;
+    right: 1rem;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.option-card input:checked ~ .checkmark {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.multiple-choice-options,
+.multiple-answer-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.add-option-btn {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-option-btn:hover {
+    background: var(--color-secondary);
+    transform: translateY(-2px);
+}
+
+.short-answer-field {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-slate);
+    border-radius: 12px;
+}
+
+.student-answer-preview,
+.model-answer-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.student-answer-preview {
+    background: #f1f5f9;
+    cursor: not-allowed;
 }
 
 .quiz-title {
@@ -132,21 +277,6 @@
 .btn-save:hover {
     background: #166339;
     transform: translateY(-2px);
-}
-
-.question-card {
-    background: var(--color-light);
-    padding: 2.5rem;
-    border-radius: 15px;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    border: 1px solid var(--border-color);
-}
-
-.question-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .question-header {
@@ -374,4 +504,66 @@
 .question-type:focus {
     border-color: #4a90e2;
     outline: none;
+}
+
+.option-input-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--bg-slate);
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.option-input-group input[type="text"] {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.option-input-group input[type="radio"],
+.option-input-group input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}
+
+.delete-option {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.delete-option:hover {
+    background: #fee2e2;
+}
+
+.options-list {
+    margin-bottom: 1rem;
+}
+
+.add-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.add-option-btn:hover {
+    background: var(--color-secondary);
+    transform: translateY(-2px);
 }

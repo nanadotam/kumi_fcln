@@ -7,8 +7,10 @@ class Database {
         $this->connection = new mysqli("localhost", "root", "", "kumidb");
         
         if ($this->connection->connect_error) {
-            throw new Exception("Database connection failed: " . $this->connection->connect_error);
+            throw new Exception("Connection failed: " . $this->connection->connect_error);
         }
+        
+        $this->connection->set_charset("utf8mb4");
     }
     
     public static function getInstance() {
@@ -16,6 +18,26 @@ class Database {
             self::$instance = new self();
         }
         return self::$instance;
+    }
+    
+    public function query($sql, $params = []) {
+        $stmt = $this->connection->prepare($sql);
+        
+        if ($stmt === false) {
+            throw new Exception("Prepare failed: " . $this->connection->error);
+        }
+        
+        if (!empty($params)) {
+            $types = str_repeat('s', count($params));
+            $stmt->bind_param($types, ...$params);
+        }
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed: " . $stmt->error);
+        }
+        
+        $result = $stmt->get_result();
+        return $result;
     }
     
     public function begin_transaction() {
@@ -30,30 +52,11 @@ class Database {
         return $this->connection->rollback();
     }
     
-    public function query($sql, $params = []) {
-        $stmt = $this->connection->prepare($sql);
-        
-        if (!$stmt) {
-            throw new Exception("Query preparation failed: " . $this->connection->error);
-        }
-        
-        if (!empty($params)) {
-            $types = str_repeat('s', count($params));
-            $stmt->bind_param($types, ...$params);
-        }
-        
-        if (!$stmt->execute()) {
-            throw new Exception("Query execution failed: " . $stmt->error);
-        }
-        
-        return $stmt->get_result();
-    }
-    
-    public function insert_id() {
+    public function lastInsertId() {
         return $this->connection->insert_id;
     }
     
-    public function error() {
-        return $this->connection->error;
+    public function getConnection() {
+        return $this->connection;
     }
 }
