@@ -79,6 +79,7 @@ $quizzes = getQuizzesByTeacher($teacherId);
     </main>
 
     <script src="../assets/js/teacher_dashboard.js"></script>
+    <script src="../assets/js/quiz.js"></script>
 </body>
 </html>
 
