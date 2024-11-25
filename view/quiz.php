@@ -55,7 +55,7 @@ if ($userRole === 'student') {
             
             <div class="quiz-grid">
                 <?php foreach ($quizzes as $quiz): ?>
-                    <div class="quiz-card" data-quiz-id="<?= $quiz['quiz_id'] ?>" data-mode="<?= $quiz['mode'] ?>">
+                    <div class="quiz-card" data-quiz-id="<?= $quiz['quiz_id'] ?>">
                         <div class="quiz-card-header">
                             <h3><?= htmlspecialchars($quiz['title']) ?></h3>
                             <?php if (isset($quiz['score'])): ?>
@@ -66,12 +66,12 @@ if ($userRole === 'student') {
                         </div>
                         <div class="quiz-meta">
                             <span><i class='bx bx-calendar'></i> <?= date('M d, Y', strtotime($quiz['created_at'])) ?></span>
-                            <!--<span><i class='bx bx-time'></i> <?= $quiz['duration'] ?> mins</span>-->
-
-                            <span><i class='bx bx-code-alt'></i> Code: <?= htmlspecialchars($quiz['quiz_code']) ?></span>
+                            <?php if ($_SESSION['role'] === 'teacher'): ?>
+                                <span><i class='bx bx-code-alt'></i> Code: <?= htmlspecialchars($quiz['quiz_code']) ?></span>
+                            <?php endif; ?>
                         </div>
                         <div class="quiz-actions">
-                            <?php if ($userRole === 'student'): ?>
+                            <?php if ($userRole === 1): ?>
                                 <?php if (in_array($quiz['quiz_id'], $completedQuizIds)): ?>
                                     <a href="quiz_result.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
                                 <?php else: ?>
