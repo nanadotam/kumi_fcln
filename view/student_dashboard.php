@@ -77,8 +77,8 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
                 <div class="stat-card">
                     <i class='bx bx-book-open'></i>
                     <div class="stat-info">
-                        <h3>Completion Rate</h3>
-                        <p><?= $completionRate ?>%</p>
+                        <h3>Quizzes Taken</h3>
+                        <p><?= $totalQuizzes ?></p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -86,6 +86,13 @@ $averageScore = round($progress['average_score'] ?? 0, 1);
                     <div class="stat-info">
                         <h3>Average Score</h3>
                         <p><?= $averageScore ?>%</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class='bx bx-check-circle'></i>
+                    <div class="stat-info">
+                        <h3>Quizzes Passed</h3>
+                        <p><?= $quizzesPassed ?></p>
                     </div>
                 </div>
             </div>
