@@ -71,7 +71,7 @@ if ($userRole === 'student') {
                             <?php endif; ?>
                         </div>
                         <div class="quiz-actions">
-                            <?php if ($userRole === 1): ?>
+                            <?php if ($userRole === 'student'): ?>
                                 <?php if (in_array($quiz['quiz_id'], $completedQuizIds)): ?>
                                     <a href="quiz_result.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
                                 <?php else: ?>
