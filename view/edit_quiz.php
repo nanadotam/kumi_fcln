@@ -126,7 +126,7 @@ if ($quizId) {
         // Initialize quiz data
         const quizId = <?= json_encode($quizId) ?>;
         const existingQuestions = <?= json_encode($questions) ?>;
-        let questionCount = existingQuestions.length;
+        let questionCount = 0; // Reset counter
         
         // Load existing questions on page load
         document.addEventListener('DOMContentLoaded', () => {
@@ -136,5 +136,8 @@ if ($quizId) {
         });
     </script>
     <script src="../assets/js/quiz.js"></script>
+    <script>
+        window.quizId = <?= json_encode($quizId) ?>;
+    </script>
 </body>
 </html>
