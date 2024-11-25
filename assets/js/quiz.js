@@ -278,9 +278,9 @@ function saveQuiz() {
             
             if (options.length < 2) {
                 alert(`Question ${questionIndex + 1}: Multiple choice questions must have at least 2 options`);
-            isValid = false;
-            return;
-        }
+                isValid = false;
+                return;
+            }
 
             let hasCorrectAnswer = false;
             options.forEach(option => {
@@ -292,8 +292,8 @@ function saveQuiz() {
             if (!hasCorrectAnswer) {
                 alert(`Question ${questionIndex + 1}: Please select at least one correct answer`);
                 isValid = false;
-            return;
-        }
+                return;
+            }
         }
 
         const question = {
@@ -304,15 +304,15 @@ function saveQuiz() {
         };
 
         if (questionType === 'paragraph') {
-                const modelAnswer = card.querySelector('.model-answer')?.value.trim();
-                question.model_answer = modelAnswer;
+            const modelAnswer = card.querySelector('.model-answer')?.value.trim();
+            question.model_answer = modelAnswer;
         } else {
             optionsContainer.querySelectorAll('.option').forEach(option => {
-                        question.options.push({
+                question.options.push({
                     text: option.querySelector('.option-input').value.trim(),
                     is_correct: option.querySelector('.is-correct').checked
-                        });
                 });
+            });
         }
 
         quiz.questions.push(question);
@@ -327,19 +327,19 @@ function saveQuiz() {
         },
         body: JSON.stringify(quiz)
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(`Quiz saved successfully! Quiz Code: ${quiz.quiz_code}`);
-                window.location.href = '../view/quiz.php';
-            } else {
-                alert('Error saving quiz: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error saving quiz. Please try again.');
-        });
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Quiz saved successfully! Quiz Code: ${quiz.quiz_code}`);
+            window.location.href = '../view/quiz.php';
+        } else {
+            alert('Error saving quiz: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving quiz. Please try again.');
+    });
 }
 function editQuiz(quizId) {
     window.location.href = `edit_quiz.php?id=${quizId}`;
