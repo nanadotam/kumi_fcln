@@ -1,21 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-/* General Reset */
+/* First, ensure the base structure is correct */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
 }
 
+/* Force the body to be full width */
 body {
-  color: var(--text-color);
-  display: flex;
-  flex-direction: column;
+  width: 100vw;
   min-height: 100vh;
-  background-image: url('../images/wheat.png');
-  background-color: var(--bg-color-primary);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Reset the navbar completely */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--gutter-small) var(--gutter-medium);
+  background-color: var(--color-light);
+  box-shadow: var(--shadow-light);
+  z-index: 1000;
+}
+
+/* Ensure the main content doesn't overlap with fixed navbar */
+.signup-container {
+  margin-top: 100px; /* Adjust based on navbar height */
+  /* ... rest of your signup-container styles ... */
 }
 
 h2 {
@@ -25,19 +46,6 @@ h2 {
   margin-bottom: var(--padding-medium);
   font-weight: 600;
   color: var(--text-color);
-}
-
-/* Navbar Styling */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--gutter-small) var(--gutter-medium);
-  margin-bottom: var(--gutter-large);
-  background-color: var(--color-light);
-  box-shadow: var(--shadow-light);
-  width: 100%;
-  position: relative;
 }
 
 .logo img {
@@ -65,18 +73,6 @@ h2 {
 
 .auth-buttons a:hover {
   background-color: #AE3A6D;
-}
-
-.signup-container {
-  position: relative;
-  width: 100%;
-  max-width: 500px;
-  margin: 50px auto;
-  padding: var(--padding-large);
-  background-color: var(--color-light);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  border-radius: var(--radius-small);
-  backdrop-filter: blur(10px);
 }
 
 p a {
@@ -196,4 +192,30 @@ footer {
   font-size: 0.8rem;
   font-weight: bold;
   color: var(--text-color);
+}
+
+/* Variant classes */
+.navbar--fixed {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.navbar--sticky {
+  position: sticky;
+  top: 0;
+}
+
+.navbar--results {
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar--landing {
+  background: transparent;
+}
+
+.navbar-container, /* if there is one */
+.navbar {
+  width: 100%;
+  max-width: 100%;
 }

@@ -12,19 +12,17 @@ include '../db/config.php';
     <link rel="stylesheet" href="../assets/css/login.css">
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-          <div class="logo">
+    <nav class="navbar">
+        <div class="logo">
             <img src="../assets/images/KUMI_logo.svg" alt="Kumi Logo">
-          </div>
-          </ul>
-          <div class="auth-buttons">
+        </div>
+        <div class="auth-buttons">
             <a href="../view/index.php" class="btn btn-login">Home</a>
             <a href="../view/register.php" class="btn btn-register">Register</a>
-          </div>
-        </nav>
-      </header>
-    <div class = "login-container">
+        </div>
+    </nav>
+
+    <div class="login-container">
         <h2>Login</h2>
         <form id="loginForm" method="POST" action="../actions/login_user.php">
             <input type="text" id="username" name="email" required placeholder="Enter your email">
@@ -36,12 +34,9 @@ include '../db/config.php';
             <input type="submit" value="Login">
         </form>
     </div>
-    <script>
-        // Removed unnecessary JavaScript validation
-        // The form will submit directly to the backend for validation
-    </script>
-    </body>
+
     <footer>
         <p>&copy; 2024 Kumi - All rights reserved.</p>
-    </footer>    
-    </html>
+    </footer>
+</body>
+</html>
