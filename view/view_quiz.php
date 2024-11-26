@@ -14,6 +14,18 @@ if (!$quizId) {
     exit();
 }
 
+// Add delete quiz function
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_quiz'])) {
+    $quizId = $_POST['quiz_id'];
+    if (deleteQuiz($quizId)) {
+        $_SESSION['success'] = "Quiz deleted successfully";
+        header('Location: quiz.php');
+        exit();
+    } else {
+        $_SESSION['error'] = "Failed to delete quiz";
+    }
+}
+
 // Get quiz details
 $quiz = getQuizById($quizId);
 if (!$quiz) {
@@ -77,6 +89,9 @@ $questions = getQuizQuestions($quizId);
                         <button onclick="editQuiz(<?= $quizId ?>)" class="edit-quiz-btn">
                             <i class='bx bxs-edit'></i> Edit Quiz
                         </button>
+                        <button onclick="confirmDelete(<?= $quizId ?>)" class="delete-quiz-btn">
+                            <i class='bx bxs-trash'></i> Delete Quiz
+                        </button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -84,6 +99,29 @@ $questions = getQuizQuestions($quizId);
     </main>
 
     <script>
+    function confirmDelete(quizId) {
+        if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '';
+
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'delete_quiz';
+            input.value = '1';
+
+            const quizInput = document.createElement('input');
+            quizInput.type = 'hidden';
+            quizInput.name = 'quiz_id';
+            quizInput.value = quizId;
+
+            form.appendChild(input);
+            form.appendChild(quizInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
     function editQuiz(quizId) {
         window.location.href = `edit_quiz.php?id=${quizId}`;
     }

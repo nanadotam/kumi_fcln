@@ -264,11 +264,13 @@ function canAccessQuiz($userId, $quizId) {
         return false;
     }
 }
+
 function saveQuizWithAnswers($quizData) {
     try {
-        $db = Database::getInstance();
+        $db = Database::getConnection();
+        $conn = $db->getConnection();
         
-        $db->beginTransaction();
+        $conn->begin_transaction();
         
         // Insert quiz
         $sql = "INSERT INTO Quizzes (title, description, created_by, deadline) 

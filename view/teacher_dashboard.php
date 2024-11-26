@@ -56,21 +56,13 @@ $quizzes = getQuizzesByTeacher($teacherId);
             <h2>Recent Quizzes</h2>
             <div class="quiz-list">
                 <?php foreach (array_slice($quizzes, 0, 5) as $quiz): ?>
-                    <a href="quiz_results.php?id=<?= $quiz['quiz_id'] ?>" class="quiz-item">
+                    <a href="view_quiz.php?id=<?= $quiz['quiz_id'] ?>" class="quiz-item">
                         <div class="quiz-info">
                             <span class="quiz-title"><?= $quiz['title'] ?></span>
                             <span class="quiz-meta">
                                 <i class='bx bx-time-five'></i>
                                 <?= date('M d, Y', strtotime($quiz['created_at'])) ?>
                             </span>
-                        </div>
-                        <div class="quiz-actions">
-                            <button onclick="editQuiz(<?= $quiz['quiz_id'] ?>)" title="Edit Quiz">
-                                <i class='bx bxs-edit'></i>
-                            </button>
-                            <button onclick="deleteQuiz(<?= $quiz['quiz_id'] ?>)" title="Delete Quiz">
-                                <i class='bx bx-trash'></i>
-                            </button>
                         </div>
                     </a>
                 <?php endforeach; ?>
