@@ -379,3 +379,26 @@ function getLeaderboardStats($quizCode) {
     $result = $db->query($sql, [$quizCode]);
     return $result->fetch_assoc();
 }
+
+function getQuizByCode($quizCode) {
+    try {
+        $db = Database::getInstance();
+        
+        $sql = "SELECT q.*, u.first_name as teacher_name 
+                FROM Quizzes q
+                LEFT JOIN Users u ON q.created_by = u.user_id
+                WHERE q.quiz_code = ?";
+                
+        $result = $db->query($sql, [$quizCode]);
+        
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        
+        return null;
+        
+    } catch (Exception $e) {
+        error_log("Error in getQuizByCode: " . $e->getMessage());
+        return null;
+    }
+}
