@@ -123,7 +123,10 @@ if (!isset($_SESSION['user_id'])) {
                         <div class="option">
                             <label for="answer_text">Option 1:</label>
                             <textarea id="answer_text" name="questions[${questionIndex}][answers][0][answer_text]" required></textarea>
-                            <input type="radio" id="is_correct" name="questions[${questionIndex}][answers][is_correct]" value="0"><br><br>
+                            <input type="radio" 
+                                   id="is_correct_${questionIndex}_0" 
+                                   name="questions[${questionIndex}][answers][0][is_correct]" 
+                                   value="1"><br><br>
                         </div>
                     </div>
                 `;
