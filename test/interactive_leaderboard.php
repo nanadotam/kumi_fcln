@@ -14,23 +14,56 @@ if ($userId) {
     $userData = $result->fetch_assoc();
 }
 
-// Fetch leaderboard data
+// Get quiz ID from URL parameter
+$quizId = $_GET['quiz_id'] ?? null;
+$quizCode = $_GET['quiz_code'] ?? null;
+
+if (!$quizId || !$quizCode) {
+    header('Location: view_leaderboard.php');
+    exit();
+}
+
+// Get quiz details
+$quizQuery = "SELECT title, description FROM Quizzes WHERE quiz_id = ? AND quiz_code = ?";
+$quizResult = $db->query($quizQuery, [$quizId, $quizCode]);
+$quizData = $quizResult->fetch_assoc();
+
+if (!$quizData) {
+    header('Location: view_leaderboard.php');
+    exit();
+}
+
+// Fetch leaderboard data for specific quiz
 $leaderboardQuery = "
     SELECT 
         u.user_id,
         CONCAT(u.first_name, ' ', u.last_name) as name,
-        COUNT(qr.result_id) as questions_answered,
-        SUM(qr.score) as total_score,
-        RANK() OVER (ORDER BY SUM(qr.score) DESC) as rank
+        qr.score as total_score,
+        COUNT(r.response_id) as questions_answered,
+        RANK() OVER (ORDER BY qr.score DESC) as rank
     FROM Users u
-    LEFT JOIN QuizResults qr ON u.user_id = qr.user_id
-    WHERE qr.submitted_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-    GROUP BY u.user_id
-    ORDER BY total_score DESC
+    JOIN QuizResults qr ON u.user_id = qr.user_id
+    LEFT JOIN Responses r ON qr.result_id = r.result_id
+    WHERE qr.quiz_id = ?
+    GROUP BY u.user_id, qr.score
+    ORDER BY qr.score DESC
     LIMIT 10
 ";
-$result = $db->query($leaderboardQuery);
+
+$result = $db->query($leaderboardQuery, [$quizId]);
 $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
+
+// Get quiz statistics
+$statsQuery = "
+    SELECT 
+        COUNT(DISTINCT qr.user_id) as total_participants,
+        ROUND(AVG(qr.score), 1) as average_score,
+        MAX(qr.score) as highest_score
+    FROM QuizResults qr
+    WHERE qr.quiz_id = ?";
+
+$statsResult = $db->query($statsQuery, [$quizId]);
+$quizStats = $statsResult->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -47,9 +80,11 @@ $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
         <header class="c-header">
             <div class="c-logo">
                 <img src="../assets/images/KUMI_logo.svg" alt="Kumi Logo" class="c-logo__img">
-                <span>Learning Progress</span>
+                <span><?= htmlspecialchars($quizData['title']) ?> Leaderboard</span>
             </div>
-            <button class="c-button c-button--primary">Start Quiz</button>
+            <div class="quiz-info">
+                <span class="quiz-code">Quiz Code: <?= htmlspecialchars($quizCode) ?></span>
+            </div>
         </header>
         
         <div class="l-grid">
@@ -78,6 +113,14 @@ $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
                             <div class="stat-item">
                                 <div class="stat-label">Success Rate</div>
                                 <div class="stat-value"><?= $userData ? round($userData['success_rate'], 1) : '0' ?>%</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Class Average</div>
+                                <div class="stat-value"><?= $quizStats['average_score'] ?>%</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Participants</div>
+                                <div class="stat-value"><?= $quizStats['total_participants'] ?></div>
                             </div>
                         </div>
                     </div>
