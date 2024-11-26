@@ -25,21 +25,19 @@ function getQuizzesByTeacher($teacherId) {
 function getQuizById($quizId) {
     try {
         $db = Database::getInstance();
-        global $conn;
         
-        if (!$db && !$conn) {
-            throw new Exception("Database connection failed");
+        $sql = "SELECT q.*, u.first_name as teacher_name 
+                FROM Quizzes q
+                LEFT JOIN Users u ON q.created_by = u.user_id
+                WHERE q.quiz_id = ?";
+                
+        $result = $db->query($sql, [$quizId]);
+        
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc();
         }
         
-        $stmt = ($db ?? $conn)->prepare("SELECT * FROM Quizzes WHERE quiz_id = ?");
-        if (!$stmt) {
-            throw new Exception("Failed to prepare statement");
-        }
-        
-        $stmt->bind_param("i", $quizId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        return null;
         
     } catch (Exception $e) {
         error_log("Error in getQuizById: " . $e->getMessage());
@@ -48,12 +46,20 @@ function getQuizById($quizId) {
 }
 
 function getQuizQuestions($quizId) {
-    global $conn;
-    $stmt = $conn->prepare("SELECT * FROM questions WHERE quiz_id = ? ORDER BY question_order");
-    $stmt->bind_param("i", $quizId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    return $result->fetch_all(MYSQLI_ASSOC);
+    try {
+        $db = Database::getInstance();
+        
+        $sql = "SELECT * FROM Questions 
+                WHERE quiz_id = ? 
+                ORDER BY order_position";
+                
+        $result = $db->query($sql, [$quizId]);
+        return $result->fetch_all(MYSQLI_ASSOC);
+        
+    } catch (Exception $e) {
+        error_log("Error getting quiz questions: " . $e->getMessage());
+        return [];
+    }
 }
 
 function getAvailableQuizzes($studentId) {
