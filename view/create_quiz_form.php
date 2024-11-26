@@ -58,10 +58,6 @@ if (!isset($_SESSION['user_id'])) {
                 </section>
 
                 <div class="button-container">
-                    <button type="button" class="btn btn-secondary">
-                        <i class='bx bx-save'></i>
-                        Save Draft
-                    </button>
                     <button type="submit" class="btn btn-primary">
                         <i class='bx bx-check'></i>
                         Create Quiz
