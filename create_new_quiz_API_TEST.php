@@ -18,6 +18,9 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Debug the incoming data
+    error_log("POST Data: " . print_r($_POST, true));
+
     // Insert quiz data
     $title = $_POST['title'];
     $description = $_POST['description'];
@@ -29,81 +32,96 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $max_attempts = !empty($_POST['max_attempts']) ? $_POST['max_attempts'] : NULL;
     $time_limit = !empty($_POST['time_limit']) ? $_POST['time_limit'] : NULL;
 
-    // Create a prepared statement
-    $stmt = $conn->prepare("INSERT INTO Quizzes (title, description, created_by, mode, deadline, 
-            shuffle_questions, shuffle_answers, max_attempts, time_limit) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    
-    // Bind parameters
-    $stmt->bind_param("ssissiiis", $title, $description, $created_by, $mode, $deadline, 
-                      $shuffle_questions, $shuffle_answers, $max_attempts, $time_limit);
-    
-    // Execute the statement
-    if ($stmt->execute()) {
-        $quiz_id = $conn->insert_id;
+    try {
+        // Create a prepared statement
+        $stmt = $conn->prepare("INSERT INTO Quizzes (title, description, created_by, mode, deadline, 
+                shuffle_questions, shuffle_answers, max_attempts, time_limit) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        
+        // Bind parameters
+        $stmt->bind_param("ssissiiis", $title, $description, $created_by, $mode, $deadline, 
+                          $shuffle_questions, $shuffle_answers, $max_attempts, $time_limit);
+        
+        // Execute the statement
+        if ($stmt->execute()) {
+            $quiz_id = $conn->insert_id;
+            $stmt->close();
 
-        // Insert questions and answers
-        foreach ($_POST['questions'] as $question) {
-            $question_text = $question['question_text'];
-            $type = $question['type'];
-            $points = $question['points'];
-            $model_answer = isset($question['model_answer']) ? $question['model_answer'] : NULL;
-            $order_position = NULL;
-
-            // Insert question using prepared statement
-            $stmt = $conn->prepare("INSERT INTO Questions (quiz_id, question_text, type, points, model_answer, order_position) 
-                    VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("issisi", $quiz_id, $question_text, $type, $points, $model_answer, $order_position);
-            
-            if ($stmt->execute()) {
-                $question_id = $conn->insert_id;
-                $stmt->close();
-
-                // Handle true/false questions differently
-                if ($type === 'true_false') {
-                    // Insert True option
-                    $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) 
-                            VALUES (?, 'True', ?, ?)");
-                    $true_is_correct = isset($question['answers']['is_correct']) && $question['answers']['is_correct'] == '1' ? 1 : 0;
-                    $order_position = 1;
-                    $stmt_answer->bind_param("iii", $question_id, $true_is_correct, $order_position);
-                    $stmt_answer->execute();
-                    $stmt_answer->close();
-
-                    // Insert False option
-                    $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) 
-                            VALUES (?, 'False', ?, ?)");
-                    $false_is_correct = $true_is_correct ? 0 : 1;
-                    $order_position = 2;
-                    $stmt_answer->bind_param("iii", $question_id, $false_is_correct, $order_position);
-                    $stmt_answer->execute();
-                    $stmt_answer->close();
-                } else {
-                    // Handle other question types as before
-                    $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) 
-                            VALUES (?, ?, ?, ?)");
-                            
-                    foreach ($question['answers'] as $answer) {
-                        $answer_text = $answer['answer_text'];
-                        $is_correct = isset($answer['is_correct']) ? 1 : 0;
-                        $order_position = NULL;
-
-                        $stmt_answer->bind_param("isii", $question_id, $answer_text, $is_correct, $order_position);
-                        $stmt_answer->execute();
+            // Check if questions exist and is an array
+            if (isset($_POST['questions']) && is_array($_POST['questions'])) {
+                foreach ($_POST['questions'] as $index => $question) {
+                    // Verify question data
+                    if (!is_array($question) || !isset($question['question_text']) || !isset($question['type'])) {
+                        continue;
                     }
+
+                    $question_text = $question['question_text'];
+                    $type = $question['type'];
+                    $points = isset($question['points']) ? $question['points'] : 1;
+                    $model_answer = isset($question['model_answer']) ? $question['model_answer'] : NULL;
+                    $order_position = $index + 1;
+
+                    // Insert question
+                    $stmt_question = $conn->prepare("INSERT INTO Questions (quiz_id, question_text, type, points, model_answer, order_position) 
+                            VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt_question->bind_param("issisi", $quiz_id, $question_text, $type, $points, $model_answer, $order_position);
                     
-                    $stmt_answer->close();
+                    if ($stmt_question->execute()) {
+                        $question_id = $conn->insert_id;
+                        $stmt_question->close();
+
+                        // Handle answers based on question type
+                        if ($type === 'true_false') {
+                            // Handle True/False questions
+                            $true_is_correct = isset($question['answers']['is_correct']) && $question['answers']['is_correct'] == '1';
+                            
+                            // Insert True option
+                            $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) VALUES (?, 'True', ?, 1)");
+                            $true_correct = $true_is_correct ? 1 : 0;
+                            $stmt_answer->bind_param("ii", $question_id, $true_correct);
+                            $stmt_answer->execute();
+                            
+                            // Insert False option
+                            $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) VALUES (?, 'False', ?, 2)");
+                            $false_correct = $true_is_correct ? 0 : 1;
+                            $stmt_answer->bind_param("ii", $question_id, $false_correct);
+                            $stmt_answer->execute();
+                            
+                            $stmt_answer->close();
+                        } else {
+                            // Handle other question types
+                            if (isset($question['answers']) && is_array($question['answers'])) {
+                                $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) VALUES (?, ?, ?, ?)");
+                                
+                                foreach ($question['answers'] as $answer_index => $answer) {
+                                    if (!is_array($answer) || !isset($answer['answer_text'])) {
+                                        continue;
+                                    }
+                                    
+                                    $answer_text = $answer['answer_text'];
+                                    $is_correct = isset($answer['is_correct']) ? 1 : 0;
+                                    $answer_order = $answer_index + 1;
+                                    
+                                    $stmt_answer->bind_param("isii", $question_id, $answer_text, $is_correct, $answer_order);
+                                    $stmt_answer->execute();
+                                }
+                                
+                                $stmt_answer->close();
+                            }
+                        }
+                    }
                 }
-            } else {
-                $stmt->close();
             }
+            
+            echo json_encode(['success' => true, 'message' => 'Quiz created successfully']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error creating quiz: ' . $stmt->error]);
         }
-        echo "New quiz created successfully";
-    } else {
-        echo "Error: " . $stmt->error;
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
     }
-    
-    $stmt->close();
+
+    exit();
 }
 
 $conn->close();
