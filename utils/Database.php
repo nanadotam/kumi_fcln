@@ -4,7 +4,11 @@ class Database {
     private $connection;
     
     private function __construct() {
-        $this->connection = new mysqli("localhost", "root", "", "kumidb");
+        // Load database configuration
+        $config = require_once __DIR__ . '/../db/config.php';
+        
+        // Create connection using the returned connection from config
+        $this->connection = $config;
         
         if ($this->connection->connect_error) {
             throw new Exception("Connection failed: " . $this->connection->connect_error);

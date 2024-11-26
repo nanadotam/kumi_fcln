@@ -6,9 +6,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Database connection credentials
 $servername = "localhost";  // Database host
-$username = "root";         // Database username
-$password = "";            // Database password (empty for local development)
-$dbname = "kumidb";        // Name of the database
+$username = "nana.amoako";         // Database username
+$password = "6YM7YABR!b9";            // Database password (empty for local development)
+$dbname = "webtech_fall2024_nana_amoako";        // Name of the database
 
 // Create new MySQL database connection
 $conn = new mysqli($servername, $username, $password, $dbname);

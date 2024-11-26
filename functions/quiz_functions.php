@@ -23,69 +23,62 @@ function getQuizzesByTeacher($teacherId) {
 }
 
 function getQuizById($quizId) {
-    $db = new mysqli("localhost", "root", "", "kumidb");
-    
-    if ($db->connect_error) {
+    try {
+        $db = Database::getInstance();
+        
+        // Get quiz details with teacher name
+        $sql = "SELECT q.*, u.first_name, u.last_name,
+                CONCAT(u.first_name, ' ', u.last_name) as teacher_name
+                FROM Quizzes q
+                JOIN Users u ON q.created_by = u.user_id
+                WHERE q.quiz_id = ?";
+        
+        $result = $db->query($sql, [$quizId]);
+        
+        if ($result->num_rows === 0) {
+            return null;
+        }
+        
+        $quiz = $result->fetch_assoc();
+        
+        // Get questions and answers
+        $sql = "SELECT q.*, a.answer_id, a.answer_text, a.is_correct 
+                FROM Questions q
+                LEFT JOIN Answers a ON q.question_id = a.question_id
+                WHERE q.quiz_id = ?
+                ORDER BY q.order_position, q.question_id";
+        
+        $result = $db->query($sql, [$quizId]);
+        
+        $questions = [];
+        while ($row = $result->fetch_assoc()) {
+            $questionId = $row['question_id'];
+            if (!isset($questions[$questionId])) {
+                $questions[$questionId] = [
+                    'question_id' => $questionId,
+                    'text' => $row['question_text'],
+                    'type' => $row['type'],
+                    'points' => $row['points'],
+                    'answers' => []
+                ];
+            }
+            if ($row['answer_id']) {
+                $questions[$questionId]['answers'][] = [
+                    'answer_id' => $row['answer_id'],
+                    'text' => $row['answer_text'],
+                    'is_correct' => $row['is_correct']
+                ];
+            }
+        }
+        
+        $quiz['questions'] = array_values($questions);
+        
+        return $quiz;
+        
+    } catch (Exception $e) {
+        error_log("Error getting quiz by ID: " . $e->getMessage());
         return null;
     }
-
-    // Get quiz details with teacher name
-    $stmt = $db->prepare("
-        SELECT q.*, u.first_name, u.last_name,
-        CONCAT(u.first_name, ' ', u.last_name) as teacher_name
-        FROM Quizzes q
-        JOIN Users u ON q.created_by = u.user_id
-        WHERE q.quiz_id = ?
-    ");
-    
-    $stmt->bind_param("i", $quizId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($result->num_rows === 0) {
-        return null;
-    }
-    
-    $quiz = $result->fetch_assoc();
-    
-    // Get questions and answers
-    $stmt = $db->prepare("
-        SELECT q.*, a.answer_id, a.answer_text, a.is_correct 
-        FROM Questions q
-        LEFT JOIN Answers a ON q.question_id = a.question_id
-        WHERE q.quiz_id = ?
-        ORDER BY q.order_position, q.question_id
-    ");
-    
-    $stmt->bind_param("i", $quizId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    $questions = [];
-    while ($row = $result->fetch_assoc()) {
-        $questionId = $row['question_id'];
-        if (!isset($questions[$questionId])) {
-            $questions[$questionId] = [
-                'question_id' => $questionId,
-                'text' => $row['question_text'],
-                'type' => $row['type'],
-                'points' => $row['points'],
-                'answers' => []
-            ];
-        }
-        if ($row['answer_id']) {
-            $questions[$questionId]['answers'][] = [
-                'answer_id' => $row['answer_id'],
-                'text' => $row['answer_text'],
-                'is_correct' => $row['is_correct']
-            ];
-        }
-    }
-    
-    $quiz['questions'] = array_values($questions);
-    
-    $db->close();
-    return $quiz;
 }
 
 function getQuizQuestions($quizId) {
@@ -322,49 +315,53 @@ function canAccessQuiz($userId, $quizId) {
 
 function saveQuizWithAnswers($quizData) {
     try {
-        $db = Database::getConnection();
-        $conn = $db->getConnection();
-        
-        $conn->begin_transaction();
+        $db = Database::getInstance();
+        $db->begin_transaction();
         
         // Insert quiz
         $sql = "INSERT INTO Quizzes (title, description, created_by, deadline) 
                 VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssis", $quizData['title'], $quizData['description'], 
-                         $quizData['created_by'], $quizData['deadline']);
-        $stmt->execute();
-        $quizId = $conn->insert_id;
+        $result = $db->query($sql, [
+            $quizData['title'],
+            $quizData['description'],
+            $quizData['created_by'],
+            $quizData['deadline']
+        ]);
+        $quizId = $db->lastInsertId();
         
         // Insert questions and answers
         foreach ($quizData['questions'] as $question) {
             $sql = "INSERT INTO Questions (quiz_id, question_text, question_type, points) 
                     VALUES (?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("issi", $quizId, $question['text'], 
-                            $question['type'], $question['points']);
-            $stmt->execute();
-            $questionId = $conn->insert_id;
+            $result = $db->query($sql, [
+                $quizId,
+                $question['text'],
+                $question['type'],
+                $question['points']
+            ]);
+            $questionId = $db->lastInsertId();
             
             // Insert options and mark correct answers
             if (isset($question['options'])) {
                 foreach ($question['options'] as $option) {
                     $sql = "INSERT INTO Options (question_id, option_text, is_correct) 
                             VALUES (?, ?, ?)";
-                    $stmt = $conn->prepare($sql);
                     $isCorrect = $option['is_correct'] ? 1 : 0;
-                    $stmt->bind_param("isi", $questionId, $option['text'], $isCorrect);
-                    $stmt->execute();
+                    $db->query($sql, [
+                        $questionId,
+                        $option['text'],
+                        $isCorrect
+                    ]);
                 }
             }
         }
         
-        $conn->commit();
+        $db->commit();
         return $quizId;
         
     } catch (Exception $e) {
-        if (isset($conn)) {
-            $conn->rollback();
+        if (isset($db)) {
+            $db->rollback();
         }
         throw $e;
     }

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../utils/Database.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
@@ -22,41 +23,30 @@ if (empty($quizCode)) {
     exit;
 }
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "kumidb";
+try {
+    $db = Database::getInstance();
+    
+    // Check if quiz code exists
+    $sql = "SELECT quiz_id FROM Quizzes WHERE quiz_code = ?";
+    $result = $db->query($sql, [$quizCode]);
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
+    if ($result->num_rows > 0) {
+        $quiz = $result->fetch_assoc();
+        echo json_encode([
+            'success' => true,
+            'quiz_id' => $quiz['quiz_id']
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid quiz code. Please check and try again.'
+        ]);
+    }
+    
+} catch (Exception $e) {
     echo json_encode([
         'success' => false,
         'message' => 'Database connection failed'
     ]);
-    exit;
 }
-
-// Check if quiz code exists
-$stmt = $conn->prepare("SELECT quiz_id FROM Quizzes WHERE quiz_code = ?");
-$stmt->bind_param("s", $quizCode);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $quiz = $result->fetch_assoc();
-    echo json_encode([
-        'success' => true,
-        'quiz_id' => $quiz['quiz_id']
-    ]);
-} else {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Invalid quiz code. Please check and try again.'
-    ]);
-}
-
-$stmt->close();
-$conn->close();
 ?> 

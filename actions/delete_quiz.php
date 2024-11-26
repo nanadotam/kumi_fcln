@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../utils/Database.php';
 header('Content-Type: application/json');
 
 // Check if user is logged in and is a teacher
@@ -23,42 +24,30 @@ if (!$quizId) {
     exit;
 }
 
-// Database connection
-$db = new mysqli("localhost", "root", "", "kumidb");
-
-if ($db->connect_error) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Database connection failed'
-    ]);
-    exit;
-}
-
-// Verify that the quiz belongs to the current teacher
-$stmt = $db->prepare("SELECT created_by FROM Quizzes WHERE quiz_id = ?");
-$stmt->bind_param("i", $quizId);
-$stmt->execute();
-$result = $stmt->get_result();
-$quiz = $result->fetch_assoc();
-
-if (!$quiz || $quiz['created_by'] !== $_SESSION['user_id']) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'You do not have permission to delete this quiz'
-    ]);
-    exit;
-}
-
-// Start transaction
-$db->begin_transaction();
-
 try {
-    // The foreign key constraints will handle the deletion of related records
-    $stmt = $db->prepare("DELETE FROM Quizzes WHERE quiz_id = ? AND created_by = ?");
-    $stmt->bind_param("ii", $quizId, $_SESSION['user_id']);
-    $stmt->execute();
+    $db = Database::getInstance();
+    
+    // Verify that the quiz belongs to the current teacher
+    $sql = "SELECT created_by FROM Quizzes WHERE quiz_id = ?";
+    $result = $db->query($sql, [$quizId]);
+    $quiz = $result->fetch_assoc();
 
-    if ($stmt->affected_rows > 0) {
+    if (!$quiz || $quiz['created_by'] !== $_SESSION['user_id']) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'You do not have permission to delete this quiz'
+        ]);
+        exit;
+    }
+
+    // Start transaction
+    $db->begin_transaction();
+
+    // The foreign key constraints will handle the deletion of related records
+    $sql = "DELETE FROM Quizzes WHERE quiz_id = ? AND created_by = ?";
+    $result = $db->query($sql, [$quizId, $_SESSION['user_id']]);
+
+    if ($result) {
         $db->commit();
         echo json_encode([
             'success' => true,
@@ -69,12 +58,12 @@ try {
     }
 
 } catch (Exception $e) {
-    $db->rollback();
+    if (isset($db)) {
+        $db->rollback();
+    }
     echo json_encode([
         'success' => false,
         'message' => 'Error: ' . $e->getMessage()
     ]);
 }
-
-$db->close();
 ?> 

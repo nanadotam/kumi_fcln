@@ -1,47 +1,47 @@
 <?php
 session_start();
+require_once '../utils/Database.php';
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "kumidb";
+try {
+    $db = Database::getInstance();
+    
+    if (!isset($_SESSION['user_id'])) {
+        die("Please log in first");
+    }
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+    // Get quiz ID from URL
+    $quiz_id = isset($_GET['id']) ? $_GET['id'] : null;
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    if (!$quiz_id) {
+        die("No quiz specified");
+    }
 
-if (!isset($_SESSION['user_id'])) {
-    die("Please log in first");
-}
+    // Fetch quiz data
+    $result = $db->query("SELECT * FROM Quizzes WHERE quiz_id = ?", [$quiz_id]);
+    $quiz = $result->fetch_assoc();
 
-// Get quiz ID from URL
-$quiz_id = isset($_GET['id']) ? $_GET['id'] : null;
+    if (!$quiz) {
+        die("Quiz not found");
+    }
 
-if (!$quiz_id) {
-    die("No quiz specified");
-}
+    // Fetch questions
+    $result = $db->query(
+        "SELECT * FROM Questions WHERE quiz_id = ? ORDER BY order_position",
+        [$quiz_id]
+    );
+    $questions = $result->fetch_all(MYSQLI_ASSOC);
 
-// Fetch quiz data
-$stmt = $conn->prepare("SELECT * FROM Quizzes WHERE quiz_id = ?");
-$stmt->bind_param("i", $quiz_id);
-$stmt->execute();
-$quiz = $stmt->get_result()->fetch_assoc();
+    // Fetch answers for each question
+    foreach ($questions as &$question) {
+        $result = $db->query(
+            "SELECT * FROM Answers WHERE question_id = ? ORDER BY order_position",
+            [$question['question_id']]
+        );
+        $question['answers'] = $result->fetch_all(MYSQLI_ASSOC);
+    }
 
-// Fetch questions
-$stmt = $conn->prepare("SELECT * FROM Questions WHERE quiz_id = ? ORDER BY order_position");
-$stmt->bind_param("i", $quiz_id);
-$stmt->execute();
-$questions = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-// Fetch answers for each question
-foreach ($questions as &$question) {
-    $stmt = $conn->prepare("SELECT * FROM Answers WHERE question_id = ? ORDER BY order_position");
-    $stmt->bind_param("i", $question['question_id']);
-    $stmt->execute();
-    $question['answers'] = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+} catch (Exception $e) {
+    die("Error: " . $e->getMessage());
 }
 ?>
 

@@ -1,17 +1,12 @@
 <?php
 header('Content-Type: application/json');
 session_start();
+require_once '../utils/Database.php';
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "kumidb";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    echo json_encode(['success' => false, 'message' => "Connection failed: " . $conn->connect_error]);
+try {
+    $db = Database::getInstance();
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => "Connection failed: " . $e->getMessage()]);
     exit;
 }
 
@@ -31,45 +26,45 @@ $shuffle_answers = isset($_POST['shuffle_answers']) ? 1 : 0;
 $max_attempts = !empty($_POST['max_attempts']) ? $_POST['max_attempts'] : NULL;
 $time_limit = !empty($_POST['time_limit']) ? $_POST['time_limit'] : NULL;
 
-// Create a prepared statement
-$stmt = $conn->prepare("INSERT INTO Quizzes (title, description, created_by, mode, deadline, 
-        shuffle_questions, shuffle_answers, max_attempts, time_limit) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+try {
+    // Begin transaction
+    $db->begin_transaction();
 
-// Bind parameters
-$stmt->bind_param("ssissiiis", $title, $description, $created_by, $mode, $deadline, 
-                  $shuffle_questions, $shuffle_answers, $max_attempts, $time_limit);
-
-// Execute the statement
-if ($stmt->execute()) {
-    $quiz_id = $conn->insert_id;
+    // Insert quiz using query method
+    $sql = "INSERT INTO Quizzes (title, description, created_by, mode, deadline, 
+            shuffle_questions, shuffle_answers, max_attempts, time_limit) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    $result = $db->query($sql, [
+        $title, $description, $created_by, $mode, $deadline,
+        $shuffle_questions, $shuffle_answers, $max_attempts, $time_limit
+    ]);
+    
+    $quiz_id = $db->lastInsertId();
     
     // Generate unique quiz code
     do {
         $quiz_code = generateCode(6);
-        $check_stmt = $conn->prepare("SELECT quiz_id FROM Quizzes WHERE quiz_code = ?");
-        $check_stmt->bind_param("s", $quiz_code);
-        $check_stmt->execute();
-        $result = $check_stmt->get_result();
-        $is_unique = ($result->num_rows === 0);
-        $check_stmt->close();
+        $check_result = $db->query("SELECT quiz_id FROM Quizzes WHERE quiz_code = ?", [$quiz_code]);
+        $is_unique = ($check_result->num_rows === 0);
     } while (!$is_unique);
 
     // Update quiz with code
-    $code_stmt = $conn->prepare("UPDATE Quizzes SET quiz_code = ? WHERE quiz_id = ?");
-    $code_stmt->bind_param("si", $quiz_code, $quiz_id);
-    $code_stmt->execute();
-    $code_stmt->close();
+    $db->query("UPDATE Quizzes SET quiz_code = ? WHERE quiz_id = ?", [$quiz_code, $quiz_id]);
+    
+    // Commit transaction
+    $db->commit();
 
     echo json_encode([
         'success' => true,
         'quiz_code' => $quiz_code,
         'message' => 'Quiz created successfully'
     ]);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Error: ' . $stmt->error]);
+    
+} catch (Exception $e) {
+    if (isset($db)) {
+        $db->rollback();
+    }
+    echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }
-
-$stmt->close();
-$conn->close();
 ?> 
