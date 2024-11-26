@@ -26,6 +26,7 @@ function getQuizById($quizId) {
     try {
         $db = Database::getInstance();
         
+        // Get quiz basic info
         $sql = "SELECT q.*, u.first_name as teacher_name 
                 FROM Quizzes q
                 LEFT JOIN Users u ON q.created_by = u.user_id
@@ -33,11 +34,33 @@ function getQuizById($quizId) {
                 
         $result = $db->query($sql, [$quizId]);
         
-        if ($result && $result->num_rows > 0) {
-            return $result->fetch_assoc();
+        if (!$result || $result->num_rows === 0) {
+            return null;
         }
         
-        return null;
+        $quiz = $result->fetch_assoc();
+        
+        // Get questions
+        $sql = "SELECT * FROM Questions 
+                WHERE quiz_id = ? 
+                ORDER BY order_position";
+                
+        $result = $db->query($sql, [$quizId]);
+        $questions = $result->fetch_all(MYSQLI_ASSOC);
+        
+        // Get answers for each question
+        foreach ($questions as &$question) {
+            $sql = "SELECT * FROM Answers 
+                    WHERE question_id = ?
+                    ORDER BY answer_id";
+            $result = $db->query($sql, [$question['question_id']]);
+            $question['answers'] = $result->fetch_all(MYSQLI_ASSOC);
+        }
+        
+        // Add questions to quiz array
+        $quiz['questions'] = $questions;
+        
+        return $quiz;
         
     } catch (Exception $e) {
         error_log("Error in getQuizById: " . $e->getMessage());
@@ -49,12 +72,24 @@ function getQuizQuestions($quizId) {
     try {
         $db = Database::getInstance();
         
+        // Get questions
         $sql = "SELECT * FROM Questions 
                 WHERE quiz_id = ? 
                 ORDER BY order_position";
                 
         $result = $db->query($sql, [$quizId]);
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $questions = $result->fetch_all(MYSQLI_ASSOC);
+        
+        // Get answers for each question
+        foreach ($questions as &$question) {
+            $sql = "SELECT * FROM Answers 
+                    WHERE question_id = ?
+                    ORDER BY answer_id";
+            $result = $db->query($sql, [$question['question_id']]);
+            $question['answers'] = $result->fetch_all(MYSQLI_ASSOC);
+        }
+        
+        return $questions;
         
     } catch (Exception $e) {
         error_log("Error getting quiz questions: " . $e->getMessage());
