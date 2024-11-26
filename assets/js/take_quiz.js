@@ -25,4 +25,4 @@ function takeQuiz(quizId) {
             console.error('Error:', error);
             alert('An error occurred. Please try again.');
         });
-    }
+    }}
