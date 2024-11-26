@@ -45,17 +45,6 @@ $questions = getQuizQuestions($quizId);
                 <i class='bx bx-arrow-back'></i> Back to Quizzes
             </a>
 
-            <div class="quiz-progress-floating">
-                <div class="progress-inner">
-                    <div class="progress-text">
-                        Question <span id="currentQuestion">1</span> of <?= count($questions) ?>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                </div>
-            </div>
-
             <div class="quiz-container">
                 <div class="quiz-header">
                     <div class="preview-badge">
