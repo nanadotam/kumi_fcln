@@ -88,5 +88,37 @@ try {
             <button class="start-btn">Start Quiz</button>
         </div>
     </div>
+
+    <script>
+    document.querySelector('.start-btn').addEventListener('click', function() {
+        const quizCode = document.getElementById('quizcode').value.trim();
+        
+        if (!quizCode) {
+            alert('Please enter a quiz code');
+            return;
+        }
+
+        // Send the code to verify_quiz_code.php
+        fetch('../actions/verify_quiz_code.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quiz_code: quizCode })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `take_quiz.php?id=${data.quiz_id}`;
+            } else {
+                alert(data.message || 'Invalid quiz code. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    });
+    </script>
 </body>
 </html>
