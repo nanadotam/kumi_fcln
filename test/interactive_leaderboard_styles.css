@@ -1,0 +1,215 @@
+:root {
+    --black: #000000;
+    --white: #ffffff;
+    --darkest: #101010;
+    --darker: #16171A;
+    --dark: #A3AFBF;
+    --medium: #DFE7EF;
+    --light: #CAD4E1;
+    --lighter: #F5F8FC;
+    --lightest: var(--white);
+    
+    --primary: #187045;
+    --primary-light: #1e8a54;
+    --primary-trans: rgba(24, 112, 69, 0.4);
+    
+    --secondary: #2a9d8f;
+    --accent: #ffc936;
+    
+    --yellow: var(--accent);
+    --orange: #ff9f43;
+    --teal: var(--secondary);
+    
+    --bg: var(--darkest);
+    --color: var(--lightest);
+    --surface: var(--darker);
+    
+    --font-primary: 'Montserrat', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Overpass Mono', 'Courier New', monospace;
+    --font-display: 'Oswald', var(--font-primary);
+}
+
+html {
+    font-size: 62.5%;
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--color);
+    font-size: 1.6rem;
+    font-family: var(--font-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+
+.l-wrapper {
+    width: 100%;
+    max-width: 960px;
+    margin: auto;
+    padding: 1.6rem 1.6rem 3.2rem;
+}
+
+.l-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.6rem;
+    position: relative;
+}
+
+@media screen and (max-width: 700px) {
+    .l-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.c-header {
+    padding: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.6rem;
+    position: relative;
+    border-bottom: 1px solid var(--primary-trans);
+}
+
+.c-header:before {
+    display: none;
+}
+
+.c-logo {
+    font-family: var(--font-display);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: var(--primary);
+    font-size: 1.6rem;
+    font-weight: 500;
+}
+
+.c-logo img {
+    height: 3rem;
+    width: auto;
+}
+
+.c-button {
+    display: inline-block;
+    background: var(--dark);
+    border: 0;
+    border-radius: 0.4rem;
+    padding: 1.2rem 2rem;
+    color: var(--lightest);
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 120ms ease-out;
+    font-family: var(--font-primary);
+    font-weight: 500;
+}
+
+.c-button--primary {
+    background: var(--primary);
+}
+
+.c-card {
+    border-radius: 0.8rem;
+    background: var(--surface);
+    width: 100%;
+    margin-bottom: 1.6rem;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.c-card__body, 
+.c-card__header {
+    padding: 2.4rem;
+}
+
+.c-list {
+    list-style: none;
+}
+
+.c-list__item {
+    padding: 1.6rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.c-list__grid {
+    display: grid;
+    grid-template-columns: 4.8rem 3fr 1fr;
+    gap: 2.4rem;
+    align-items: center;
+}
+
+.c-avatar {
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.c-avatar--lg {
+    width: 9.6rem;
+    height: 9.6rem;
+}
+
+.u-text--small {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+}
+
+.u-text--center { text-align: center; }
+.u-text--right { text-align: right; }
+.u-text--left { text-align: left; }
+
+.u-bg--light-gradient {
+    background: linear-gradient(to top, var(--light), var(--lightest));
+}
+
+.u-text--dark { color: var(--darkest); }
+.u-text--yellow { color: var(--yellow); }
+.u-text--orange { color: var(--orange); }
+.u-text--teal { color: var(--teal); }
+
+.u-bg--yellow { background: var(--yellow); }
+.u-bg--orange { background: var(--orange); }
+.u-bg--teal { background: var(--teal); }
+
+.u-display--flex {
+    display: flex;
+}
+
+.u-justify--space-between {
+    justify-content: space-between;
+}
+
+@media screen and (max-width: 700px) {
+    .c-card__header {
+        flex-direction: column;
+        gap: 1.6rem;
+    }
+    
+    .c-list__grid {
+        grid-template-columns: 3.2rem 3fr 1fr;
+        gap: 1.2rem;
+    }
+    
+    .c-avatar {
+        width: 3.2rem;
+        height: 3.2rem;
+    }
+}
+
