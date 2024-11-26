@@ -502,156 +502,167 @@ body {
     transition: background 0.3s ease;
 }
 
-/* Comprehensive Mobile Responsive Styles */
+/* Mobile Responsive Styles */
 @media screen and (max-width: 768px) {
-    /* Sidebar adjustments */
+    /* Convert sidebar to top navigation */
     .sidebar {
-        width: 70px;
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: auto;
+        width: 100% !important;
+        padding: 0.5rem;
+        background: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
-    
-    .sidebar .logo-container {
+
+    .logo-container {
+        margin-bottom: 0;
         padding: 0.5rem;
     }
-    
-    .sidebar .logo-container img {
+
+    .logo-container img {
         width: 40px;
+        height: auto;
     }
-    
-    .sidebar span {
+
+    .nav-links {
+        flex-direction: row;
+        gap: 1rem;
+        margin-right: 1rem;
+    }
+
+    .nav-links a {
+        padding: 0.5rem;
+    }
+
+    .nav-links span {
         display: none;
     }
-    
-    .nav-links a {
-        justify-content: center;
-        padding: 1rem 0;
-    }
-    
+
     .nav-links i {
+        font-size: 1.3rem;
         margin: 0;
     }
-    
-    /* Main content adjustments */
+
+    /* Adjust main container for top navigation */
     .dashboard-container {
-        margin-left: 70px;
-        width: calc(100% - 70px);
+        margin-left: 0 !important;
+        margin-top: 60px !important; /* Height of top navigation */
+        width: 100% !important;
         padding: 1rem;
     }
 
-    /* Welcome section */
+    /* Welcome section adjustments */
     .welcome-section {
-        padding: 1.5rem;
-    }
-
-    .welcome-section h1 {
-        font-size: 1.3rem;
-    }
-
-    /* Stats overview */
-    .stats-overview {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .stat-card {
-        padding: 1.2rem;
-    }
-
-    /* Quiz grid */
-    .quiz-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .quiz-card {
-        aspect-ratio: auto;
-        padding: 1.2rem;
-    }
-
-    /* Quiz code section */
-    .quizcode-container {
-        padding: 1.2rem;
-    }
-
-    .quizcode-container input {
-        max-width: 100%;
+        margin-top: 0.5rem;
     }
 }
 
 /* Small mobile devices */
 @media screen and (max-width: 480px) {
-    /* Further sidebar adjustments */
-    .sidebar {
-        width: 60px;
-    }
-
-    .dashboard-container {
-        margin-left: 60px;
-        width: calc(100% - 60px);
-        padding: 0.8rem;
-    }
-
-    /* Welcome section */
-    .welcome-section {
-        padding: 1.2rem;
-    }
-
-    .welcome-section h1 {
-        font-size: 1.2rem;
-    }
-
-    /* Stats and cards */
-    .stat-card {
-        padding: 1rem;
-    }
-
-    .stat-info p {
-        font-size: 1.2rem;
-    }
-
-    .quiz-card {
-        padding: 1rem;
-    }
-
-    .quiz-meta {
-        gap: 0.3rem;
-    }
-
-    /* Buttons */
-    .start-btn,
-    .start-quiz-btn {
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    .quiz-actions {
-        flex-direction: column;
+    .nav-links {
         gap: 0.5rem;
     }
-}
 
-/* Landscape orientation */
-@media screen and (max-height: 480px) and (orientation: landscape) {
-    .sidebar {
-        position: absolute;
-        height: 100%;
+    .nav-links a {
+        padding: 0.4rem;
+    }
+
+    .nav-links i {
+        font-size: 1.2rem;
     }
 
     .dashboard-container {
-        margin-bottom: 2rem;
-    }
-
-    .welcome-section {
-        margin-bottom: 1.5rem;
-    }
-
-    .stats-overview {
-        grid-template-columns: repeat(2, 1fr);
+        padding: 0.8rem;
     }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --color-bg: #1a1a1a;
+/* iPhone notch safe area */
+@supports (padding: max(0px)) {
+    .sidebar {
+        padding-top: max(0.5rem, env(safe-area-inset-top));
+    }
+
+    .dashboard-container {
+        margin-top: max(60px, calc(60px + env(safe-area-inset-top))) !important;
+    }
+}
+
+/* Mobile Navigation Bar - Bottom Fixed */
+.mobile-nav {
+    display: none;  /* Hidden by default */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 0.8rem;
+    padding-bottom: max(0.8rem, env(safe-area-inset-bottom)); /* iPhone safe area */
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Mobile Specific Styles */
+@media screen and (max-width: 768px) {
+    /* Hide regular sidebar */
+    .sidebar {
+        display: none;
+    }
+
+    /* Show mobile navigation */
+    .mobile-nav {
+        display: block;
+    }
+
+    /* Adjust main container */
+    .dashboard-container {
+        margin-left: 0 !important;  /* Override any existing margins */
+        width: 100% !important;
+        padding: 1rem;
+        padding-bottom: calc(4rem + env(safe-area-inset-bottom)); /* Space for mobile nav */
+    }
+
+    /* Welcome section adjustments */
+    .welcome-section {
+        margin: 0.5rem 0 1.5rem;
+        border-radius: 20px;
+        padding: 2rem 1.5rem;
+    }
+
+    /* Stats cards in welcome section */
+    .stats-overview {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1.2rem;
+        border-radius: 15px;
+    }
+
+    /* Quiz code section */
+    .quizcode-container {
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+        border-radius: 20px;
+    }
+
+    .quizcode-container input {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .start-btn {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-top: 1rem;
     }
 }
