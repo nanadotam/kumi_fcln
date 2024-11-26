@@ -43,14 +43,29 @@ $stmt->bind_param("ssissiiis", $title, $description, $created_by, $mode, $deadli
 // Execute the statement
 if ($stmt->execute()) {
     $quiz_id = $conn->insert_id;
-    $success = true;
     
-    // Insert questions and answers
-    foreach ($_POST['questions'] as $question) {
-        // ... existing question insertion code ...
-    }
-    
-    echo json_encode(['success' => true, 'message' => 'New quiz created successfully']);
+    // Generate unique quiz code
+    do {
+        $quiz_code = generateCode(6);
+        $check_stmt = $conn->prepare("SELECT quiz_id FROM Quizzes WHERE quiz_code = ?");
+        $check_stmt->bind_param("s", $quiz_code);
+        $check_stmt->execute();
+        $result = $check_stmt->get_result();
+        $is_unique = ($result->num_rows === 0);
+        $check_stmt->close();
+    } while (!$is_unique);
+
+    // Update quiz with code
+    $code_stmt = $conn->prepare("UPDATE Quizzes SET quiz_code = ? WHERE quiz_id = ?");
+    $code_stmt->bind_param("si", $quiz_code, $quiz_id);
+    $code_stmt->execute();
+    $code_stmt->close();
+
+    echo json_encode([
+        'success' => true,
+        'quiz_code' => $quiz_code,
+        'message' => 'Quiz created successfully'
+    ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Error: ' . $stmt->error]);
 }

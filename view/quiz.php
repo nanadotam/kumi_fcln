@@ -45,7 +45,7 @@ if ($userRole === 'student') {
             <div class="page-header">
                 <h1>My Quizzes</h1>
                 <?php if ($userRole === 'teacher'): ?>
-                    <a href="create_quiz.php" class="create-btn">
+                    <a href="create_quiz_form.php" class="create-btn">
                         <i class='bx bx-plus'></i> Create Quiz
                     </a>
                 <?php endif; ?>
