@@ -15,6 +15,11 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  background-image: url('../images/wheat.png');
+  background-color: var(--bg-color-primary);
 }
 
 /* Reset the navbar completely */
@@ -35,8 +40,14 @@ body {
 
 /* Ensure the main content doesn't overlap with fixed navbar */
 .signup-container {
-  margin-top: 100px; /* Adjust based on navbar height */
-  /* ... rest of your signup-container styles ... */
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: 100px auto; /* Centers the container horizontally and maintains space for navbar */
+  padding: var(--gutter-medium);
+  background-color: var(--color-light);
+  box-shadow: var(--shadow-light);
+  border-radius: var(--radius-small);
 }
 
 h2 {
