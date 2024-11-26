@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+
 :root {
     --color-primary: #187045;
     --color-secondary: #2a9d8f;
@@ -15,12 +21,126 @@
     --border-radius: 8px;
 }
 
-/* Main Container */
-.quiz-creator {
-    max-width: 800px;
-    margin: 2rem auto;
+
+.main-content {
+    margin-left: 270px;  /* Match sidebar width + padding */
+    width: calc(100% - 270px);
+    min-height: 100vh;
     padding: 2rem;
-    margin-left: 270px;
+    background-color: var(--color-bg);
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--color-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+}
+
+.container h1 {
+    color: var(--color-primary);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--color-border);
+}
+
+/* Sidebar styles from student_dashboard.css */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: var(--color-light);
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 1rem;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    overflow-y: auto;
+}
+
+.logo-container {
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-container img {
+    width: 120px;
+    height: auto;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--color-dark);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background-color: var(--color-primary);
+    color: var(--color-light);
+}
+
+.nav-links i {
+    font-size: 1.5rem;
+    min-width: 1.5rem;
+}
+
+/* Update main container positioning */
+.quiz-creator {
+    margin-left: 270px;  /* Match sidebar width + padding */
+    width: calc(100% - 270px);
+    padding: 2rem;
+    max-width: 1400px;  /* Optional: set maximum width */
+}
+
+/* Update responsive design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 70px;
+        transition: width 0.3s ease;
+    }
+    
+    .sidebar .logo-container {
+        padding: 0.5rem;
+    }
+    
+    .sidebar .logo-container img {
+        width: 40px;
+    }
+    
+    .sidebar span {
+        display: none;
+    }
+    
+    .nav-links a {
+        justify-content: center;
+        padding: 1rem 0;
+    }
+    
+    .nav-links i {
+        margin: 0;
+    }
+    
+    .quiz-creator {
+        margin-left: 90px;
+        width: calc(100% - 90px);
+        padding: 1rem;
+    }
 }
 
 /* Section Cards */
@@ -186,22 +306,6 @@ select:focus {
     border-color: var(--color-primary);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .quiz-creator {
-        margin-left: 0;
-        padding: 1rem;
-    }
-
-    .section-card {
-        padding: 1rem;
-    }
-
-    .btn {
-        width: 100%;
-    }
-}
-
 /* Animation */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -210,4 +314,18 @@ select:focus {
 
 .question-card {
     animation: fadeIn 0.3s ease-out;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 90px;
+        width: calc(100% - 90px);
+        padding: 1rem;
+    }
+    
+    .container {
+        padding: 1rem;
+    }
 }
