@@ -1,31 +1,21 @@
 <?php
 session_start();
-require_once '../functions/auth_functions.php';
 require_once '../functions/quiz_functions.php';
+require_once '../functions/auth_functions.php';
 
-// Authentication and role check
+// Authentication check
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header('Location: login.php');
     exit();
 }
 
 $quizId = $_GET['id'] ?? null;
-if (!$quizId) {
-    header('Location: quiz.php');
-    exit();
-}
+$userId = $_SESSION['user_id'];
 
-// Get quiz details
+// Get quiz using the same function as take_quiz.php
 $quiz = getQuizById($quizId);
 if (!$quiz) {
-    $_SESSION['error'] = "Quiz not found";
-    header('Location: quiz.php');
-    exit();
-}
-
-// Verify teacher owns this quiz
-if (!verifyQuizOwnership($quizId, $_SESSION['user_id'])) {
-    header('Location: quiz.php');
+    header('Location: dashboard.php');
     exit();
 }
 ?>
@@ -42,20 +32,9 @@ if (!verifyQuizOwnership($quizId, $_SESSION['user_id'])) {
 </head>
 <body>
     <?php include_once '../components/sidebar.php'; ?>
-
+    
     <div class="preview-mode-banner">
         <i class='bx bx-show'></i> Preview Mode - This is how students will see your quiz
-    </div>
-
-    <div class="quiz-progress-floating">
-        <div class="progress-inner">
-            <div class="progress-text">
-                Question <span id="currentQuestion">1</span> of <?= count($quiz['questions']) ?>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-        </div>
     </div>
 
     <div class="quiz-wrapper">
@@ -71,31 +50,32 @@ if (!verifyQuizOwnership($quizId, $_SESSION['user_id'])) {
             
             <form>
                 <?php foreach ($quiz['questions'] as $index => $question): ?>
-                    <div class="question-card" data-question="<?= $index + 1 ?>">
+                    <div class="question-item">
                         <div class="question-header">
                             <h3>Question <?= $index + 1 ?></h3>
-                            <span class="question-type"><?= ucfirst($question['type']) ?></span>
+                            <span class="question-type"><?= ucfirst(str_replace('_', ' ', $question['type'])) ?></span>
                         </div>
                         <p class="question-text"><?= htmlspecialchars($question['text']) ?></p>
                         
                         <div class="answer-container">
-                            <?php if ($question['type'] === 'multiple_choice'): ?>
+                            <?php if ($question['type'] === 'multiple_choice' || $question['type'] === 'true_false'): ?>
                                 <?php foreach ($question['answers'] as $answer): ?>
                                     <div class="answer-option">
                                         <input type="radio" 
+                                               disabled
                                                id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
-                                               name="responses[q_<?= $question['question_id'] ?>]" 
-                                               value="<?= $answer['answer_id'] ?>">
+                                               name="q_<?= $question['question_id'] ?>">
                                         <label for="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>">
                                             <?= htmlspecialchars($answer['text']) ?>
                                         </label>
                                     </div>
                                 <?php endforeach; ?>
-                            <?php else: ?>
+                            <?php elseif ($question['type'] === 'short_answer'): ?>
                                 <div class="text-answer">
                                     <textarea 
                                         class="text-input"
-                                        placeholder="Students will type their answer here..."
+                                        placeholder="Students will enter their answer here..."
+                                        disabled
                                         rows="6"
                                     ></textarea>
                                 </div>
@@ -111,33 +91,5 @@ if (!verifyQuizOwnership($quizId, $_SESSION['user_id'])) {
             </form>
         </div>
     </div>
-    
-    <script>
-        const questionCards = document.querySelectorAll('.question-card');
-        const currentQuestionSpan = document.getElementById('currentQuestion');
-        const progressFill = document.getElementById('progressFill');
-        const totalQuestions = questionCards.length;
-
-        // Show first question by default
-        if (questionCards.length > 0) {
-            questionCards[0].classList.add('active');
-            updateProgress(1);
-        }
-
-        function updateProgress(currentQuestion) {
-            currentQuestionSpan.textContent = currentQuestion;
-            const progress = (currentQuestion / totalQuestions) * 100;
-            progressFill.style.width = `${progress}%`;
-        }
-
-        // Navigation between questions
-        questionCards.forEach((card, index) => {
-            card.addEventListener('click', () => {
-                questionCards.forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                updateProgress(index + 1);
-            });
-        });
-    </script>
 </body>
 </html> 

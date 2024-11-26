@@ -40,7 +40,7 @@ function getQuizById($quizId) {
         
         $quiz = $result->fetch_assoc();
         
-        // Get questions
+        // Get questions with their text and type
         $sql = "SELECT * FROM Questions 
                 WHERE quiz_id = ? 
                 ORDER BY order_position";
@@ -55,6 +55,10 @@ function getQuizById($quizId) {
                     ORDER BY answer_id";
             $result = $db->query($sql, [$question['question_id']]);
             $question['answers'] = $result->fetch_all(MYSQLI_ASSOC);
+            
+            // Add the question text and type
+            $question['text'] = $question['question_text'];
+            $question['type'] = $question['question_type'];
         }
         
         // Add questions to quiz array
