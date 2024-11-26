@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 25, 2024 at 03:40 PM
+-- Generation Time: Nov 26, 2024 at 11:04 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -32,39 +32,24 @@ CREATE TABLE `Answers` (
   `question_id` int(11) NOT NULL,
   `answer_text` text NOT NULL,
   `is_correct` tinyint(1) NOT NULL,
-  `model_answer` text DEFAULT NULL
+  `order_position` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Answers`
 --
 
-INSERT INTO `Answers` (`answer_id`, `question_id`, `answer_text`, `is_correct`, `model_answer`) VALUES
-(1, 1, '4', 1, NULL),
-(2, 1, '5', 0, NULL),
-(3, 1, '6', 0, NULL),
-(4, 2, '15', 1, NULL),
-(5, 2, '10', 0, NULL),
-(6, 2, '20', 0, NULL),
-(7, 5, 'x = -4 and x = 1.5', 1, 'The correct solution using quadratic formula'),
-(8, 5, 'x = 4 and x = -1.5', 0, NULL),
-(9, 5, 'x = 2 and x = -3', 0, NULL),
-(10, 5, 'x = 3 and x = -2', 0, NULL),
-(11, 8, 'Newton (N)', 1, 'The SI unit of force is Newton'),
-(12, 8, 'Kilogram (kg)', 0, NULL),
-(13, 8, 'Joule (J)', 0, NULL),
-(14, 8, 'Pascal (Pa)', 0, NULL),
-(15, 11, 'TypeError', 1, 'Cannot concatenate string and integer'),
-(16, 11, '22', 0, NULL),
-(17, 11, '4', 0, NULL),
-(18, 11, 'undefined', 0, NULL),
-(19, 14, 'Jane Austen', 1, NULL),
-(20, 14, 'Emily Bronte', 0, NULL),
-(21, 14, 'Charlotte Bronte', 0, NULL),
-(22, 14, 'Virginia Woolf', 0, NULL),
-(23, 5, 'Placeholder for missing answer 17', 0, NULL),
-(24, 8, 'Placeholder for missing answer 21', 0, NULL),
-(25, 11, 'Placeholder for missing answer 25', 0, NULL);
+INSERT INTO `Answers` (`answer_id`, `question_id`, `answer_text`, `is_correct`, `order_position`, `created_at`) VALUES
+(34, 29, '1', 0, NULL, '2024-11-26 10:03:08'),
+(35, 29, '2', 0, NULL, '2024-11-26 10:03:08'),
+(36, 29, '1d', 1, NULL, '2024-11-26 10:03:08'),
+(37, 30, '1', 0, NULL, '2024-11-26 10:03:11'),
+(38, 30, '2', 0, NULL, '2024-11-26 10:03:11'),
+(39, 30, '1d', 1, NULL, '2024-11-26 10:03:11'),
+(40, 31, '1', 0, NULL, '2024-11-26 10:03:16'),
+(41, 31, '2', 0, NULL, '2024-11-26 10:03:16'),
+(42, 31, '1d', 1, NULL, '2024-11-26 10:03:16');
 
 -- --------------------------------------------------------
 
@@ -142,45 +127,21 @@ CREATE TABLE `Questions` (
   `question_id` int(11) NOT NULL,
   `quiz_id` int(11) NOT NULL,
   `question_text` text NOT NULL,
+  `type` enum('true_false','multiple_choice','multiple_answer','short_answer') NOT NULL,
   `points` int(11) NOT NULL DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `question_type` enum('true_false','multiple_choice','multiple_answer','short_answer') NOT NULL
+  `model_answer` text DEFAULT NULL,
+  `order_position` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Questions`
 --
 
-INSERT INTO `Questions` (`question_id`, `quiz_id`, `question_text`, `type`, `points`, `created_at`, `question_type`) VALUES
-(1, 1, 'What is 2 + 2?', 'multiple_choice', 1, '2024-11-21 18:00:49', 'true_false'),
-(2, 1, 'What is 5 * 3?', 'multiple_choice', 1, '2024-11-21 18:00:49', 'true_false'),
-(3, 2, 'Name a state of matter.', 'short_answer', 2, '2024-11-21 18:00:49', 'true_false'),
-(4, 3, 'Who was the first president of the US?', 'short_answer', 2, '2024-11-21 18:00:49', 'true_false'),
-(5, 4, 'Solve for x: 2x² + 5x - 12 = 0', 'multiple_choice', 3, '2024-11-22 21:42:40', 'true_false'),
-(6, 4, 'Is the square root of a negative number a real number?', 'true_false', 1, '2024-11-22 21:42:40', 'true_false'),
-(7, 4, 'Explain the concept of logarithms', 'short_answer', 3, '2024-11-22 21:42:40', 'true_false'),
-(8, 5, 'What is the SI unit of force?', 'multiple_choice', 1, '2024-11-22 21:42:40', 'true_false'),
-(9, 5, 'Calculate the acceleration of an object with mass 10kg under 20N force', 'short_answer', 3, '2024-11-22 21:42:40', 'true_false'),
-(10, 5, 'True or False: Weight and mass are the same thing', 'true_false', 1, '2024-11-22 21:42:40', 'true_false'),
-(11, 6, 'What is the output of: print(2 + \"2\")?', 'multiple_choice', 2, '2024-11-22 21:42:40', 'true_false'),
-(12, 6, 'Write a function to check if a string is palindrome', 'short_answer', 3, '2024-11-22 21:42:40', 'true_false'),
-(13, 6, 'Explain the difference between == and === in JavaScript', 'short_answer', 2, '2024-11-22 21:42:40', 'true_false'),
-(14, 7, 'Who wrote \"Pride and Prejudice\"?', 'multiple_choice', 1, '2024-11-22 21:42:40', 'true_false'),
-(15, 7, 'Analyze the main theme of \"1984\" by George Orwell', 'short_answer', 4, '2024-11-22 21:42:40', 'true_false'),
-(16, 7, 'Is \"The Great Gatsby\" set in the 1920s?', 'true_false', 1, '2024-11-22 21:42:40', 'true_false');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `question_options`
---
-
-CREATE TABLE `question_options` (
-  `id` int(11) NOT NULL,
-  `question_id` int(11) NOT NULL,
-  `option_text` text NOT NULL,
-  `is_correct` tinyint(1) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `Questions` (`question_id`, `quiz_id`, `question_text`, `type`, `points`, `model_answer`, `order_position`, `created_at`) VALUES
+(29, 25, '1d', 'multiple_choice', 12, NULL, NULL, '2024-11-26 10:03:08'),
+(30, 26, '1d', 'multiple_choice', 12, NULL, NULL, '2024-11-26 10:03:11'),
+(31, 27, '1d', 'multiple_choice', 12, NULL, NULL, '2024-11-26 10:03:16');
 
 -- --------------------------------------------------------
 
@@ -236,21 +197,40 @@ CREATE TABLE `Quizzes` (
   `created_by` int(11) NOT NULL,
   `mode` enum('individual','group','live','asynchronous') NOT NULL,
   `deadline` datetime DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `shuffle_questions` BOOLEAN DEFAULT FALSE,
+  `shuffle_answers` BOOLEAN DEFAULT FALSE,
+  `max_attempts` int(11) DEFAULT NULL,
+  `time_limit` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Quizzes`
 --
 
-INSERT INTO `Quizzes` (`quiz_id`, `title`, `description`, `created_by`, `mode`, `deadline`, `created_at`) VALUES
-(1, 'Math Basics', 'A basic math quiz.', 8, 'individual', '2024-12-01 23:59:59', '2024-11-21 17:57:01'),
-(2, 'Science Quiz', 'Test your science knowledge.', 8, 'group', '2024-12-10 23:59:59', '2024-11-21 17:57:01'),
-(3, 'History Quiz', 'Explore historical events.', 11, 'asynchronous', '2024-12-15 23:59:59', '2024-11-21 17:57:01'),
-(4, 'Advanced Mathematics', 'Complex math problems for senior students', 8, 'individual', '2024-12-20 23:59:59', '2024-11-22 21:39:13'),
-(5, 'Physics Fundamentals', 'Group quiz on basic physics concepts', 11, 'group', '2024-12-25 23:59:59', '2024-11-22 21:39:13'),
-(6, 'Live Programming Test', 'Real-time coding assessment', 12, 'live', '2024-12-15 14:00:00', '2024-11-22 21:39:13'),
-(7, 'Literature Review', 'Analysis of classic literature', 8, 'asynchronous', '2024-12-30 23:59:59', '2024-11-22 21:39:13');
+INSERT INTO `Quizzes` (`quiz_id`, `title`, `description`, `created_by`, `mode`, `deadline`, `created_at`, `shuffle_questions`, `shuffle_answers`, `max_attempts`, `time_limit`) VALUES
+(1, 'Math Basics', 'A basic math quiz.', 8, 'individual', '2024-12-01 23:59:59', '2024-11-21 17:57:01', FALSE, FALSE, NULL, NULL),
+(2, 'Science Quiz', 'Test your science knowledge.', 8, 'group', '2024-12-10 23:59:59', '2024-11-21 17:57:01', FALSE, FALSE, NULL, NULL),
+(3, 'History Quiz', 'Explore historical events.', 11, 'asynchronous', '2024-12-15 23:59:59', '2024-11-21 17:57:01', FALSE, FALSE, NULL, NULL),
+(4, 'Advanced Mathematics', 'Complex math problems for senior students', 8, 'individual', '2024-12-20 23:59:59', '2024-11-22 21:39:13', FALSE, FALSE, NULL, NULL),
+(5, 'Physics Fundamentals', 'Group quiz on basic physics concepts', 11, 'group', '2024-12-25 23:59:59', '2024-11-22 21:39:13', FALSE, FALSE, NULL, NULL),
+(6, 'Live Programming Test', 'Real-time coding assessment', 12, 'live', '2024-12-15 14:00:00', '2024-11-22 21:39:13', FALSE, FALSE, NULL, NULL),
+(7, 'Literature Review', 'Analysis of classic literature', 8, 'asynchronous', '2024-12-30 23:59:59', '2024-11-22 21:39:13', FALSE, FALSE, NULL, NULL),
+(8, 'qkj`', 'if', 19, 'individual', NULL, '2024-11-25 14:51:35', FALSE, FALSE, NULL, NULL),
+(9, 'Test 3', 'Another quiz', 19, 'individual', '2024-11-30 16:30:00', '2024-11-25 16:17:57', FALSE, FALSE, NULL, NULL),
+(13, 'Quiz 1 - 202', 'Another Quiz', 21, 'individual', '2024-11-28 02:47:00', '2024-11-25 23:44:55', FALSE, FALSE, NULL, NULL),
+(14, 'Quiz Test 2', 'Another quiz', 21, 'individual', '2024-11-21 04:45:00', '2024-11-25 23:46:00', FALSE, FALSE, NULL, NULL),
+(17, 'Test New Quiz Options', 'How is it looking', 22, 'individual', '2024-11-28 08:00:00', '2024-11-26 09:01:45', FALSE, FALSE, NULL, NULL),
+(18, 'Test New Quiz Options', 'How is it looking', 22, 'individual', '2024-11-28 08:00:00', '2024-11-26 09:01:47', FALSE, FALSE, NULL, NULL),
+(19, 'Hi', 'Test 2', 22, 'individual', '2024-11-08 12:02:00', '2024-11-26 09:04:33', FALSE, FALSE, NULL, NULL),
+(20, 'Hiw', '1', 22, 'individual', '2024-11-26 09:17:00', '2024-11-26 09:12:34', FALSE, FALSE, NULL, NULL),
+(21, 'Hiw', '1', 22, 'individual', '2024-11-26 09:17:00', '2024-11-26 09:45:37', FALSE, FALSE, NULL, NULL),
+(22, 'Hiw', '1', 22, 'individual', '2024-11-26 09:17:00', '2024-11-26 09:45:41', FALSE, FALSE, NULL, NULL),
+(23, 'FRANCES', 'HG', 22, 'individual', '2024-11-26 09:52:00', '2024-11-26 09:47:20', FALSE, FALSE, NULL, NULL),
+(24, 'Hello', '13', 22, 'individual', '2024-11-26 09:05:00', '2024-11-26 10:00:21', FALSE, FALSE, NULL, NULL),
+(25, '12', '13', 22, 'individual', '2024-11-26 10:07:00', '2024-11-26 10:03:08', FALSE, FALSE, NULL, NULL),
+(26, '12', '13', 22, 'individual', '2024-11-26 10:07:00', '2024-11-26 10:03:11', FALSE, FALSE, NULL, NULL),
+(27, '12', '13', 22, 'individual', '2024-11-26 10:07:00', '2024-11-26 10:03:16', FALSE, FALSE, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -265,51 +245,6 @@ CREATE TABLE `Responses` (
   `selected_answer_id` int(11) DEFAULT NULL,
   `is_correct` tinyint(1) DEFAULT 0,
   `text_response` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `Responses`
---
-
-INSERT INTO `Responses` (`response_id`, `result_id`, `question_id`, `selected_answer_id`, `is_correct`, `text_response`) VALUES
-(1, 1, 1, 1, 1, NULL),
-(2, 1, 2, 4, 1, NULL),
-(3, 2, 1, 2, 0, NULL),
-(4, 2, 2, 5, 0, NULL),
-(5, 3, 3, NULL, 1, NULL),
-(6, 4, 3, NULL, 1, NULL),
-(7, 5, 1, 1, 0, NULL),
-(8, 5, 2, 4, 0, NULL),
-(9, 8, 1, 1, 1, NULL),
-(10, 8, 2, 5, 0, NULL),
-(11, 9, 3, NULL, 0, 'Gas'),
-(12, 10, 4, NULL, 0, 'George Washington'),
-(34, 9, 5, 17, 1, NULL),
-(35, 9, 6, NULL, 1, 'No, it is an imaginary number'),
-(36, 9, 7, NULL, NULL, 'Logarithms are the inverse of exponential functions...'),
-(37, 10, 8, 21, 1, NULL),
-(38, 10, 9, NULL, NULL, 'a = F/m = 20N/10kg = 2 m/s²'),
-(39, 11, 11, 25, 1, NULL),
-(40, 11, 12, NULL, NULL, 'function isPalindrome(str) { return str === str.split(\"\").reverse().join(\"\"); }'),
-(44, 20, 5, 7, 1, NULL),
-(45, 20, 6, NULL, 0, NULL),
-(46, 20, 7, NULL, 0, 'ii'),
-(47, 21, 14, 19, 1, NULL),
-(48, 21, 15, NULL, 0, 'kd'),
-(49, 21, 16, NULL, 0, NULL),
-(50, 22, 5, 7, 1, NULL),
-(51, 22, 6, NULL, 0, NULL),
-(52, 22, 7, NULL, 0, 'qc');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `short_answer_details`
---
-
-CREATE TABLE `short_answer_details` (
-  `question_id` int(11) NOT NULL,
-  `model_answer` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -348,7 +283,10 @@ INSERT INTO `Users` (`user_id`, `first_name`, `last_name`, `email`, `password`, 
 (16, 'Teacher', 'Nana', 'nana@teacher2.com', '$2y$10$csIHSt8jvH9lEBMmxkt3T.4EYKceQ6fhDdPH8s.PmC6iSEQCSq6Zy', 'teacher', '2024-11-24 00:34:13', '2024-11-24 00:34:13'),
 (17, 'student1', 'test', 'student1@kumi.com', '$2y$10$vcxnXI2uy9LmYvFXuJoxWuHMYLLbf68EVtdFuzXL69T3WVM9JxAOa', 'student', '2024-11-24 00:37:52', '2024-11-24 00:37:52'),
 (18, 'marge teach', 'nana', 'margeteach@nana.com', '$2y$10$bEWOiK9icdfwxlZHHHP8GuD0QkRi8Ecu4vmZbvZ4MbKPbZcMPS5t2', 'teacher', '2024-11-25 10:41:07', '2024-11-25 10:41:07'),
-(19, 'nana', 'frances', 'nana.frances@email.com', '$2y$10$uysFFy7P35oSaD.8zHTIiODfqpxYGMWAOf6HMOX9ehzntTUME0Ki.', 'teacher', '2024-11-25 13:57:27', '2024-11-25 13:57:27');
+(19, 'nana', 'frances', 'nana.frances@email.com', '$2y$10$uysFFy7P35oSaD.8zHTIiODfqpxYGMWAOf6HMOX9ehzntTUME0Ki.', 'teacher', '2024-11-25 13:57:27', '2024-11-25 13:57:27'),
+(20, 'Don', 'Elijah', 'donelijah@email.com', '$2y$10$3v7PQ7GQyg47xaP1n8bPVOxIN9cGvCkmNRZYGfZPiIbrTc7ffqLvC', 'teacher', '2024-11-25 20:52:14', '2024-11-25 20:52:14'),
+(21, 'caleb', 'frances', 'calfran@nana.com', '$2y$10$CjLW75wHJVsXnJywMgXCAuyrobXLINkAbsWhFUxpWoP.TCA1qJp16', 'teacher', '2024-11-25 23:05:31', '2024-11-25 23:05:31'),
+(22, 'newtest', 'page', 'newpage@test.com', '$2y$10$wzWUvoMubdNLsjLhgNE7gOOb/48MmETSGA340TUkjL39Uk8oAx/bi', 'teacher', '2024-11-26 09:00:13', '2024-11-26 09:00:13');
 
 --
 -- Indexes for dumped tables
@@ -389,13 +327,6 @@ ALTER TABLE `Questions`
   ADD KEY `quiz_id` (`quiz_id`);
 
 --
--- Indexes for table `question_options`
---
-ALTER TABLE `question_options`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `question_id` (`question_id`);
-
---
 -- Indexes for table `QuizResults`
 --
 ALTER TABLE `QuizResults`
@@ -421,12 +352,6 @@ ALTER TABLE `Responses`
   ADD KEY `selected_answer_id` (`selected_answer_id`);
 
 --
--- Indexes for table `short_answer_details`
---
-ALTER TABLE `short_answer_details`
-  ADD PRIMARY KEY (`question_id`);
-
---
 -- Indexes for table `Users`
 --
 ALTER TABLE `Users`
@@ -441,7 +366,7 @@ ALTER TABLE `Users`
 -- AUTO_INCREMENT for table `Answers`
 --
 ALTER TABLE `Answers`
-  MODIFY `answer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `answer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `Events`
@@ -465,13 +390,7 @@ ALTER TABLE `Groups`
 -- AUTO_INCREMENT for table `Questions`
 --
 ALTER TABLE `Questions`
-  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
-
---
--- AUTO_INCREMENT for table `question_options`
---
-ALTER TABLE `question_options`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `QuizResults`
@@ -483,7 +402,7 @@ ALTER TABLE `QuizResults`
 -- AUTO_INCREMENT for table `Quizzes`
 --
 ALTER TABLE `Quizzes`
-  MODIFY `quiz_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `quiz_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `Responses`
@@ -495,7 +414,7 @@ ALTER TABLE `Responses`
 -- AUTO_INCREMENT for table `Users`
 --
 ALTER TABLE `Users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Constraints for dumped tables
@@ -521,12 +440,6 @@ ALTER TABLE `Questions`
   ADD CONSTRAINT `questions_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `Quizzes` (`quiz_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `question_options`
---
-ALTER TABLE `question_options`
-  ADD CONSTRAINT `question_options_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `Questions` (`question_id`) ON DELETE CASCADE;
-
---
 -- Constraints for table `QuizResults`
 --
 ALTER TABLE `QuizResults`
@@ -547,12 +460,6 @@ ALTER TABLE `Responses`
   ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`result_id`) REFERENCES `QuizResults` (`result_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `Questions` (`question_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `responses_ibfk_3` FOREIGN KEY (`selected_answer_id`) REFERENCES `Answers` (`answer_id`) ON DELETE SET NULL;
-
---
--- Constraints for table `short_answer_details`
---
-ALTER TABLE `short_answer_details`
-  ADD CONSTRAINT `short_answer_details_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `Questions` (`question_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

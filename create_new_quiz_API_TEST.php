@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Error: " . $stmt->error;
     }
     
-    // $stmt->close();
+    $stmt->close();
 }
 
 $conn->close();
@@ -115,19 +115,13 @@ $conn->close();
     <title>Create New Quiz</title>
 </head>
 <body>
-    <?php include 'components/sidebar.php'; ?>
-
-    <div class="main-content">
-        <div class="container">
-            <h1>Create New Quiz</h1>
-            <form id="quiz-form" method="post" action="">
-                <label for="title">Title:</label>
-                <input type="text" id="title" name="title" required><br><br>
+    <h1>Create New Quiz</h1>
+    <form method="post" action="">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br><br>
 
         <label for="description">Description:</label>
         <textarea id="description" name="description"></textarea><br><br>
-        <!-- Import CSS -->
-        <link rel="stylesheet" href="new_quiz.css">
 
         <label for="mode">Mode:</label>
         <select id="mode" name="mode" required>
@@ -153,25 +147,40 @@ $conn->close();
         <label for="time_limit">Time Limit (minutes):</label>
         <input type="number" id="time_limit" name="time_limit" min="0"><br><br>
 
-        <section class="questions-section">
-            <h2>Questions</h2>
-            <div id="questions"></div>
-            <button type="button" class="btn btn-secondary btn-add-question" onclick="addQuestion()">
-                <i class='bx bx-plus'></i>
-                Add Question
-            </button>
-        </section>
+        <h2>Questions</h2>
+        <div id="questions">
+            <div class="question">
+                <label for="question_text">Question Text:</label>
+                <textarea id="question_text" name="questions[0][question_text]" required></textarea><br><br>
 
-        <div class="button-container">
-            <button type="button" class="btn btn-secondary">
-                <i class='bx bx-save'></i>
-                Save Draft
-            </button>
-            <button type="submit" class="btn btn-primary">
-                <i class='bx bx-check'></i>
-                Create Quiz
-            </button>
+                <label for="type">Type:</label>
+                <select id="type" name="questions[0][type]" required onchange="updateAnswers(0)">
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="multiple_answer">Multiple Answer</option>
+                    <option value="true_false">True/False</option>
+                    <option value="short_answer">Short Answer</option>
+                </select><br><br>
+
+                <label for="points">Points:</label>
+                <input type="number" id="points" name="questions[0][points]" required><br><br>
+
+                <h3>Answers</h3>
+                <div class="answers" id="answers_0">
+                    <div class="answer">
+                        <label for="answer_text">Answer Text:</label>
+                        <textarea id="answer_text" name="questions[0][answers][0][answer_text]" required></textarea><br><br>
+
+                        <label for="is_correct">Is Correct:</label>
+                        <input type="checkbox" id="is_correct" name="questions[0][answers][0][is_correct]" value="1"><br><br>
+
+                        <label for="model_answer">Model Answer:</label>
+                        <textarea id="model_answer" name="questions[0][answers][0][model_answer]"></textarea><br><br>
+                    </div>
+                </div>
+            </div>
         </div>
+        <button type="button" onclick="addQuestion()">Add Question</button><br><br>
+        <input type="submit" value="Create Quiz">
     </form>
 
     <script>
@@ -284,49 +293,6 @@ $conn->close();
             
             answersDiv.querySelector('.answer').appendChild(newOption);
         }
-
-        document.getElementById('quiz-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Show loading state
-            const submitButton = this.querySelector('button[type="submit"]');
-            submitButton.classList.add('loading');
-            
-            const formData = new FormData(this);
-            
-            // Add debug logging
-            console.log('Submitting form data:', Object.fromEntries(formData));
-            
-            fetch('actions/create_quiz.php', {  // Change the URL to point to a separate processing file
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Show success message
-                    alert(data.message);
-                    // Redirect to quiz list
-                    window.location.href = 'quiz.php';
-                } else {
-                    // Show error message
-                    alert(data.message || 'Error creating quiz');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while creating the quiz. Please check the console for details.');
-            })
-            .finally(() => {
-                // Remove loading state
-                submitButton.classList.remove('loading');
-            });
-        });
     </script>
 </body>
 </html>
