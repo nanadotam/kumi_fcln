@@ -162,7 +162,7 @@ $questions = getQuizQuestions($quizId);
                         <button onclick="editQuiz(<?= $quizId ?>)" class="edit-quiz-btn">
                             <i class='bx bxs-edit'></i> Edit Quiz
                         </button>
-                        <button onclick="confirmDelete(<?= $quizId ?>)" class="delete-quiz-btn">
+                        <button class="delete-quiz-btn" onclick="deleteQuiz(<?= $quizId ?>)">
                             <i class='bx bxs-trash'></i> Delete Quiz
                         </button>
                     <?php endif; ?>
@@ -198,7 +198,11 @@ $questions = getQuizQuestions($quizId);
             });
         });
 
-        function confirmDelete(quizId) {
+        function editQuiz(quizId) {
+            window.location.href = `edit_quiz.php?id=${quizId}`;
+        }
+
+        function deleteQuiz(quizId) {
             if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
                 fetch('../actions/delete_quiz.php', {
                     method: 'POST',
@@ -210,7 +214,7 @@ $questions = getQuizQuestions($quizId);
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Redirect back to quiz list
+                        // Redirect to quiz list page after successful deletion
                         window.location.href = 'quiz.php';
                     } else {
                         alert(data.message || 'Error deleting quiz');
@@ -221,10 +225,6 @@ $questions = getQuizQuestions($quizId);
                     alert('An error occurred while deleting the quiz');
                 });
             }
-        }
-
-        function editQuiz(quizId) {
-            window.location.href = `edit_quiz.php?id=${quizId}`;
         }
     </script>
 </body>
