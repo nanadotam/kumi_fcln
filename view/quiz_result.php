@@ -139,6 +139,9 @@ try {
         <div class="actions">
             <a href="student_dashboard.php" class="btn">Back to Dashboard</a>
             <a href="quiz.php" class="btn">Take Another Quiz</a>
+            <a href="../view/live_leaderboard.php?code=<?= $quiz['quiz_code'] ?>" class="btn btn-primary">
+                <i class='bx bx-trophy'></i> View Leaderboard
+            </a>
         </div>
     </main>
 </body>

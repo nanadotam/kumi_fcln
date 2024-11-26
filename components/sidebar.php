@@ -74,7 +74,7 @@ $userRole = $_SESSION['role'];
     }
 </style>
 
-<div class="sidebar">
+<div class="sidebar <?= $currentPage === 'leaderboard' ? 'sidebar-leaderboard' : '' ?>">
     <div class="logo-container">
         <img src="../assets/images/KUMI_logo.svg" alt="Kumi Logo">
     </div>
@@ -91,6 +91,10 @@ $userRole = $_SESSION['role'];
             <i class='bx bx-user'></i>
             <span>Profile</span>
         </a>
+        <a href="interactive_leaderboard.php" onclick="showQuizCodeModal(event)" class="sidebar-link">
+            <i class='bx bx-trophy'></i>
+            <span>Leaderboard</span>
+        </a>
         <a href="#" onclick="confirmLogout(event)">
             <i class='bx bx-log-out'></i>
             <span>Logout</span>
@@ -105,4 +109,4 @@ function confirmLogout(event) {
         window.location.href = '../actions/logout.php';
     }
 }
-</script> 
+</script>
