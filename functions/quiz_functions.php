@@ -1,5 +1,5 @@
 <?php
-require_once '../utils/Database.php';
+require_once __DIR__ . '/../utils/Database.php';
 
 function createQuiz($title, $description, $createdBy, $mode, $deadline = null) {
     $db = Database::getInstance();
@@ -23,12 +23,28 @@ function getQuizzesByTeacher($teacherId) {
 }
 
 function getQuizById($quizId) {
-    global $conn;
-    $stmt = $conn->prepare("SELECT * FROM quizzes WHERE quiz_id = ?");
-    $stmt->bind_param("i", $quizId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    return $result->fetch_assoc();
+    try {
+        $db = Database::getInstance();
+        global $conn;
+        
+        if (!$db && !$conn) {
+            throw new Exception("Database connection failed");
+        }
+        
+        $stmt = ($db ?? $conn)->prepare("SELECT * FROM Quizzes WHERE quiz_id = ?");
+        if (!$stmt) {
+            throw new Exception("Failed to prepare statement");
+        }
+        
+        $stmt->bind_param("i", $quizId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+        
+    } catch (Exception $e) {
+        error_log("Error in getQuizById: " . $e->getMessage());
+        return null;
+    }
 }
 
 function getQuizQuestions($quizId) {

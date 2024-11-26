@@ -17,6 +17,7 @@ if (!$quizId) {
 // Get quiz details
 $quiz = getQuizById($quizId);
 if (!$quiz) {
+    $_SESSION['error'] = "Quiz not found or database error occurred";
     header('Location: quiz.php');
     exit();
 }
