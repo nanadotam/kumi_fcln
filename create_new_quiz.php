@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+
 // Database connection
 $servername = "localhost";
 $username = "root";
@@ -108,7 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -288,45 +288,37 @@ $conn->close();
         document.getElementById('quiz-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Show loading state
             const submitButton = this.querySelector('button[type="submit"]');
             submitButton.classList.add('loading');
             
             const formData = new FormData(this);
             
-            // Add debug logging
-            console.log('Submitting form data:', Object.fromEntries(formData));
-            
-            fetch('actions/create_quiz.php', {  // Change the URL to point to a separate processing file
+            fetch('process_quiz.php', {  // Point to the new processing file
                 method: 'POST',
                 body: formData
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Network response status: ' + response.status + ' ' + response.statusText);
                 }
                 return response.json();
             })
             .then(data => {
                 if (data.success) {
-                    // Show success message
-                    alert(data.message);
-                    // Redirect to quiz list
-                    window.location.href = 'quiz.php';
+                    alert('Success: ' + data.message);
+                    window.location.href = '../view/quiz.php';
                 } else {
-                    // Show error message
-                    alert(data.message || 'Error creating quiz');
+                    alert('Error: ' + data.message);
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while creating the quiz. Please check the console for details.');
+                alert('Error details: ' + error.message);
             })
             .finally(() => {
-                // Remove loading state
                 submitButton.classList.remove('loading');
             });
         });
     </script>
 </body>
 </html>
+

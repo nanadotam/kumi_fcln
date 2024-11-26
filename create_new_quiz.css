@@ -1,0 +1,213 @@
+:root {
+    --color-primary: #187045;
+    --color-secondary: #2a9d8f;
+    --color-highlight: #34d399;
+    --color-bg: #f8f9fa;
+    --color-light: #ffffff;
+    --color-dark: #333333;
+    --color-border: #e2e8f0;
+    --color-error: #dc2626;
+    --color-success: #059669;
+    --transition: all 0.3s ease;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+}
+
+/* Main Container */
+.quiz-creator {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    margin-left: 270px;
+}
+
+/* Section Cards */
+.section-card {
+    background: var(--color-light);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+    border: 1px solid var(--color-border);
+}
+
+.section-card h2 {
+    color: var(--color-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-secondary);
+}
+
+/* Form Controls */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--color-dark);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="datetime-local"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background: var(--color-light);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
+}
+
+/* Quiz Title and Description */
+.quiz-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.quiz-description {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Question Cards */
+.question-card {
+    background: var(--color-light);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-border);
+    transition: var(--transition);
+}
+
+.question-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Answer Options */
+.answers-container {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--color-bg);
+    border-radius: var(--border-radius);
+}
+
+.option-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Custom Radio and Checkbox Styles */
+.custom-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.custom-control input[type="radio"],
+.custom-control input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: var(--color-light);
+    border: none;
+}
+
+.btn-secondary {
+    background: var(--color-secondary);
+    color: var(--color-light);
+    border: none;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Add Question Button */
+.add-question-btn {
+    width: 100%;
+    padding: 1rem;
+    margin: 1rem 0;
+    border: 2px dashed var(--color-border);
+    background: transparent;
+    color: var(--color-primary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.add-question-btn:hover {
+    background: rgba(24, 112, 69, 0.05);
+    border-color: var(--color-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .quiz-creator {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .section-card {
+        padding: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.question-card {
+    animation: fadeIn 0.3s ease-out;
+}
