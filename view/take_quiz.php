@@ -110,8 +110,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $textResponse = $response;
                 // You might want to implement a more sophisticated way to check text answers
                 $isCorrect = !empty($textResponse) ? 1 : 0;
+                // Ensure selectedAnswerId is NULL for text responses
+                $selectedAnswerId = null;
             } else {
-                $selectedAnswerId = $response;
+                // For multiple choice and true/false questions
+                $selectedAnswerId = $response ? (int)$response : null;
                 // Check if the selected answer is correct
                 foreach ($question['answers'] as $answer) {
                     if ($answer['answer_id'] == $selectedAnswerId) {
@@ -121,12 +124,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             
-            // Insert response
+            // Insert response with proper NULL handling
             $stmt = $db->prepare("
                 INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct, text_response)
                 VALUES (?, ?, ?, ?, ?)
             ");
-            $stmt->bind_param("iiiis", $resultId, $questionId, $selectedAnswerId, $isCorrect, $textResponse);
+            $stmt->bind_param("iiiss", $resultId, $questionId, $selectedAnswerId, $isCorrect, $textResponse);
             $stmt->execute();
             
             if ($isCorrect) {
@@ -193,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p class="question-text"><?= htmlspecialchars($question['text']) ?></p>
                         
                         <div class="answer-container">
-                            <?php if ($question['type'] === 'multiple_choice'): ?>
+                            <?php if ($question['type'] === 'multiple_choice' || $question['type'] === 'true_false'): ?>
                                 <?php foreach ($question['answers'] as $answer): ?>
                                     <div class="answer-option">
                                         <input type="radio" 
@@ -206,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </label>
                                     </div>
                                 <?php endforeach; ?>
-                            <?php else: ?>
+                            <?php elseif ($question['type'] === 'short_answer'): ?>
                                 <div class="text-answer">
                                     <textarea 
                                         name="responses[q_<?= $question['question_id'] ?>]"

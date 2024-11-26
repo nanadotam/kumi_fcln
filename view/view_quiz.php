@@ -45,17 +45,6 @@ $questions = getQuizQuestions($quizId);
                 <i class='bx bx-arrow-back'></i> Back to Quizzes
             </a>
 
-            <div class="quiz-progress-floating">
-                <div class="progress-inner">
-                    <div class="progress-text">
-                        Question <span id="currentQuestion">1</span> of <?= count($questions) ?>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                </div>
-            </div>
-
             <div class="quiz-container">
                 <div class="quiz-header">
                     <div class="preview-badge">
@@ -156,9 +145,7 @@ $questions = getQuizQuestions($quizId);
 
                 <div class="quiz-actions">
                     <?php if ($_SESSION['role'] === 'teacher'): ?>
-                        <a href="preview_quiz.php?id=<?= $quizId ?>" class="preview-quiz-btn">
-                            <i class='bx bx-play'></i> Preview Quiz
-                        </a>
+                
                         <button onclick="editQuiz(<?= $quizId ?>)" class="edit-quiz-btn">
                             <i class='bx bxs-edit'></i> Edit Quiz
                         </button>

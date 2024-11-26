@@ -104,5 +104,4 @@ function recordFailedAttempt($conn, $ip_address) {
     $stmt->execute();
 }
 
-
 ?>

@@ -120,10 +120,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) 
                             VALUES (?, ?, ?, ?)");
                             
-                    foreach ($question['answers'] as $answer) {
+                    foreach ($question['answers'] as $index => $answer) {
                         $answer_text = $answer['answer_text'];
-                        $is_correct = isset($answer['is_correct']) ? 1 : 0;
-                        $order_position = NULL;
+                        $is_correct = isset($answer['is_correct']) && $answer['is_correct'] == 1 ? 1 : 0;
+                        $order_position = $index + 1;
 
                         $stmt_answer->bind_param("isii", $question_id, $answer_text, $is_correct, $order_position);
                         $stmt_answer->execute();
