@@ -176,6 +176,36 @@ if ($userRole === 'student') {
         });
     }
     </script>
+    <script>
+    function deleteQuiz(quizId) {
+        if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
+            fetch('../actions/delete_quiz.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ quiz_id: quizId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the quiz card from the UI
+                    const quizCard = document.querySelector(`.quiz-card[data-quiz-id="${quizId}"]`);
+                    quizCard.remove();
+                    
+                    // Show success message
+                    alert('Quiz deleted successfully');
+                } else {
+                    alert(data.message || 'Error deleting quiz');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the quiz');
+            });
+        }
+    }
+    </script>
 </body>
 </html>
 
