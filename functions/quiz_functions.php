@@ -345,3 +345,37 @@ function deleteQuiz($quizId) {
         return false;
     }
 }
+
+function getLeaderboardRankings($quizCode) {
+    $db = Database::getInstance();
+    
+    $sql = "SELECT 
+                l.*,
+                u.first_name,
+                u.last_name,
+                RANK() OVER (ORDER BY l.score DESC) as rank
+            FROM QuizLeaderboard l
+            JOIN Users u ON l.user_id = u.user_id
+            JOIN Quizzes q ON l.quiz_id = q.quiz_id
+            WHERE q.quiz_code = ?
+            ORDER BY l.score DESC
+            LIMIT 50";
+            
+    $result = $db->query($sql, [$quizCode]);
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function getLeaderboardStats($quizCode) {
+    $db = Database::getInstance();
+    
+    $sql = "SELECT 
+                COUNT(*) as total_participants,
+                ROUND(AVG(l.score), 1) as average_score,
+                MAX(l.score) as highest_score
+            FROM QuizLeaderboard l
+            JOIN Quizzes q ON l.quiz_id = q.quiz_id
+            WHERE q.quiz_code = ?";
+            
+    $result = $db->query($sql, [$quizCode]);
+    return $result->fetch_assoc();
+}
