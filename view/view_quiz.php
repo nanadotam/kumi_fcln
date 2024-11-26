@@ -28,6 +28,7 @@ $questions = getQuizQuestions($quizId);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,9 +37,10 @@ $questions = getQuizQuestions($quizId);
     <link rel="stylesheet" href="../assets/css/take_quiz.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
+
 <body>
     <?php include_once '../components/sidebar.php'; ?>
-    
+
     <main>
         <div class="quiz-wrapper">
             <a href="quiz.php" class="back-link">
@@ -53,8 +55,10 @@ $questions = getQuizQuestions($quizId);
                     <h1><?= htmlspecialchars($quiz['title']) ?></h1>
                     <p class="description"><?= htmlspecialchars($quiz['description']) ?></p>
                     <div class="quiz-metadata">
-                        <span><i class='bx bx-calendar'></i> Created: <?= date('M d, Y', strtotime($quiz['created_at'])) ?></span>
-                        <span><i class='bx bx-user'></i> Created by: <?= htmlspecialchars($quiz['teacher_name']) ?></span>
+                        <span><i class='bx bx-calendar'></i> Created:
+                            <?= date('M d, Y', strtotime($quiz['created_at'])) ?></span>
+                        <span><i class='bx bx-user'></i> Created by:
+                            <?= htmlspecialchars($quiz['teacher_name']) ?></span>
                         <?php if ($_SESSION['role'] === 'teacher'): ?>
                             <span><i class='bx bx-code-alt'></i> Code: <?= htmlspecialchars($quiz['quiz_code']) ?></span>
                         <?php endif; ?>
@@ -67,36 +71,34 @@ $questions = getQuizQuestions($quizId);
                             <div class="question-header">
                                 <h3>Question <?= $index + 1 ?></h3>
                                 <span class="question-type">
-                                    <?php 
-                                        switch($question['type']) {
-                                            case 'multiple_choice':
-                                                echo 'Multiple Choice';
-                                                break;
-                                            case 'multiple_answer':
-                                                echo 'Multiple Answer';
-                                                break;
-                                            case 'true_false':
-                                                echo 'True/False';
-                                                break;
-                                            case 'short_answer':
-                                                echo 'Short Answer';
-                                                break;
-                                        }
+                                    <?php
+                                    switch ($question['type']) {
+                                        case 'multiple_choice':
+                                            echo 'Multiple Choice';
+                                            break;
+                                        case 'multiple_answer':
+                                            echo 'Multiple Answer';
+                                            break;
+                                        case 'true_false':
+                                            echo 'True/False';
+                                            break;
+                                        case 'short_answer':
+                                            echo 'Short Answer';
+                                            break;
+                                    }
                                     ?>
                                 </span>
                             </div>
-                            
+
                             <p class="question-text"><?= htmlspecialchars($question['text']) ?></p>
-                            
+
                             <div class="answer-options">
-                                <?php switch($question['type']): 
+                                <?php switch ($question['type']):
                                     case 'multiple_choice': ?>
                                         <?php foreach ($question['answers'] as $answer): ?>
                                             <div class="answer-option">
-                                                <input type="radio" 
-                                                       id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
-                                                       name="q_<?= $question['question_id'] ?>" 
-                                                       disabled>
+                                                <input type="radio" id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
+                                                    name="q_<?= $question['question_id'] ?>" disabled>
                                                 <label for="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>">
                                                     <?= htmlspecialchars($answer['text']) ?>
                                                 </label>
@@ -107,10 +109,9 @@ $questions = getQuizQuestions($quizId);
                                     <?php case 'multiple_answer': ?>
                                         <?php foreach ($question['answers'] as $answer): ?>
                                             <div class="answer-option">
-                                                <input type="checkbox" 
-                                                       id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
-                                                       name="q_<?= $question['question_id'] ?>[]" 
-                                                       disabled>
+                                                <input type="checkbox"
+                                                    id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
+                                                    name="q_<?= $question['question_id'] ?>[]" disabled>
                                                 <label for="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>">
                                                     <?= htmlspecialchars($answer['text']) ?>
                                                 </label>
@@ -121,10 +122,8 @@ $questions = getQuizQuestions($quizId);
                                     <?php case 'true_false': ?>
                                         <?php foreach ($question['answers'] as $answer): ?>
                                             <div class="answer-option">
-                                                <input type="radio" 
-                                                       id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
-                                                       name="q_<?= $question['question_id'] ?>" 
-                                                       disabled>
+                                                <input type="radio" id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
+                                                    name="q_<?= $question['question_id'] ?>" disabled>
                                                 <label for="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>">
                                                     <?= htmlspecialchars($answer['text']) ?>
                                                 </label>
@@ -145,7 +144,7 @@ $questions = getQuizQuestions($quizId);
 
                 <div class="quiz-actions">
                     <?php if ($_SESSION['role'] === 'teacher'): ?>
-                
+
                         <button onclick="editQuiz(<?= $quizId ?>)" class="edit-quiz-btn">
                             <i class='bx bxs-edit'></i> Edit Quiz
                         </button>
@@ -198,21 +197,22 @@ $questions = getQuizQuestions($quizId);
                     },
                     body: JSON.stringify({ quiz_id: quizId })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Redirect to quiz list page after successful deletion
-                        window.location.href = 'quiz.php';
-                    } else {
-                        alert(data.message || 'Error deleting quiz');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while deleting the quiz');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Redirect to quiz list page after successful deletion
+                            window.location.href = 'quiz.php';
+                        } else {
+                            alert(data.message || 'Error deleting quiz');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting the quiz');
+                    });
             }
         }
     </script>
 </body>
-</html> 
+
+</html>
