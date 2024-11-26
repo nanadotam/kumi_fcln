@@ -200,24 +200,26 @@ $questions = getQuizQuestions($quizId);
 
         function confirmDelete(quizId) {
             if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '';
-
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'delete_quiz';
-                input.value = '1';
-
-                const quizInput = document.createElement('input');
-                quizInput.type = 'hidden';
-                quizInput.name = 'quiz_id';
-                quizInput.value = quizId;
-
-                form.appendChild(input);
-                form.appendChild(quizInput);
-                document.body.appendChild(form);
-                form.submit();
+                fetch('../actions/delete_quiz.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ quiz_id: quizId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect back to quiz list
+                        window.location.href = 'quiz.php';
+                    } else {
+                        alert(data.message || 'Error deleting quiz');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the quiz');
+                });
             }
         }
 
