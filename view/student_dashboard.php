@@ -4,7 +4,6 @@ require_once '../functions/auth_functions.php';
 require_once '../functions/quiz_functions.php';
 
 $currentPage = 'dashboard';
-include_once '../components/sidebar.php';
 
 // Check if user is logged in and is a student
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
