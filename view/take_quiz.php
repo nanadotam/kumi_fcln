@@ -76,6 +76,9 @@ while ($row = $result->fetch_assoc()) {
     }
 }
 
+// After fetching questions and answers, add this before the HTML:
+$quiz['questions'] = array_values($questions);  // Convert associative array to indexed array
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $responses = $_POST['responses'] ?? [];
@@ -96,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resultId = $db->insert_id;
         
         // Process each response
-        foreach ($questions as $question) {
+        foreach ($quiz['questions'] as $question) {
             $questionId = $question['question_id'];
             $response = $responses["q_{$questionId}"] ?? null;
             $isCorrect = 0;
