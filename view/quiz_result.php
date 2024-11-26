@@ -50,6 +50,9 @@ try {
             
     $responses = $db->query($sql, [$resultId])->fetch_all(MYSQLI_ASSOC);
     
+    $quizCodeResult = $db->query("SELECT quiz_code FROM Quizzes WHERE quiz_id = ?", [$quizId]);
+    $quizCode = $quizCodeResult->fetch_assoc()['quiz_code'];
+    
 } catch (Exception $e) {
     $_SESSION['error'] = $e->getMessage();
     header('Location: student_dashboard.php');
@@ -139,7 +142,7 @@ try {
         <div class="actions">
             <a href="student_dashboard.php" class="btn">Back to Dashboard</a>
             <a href="quiz.php" class="btn">Take Another Quiz</a>
-            <a href="../view/live_leaderboard.php?code=<?= $quiz['quiz_code'] ?>" class="btn btn-primary">
+            <a href="interactive_leaderboard.php?quiz_id=<?= $quizId ?>" class="btn btn-primary">
                 <i class='bx bx-trophy'></i> View Leaderboard
             </a>
         </div>

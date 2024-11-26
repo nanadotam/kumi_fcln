@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $question_id = $conn->insert_id;
                 $stmt->close();
 
-                // Handle true/false questions differently
+                // Handle different question types
                 if ($type === 'true_false') {
                     // Insert True option
                     $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) 
@@ -115,8 +115,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt_answer->bind_param("iii", $question_id, $false_is_correct, $order_position);
                     $stmt_answer->execute();
                     $stmt_answer->close();
+                } elseif ($type === 'short_answer') {
+                    // For short answer questions, we only need to store the model answer
+                    $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) 
+                            VALUES (?, ?, 1, 1)");
+                    $model_answer = $question['model_answer'] ?? '';
+                    $stmt_answer->bind_param("is", $question_id, $model_answer);
+                    $stmt_answer->execute();
+                    $stmt_answer->close();
                 } else {
-                    // Handle other question types as before
+                    // Handle multiple choice and multiple answer questions
                     $stmt_answer = $conn->prepare("INSERT INTO Answers (question_id, answer_text, is_correct, order_position) 
                             VALUES (?, ?, ?, ?)");
                             
@@ -128,7 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $stmt_answer->bind_param("isii", $question_id, $answer_text, $is_correct, $order_position);
                         $stmt_answer->execute();
                     }
-                    
                     $stmt_answer->close();
                 }
             } else {

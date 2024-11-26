@@ -153,17 +153,13 @@ if (!isset($_SESSION['user_id'])) {
                         <input type="radio" id="is_correct" name="questions[${questionIndex}][answers][is_correct]" value="0"><br><br>
                     </div>
                 `;
-            } else {
+            } else if (typeSelect.value === 'short_answer') {
                 answersDiv.innerHTML = `
                     <div class="answer">
-                        <label for="answer_text">Answer Text:</label>
-                        <textarea id="answer_text" name="questions[${questionIndex}][answers][0][answer_text]" required></textarea><br><br>
-
-                        <label for="is_correct">Is Correct:</label>
-                        <input type="checkbox" id="is_correct" name="questions[${questionIndex}][answers][0][is_correct]" value="1"><br><br>
-
-                        <label for="model_answer">Model Answer:</label>
-                        <textarea id="model_answer" name="questions[${questionIndex}][answers][0][model_answer]"></textarea><br><br>
+                        <label for="model_answer_${questionIndex}">Model Answer:</label>
+                        <textarea id="model_answer_${questionIndex}" 
+                                 name="questions[${questionIndex}][model_answer]" 
+                                 required></textarea>
                     </div>
                 `;
             }
