@@ -1,48 +1,80 @@
 <?php
 session_start();
-require_once '../utils/Database.php';
-require_once '../functions/quiz_functions.php';
-
-// Set JSON content type header
 header('Content-Type: application/json');
 
-// Ensure request is POST and user is logged in
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
-    exit();
+// Check if user is logged in and is a teacher
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Unauthorized access'
+    ]);
+    exit;
 }
 
-// Get the JSON data from the request
+// Get the JSON data
 $data = json_decode(file_get_contents('php://input'), true);
 $quizId = $data['quiz_id'] ?? null;
 
 if (!$quizId) {
-    echo json_encode(['success' => false, 'message' => 'Quiz ID is required']);
-    exit();
+    echo json_encode([
+        'success' => false,
+        'message' => 'Quiz ID is required'
+    ]);
+    exit;
 }
 
+// Database connection
+$db = new mysqli("localhost", "root", "", "kumidb");
+
+if ($db->connect_error) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database connection failed'
+    ]);
+    exit;
+}
+
+// Verify that the quiz belongs to the current teacher
+$stmt = $db->prepare("SELECT created_by FROM Quizzes WHERE quiz_id = ?");
+$stmt->bind_param("i", $quizId);
+$stmt->execute();
+$result = $stmt->get_result();
+$quiz = $result->fetch_assoc();
+
+if (!$quiz || $quiz['created_by'] !== $_SESSION['user_id']) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'You do not have permission to delete this quiz'
+    ]);
+    exit;
+}
+
+// Start transaction
+$db->begin_transaction();
+
 try {
-    $db = Database::getInstance();
-    
-    // Start transaction
-    $db->begin_transaction();
-    
-    // Delete related records first
-    $tables = ['QuizResults', 'Questions', 'Quizzes'];
-    
-    foreach ($tables as $table) {
-        $sql = "DELETE FROM $table WHERE quiz_id = ?";
-        $db->query($sql, [$quizId]);
+    // The foreign key constraints will handle the deletion of related records
+    $stmt = $db->prepare("DELETE FROM Quizzes WHERE quiz_id = ? AND created_by = ?");
+    $stmt->bind_param("ii", $quizId, $_SESSION['user_id']);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $db->commit();
+        echo json_encode([
+            'success' => true,
+            'message' => 'Quiz deleted successfully'
+        ]);
+    } else {
+        throw new Exception('Failed to delete quiz');
     }
-    
-    // Commit transaction
-    $db->commit();
-    
-    echo json_encode(['success' => true]);
+
 } catch (Exception $e) {
-    if (isset($db)) {
-        $db->rollback();
-    }
-    error_log("Error deleting quiz: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'Database error occurred']);
-} 
+    $db->rollback();
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error: ' . $e->getMessage()
+    ]);
+}
+
+$db->close();
+?> 
