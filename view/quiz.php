@@ -95,6 +95,18 @@ if ($userRole === 'student') {
 
     <script src="../assets/js/quiz.js"></script>
     <script src="../assets/js/take_quiz.js"></script>
+    <script>
+    function editQuiz(quizId) {
+        // Redirect to edit_quiz.php with the quiz ID
+        window.location.href = `edit_quiz.php?id=${quizId}`;
+    }
+
+    function deleteQuiz(quizId) {
+        if (confirm('Are you sure you want to delete this quiz?')) {
+            // Existing delete functionality...
+        }
+    }
+    </script>
 </body>
 </html>
 
