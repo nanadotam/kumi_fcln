@@ -24,6 +24,12 @@ include '../db/config.php';
 
     <div class="login-container">
         <h2>Login</h2>
+        <?php
+        if (isset($_SESSION['login_error'])) {
+            echo '<div class="error-message">' . htmlspecialchars($_SESSION['login_error']) . '</div>';
+            unset($_SESSION['login_error']);
+        }
+        ?>
         <form id="loginForm" method="POST" action="../actions/login_user.php">
             <input type="text" id="username" name="email" required placeholder="Enter your email">
             <span style="color: tomato" id="usernameError" class="error"></span>
@@ -38,5 +44,17 @@ include '../db/config.php';
     <footer>
         <p>&copy; 2024 Kumi - All rights reserved.</p>
     </footer>
+
+    <style>
+        .error-message {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
 </body>
 </html>

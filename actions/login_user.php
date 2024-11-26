@@ -50,18 +50,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // Handle invalid password
             error_log("Invalid password.");
-            $_SESSION['notification'] = "Invalid password.";
+            $_SESSION['login_error'] = "Invalid email or password. Please try again.";
             header("Location: ../view/login.php");
+            $stmt->close();
+            $conn->close();
             exit();
         }
     } else {
         // Handle non-existent user
         error_log("No user found with that email.");
-        $_SESSION['notification'] = "No user found with that email.";
+        $_SESSION['login_error'] = "Invalid email or password. Please try again.";
         header("Location: ../view/login.php");
         $stmt->close();
         $conn->close();
         exit();
     }
 }
+
+
 ?>
