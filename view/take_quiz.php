@@ -12,62 +12,145 @@ if (!isset($_SESSION['user_id'])) {
 $quizId = $_GET['id'] ?? null;
 $userId = $_SESSION['user_id'];
 
+// Database connection
+$db = new mysqli("localhost", "root", "", "kumidb");
+
 // Validate quiz access
-if (!$quizId || !canAccessQuiz($userId, $quizId)) {
+$stmt = $db->prepare("
+    SELECT q.*, u.role 
+    FROM Quizzes q 
+    JOIN Users u ON u.user_id = ?
+    WHERE q.quiz_id = ? AND (
+        q.mode = 'individual' OR 
+        (q.mode = 'group' AND EXISTS (
+            SELECT 1 FROM GroupMembers gm 
+            WHERE gm.user_id = ? AND gm.group_id IN (
+                SELECT group_id FROM GroupMembers
+            )
+        ))
+    )
+");
+
+$stmt->bind_param("iii", $userId, $quizId, $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
     header('Location: dashboard.php');
     exit();
 }
 
-$quiz = getQuizById($quizId);
-if (!$quiz) {
-    header('Location: dashboard.php');
-    exit();
+$quiz = $result->fetch_assoc();
+
+// Get questions and answers
+$stmt = $db->prepare("
+    SELECT q.*, a.answer_id, a.answer_text, a.is_correct 
+    FROM Questions q
+    LEFT JOIN Answers a ON q.question_id = a.question_id
+    WHERE q.quiz_id = ?
+    ORDER BY q.order_position, q.question_id
+");
+
+$stmt->bind_param("i", $quizId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$questions = [];
+while ($row = $result->fetch_assoc()) {
+    $questionId = $row['question_id'];
+    if (!isset($questions[$questionId])) {
+        $questions[$questionId] = [
+            'question_id' => $questionId,
+            'text' => $row['question_text'],
+            'type' => $row['type'],
+            'points' => $row['points'],
+            'answers' => []
+        ];
+    }
+    if ($row['answer_id']) {
+        $questions[$questionId]['answers'][] = [
+            'answer_id' => $row['answer_id'],
+            'text' => $row['answer_text'],
+            'is_correct' => $row['is_correct']
+        ];
+    }
 }
+
+// After fetching questions and answers, add this before the HTML:
+$quiz['questions'] = array_values($questions);  // Convert associative array to indexed array
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $responses = $_POST['responses'] ?? [];
-    $quizResults = [];
     $totalScore = 0;
-    $totalQuestions = count($quiz['questions']);
-    $correctAnswers = 0;
-
-    foreach ($quiz['questions'] as $question) {
-        $questionId = $question['question_id'];
-        $response = $_POST['responses']["q_{$questionId}"] ?? null;
+    $totalPoints = 0;
+    
+    // Start transaction
+    $db->begin_transaction();
+    
+    try {
+        // Insert quiz result
+        $stmt = $db->prepare("
+            INSERT INTO QuizResults (quiz_id, user_id, score) 
+            VALUES (?, ?, 0)
+        ");
+        $stmt->bind_param("ii", $quizId, $userId);
+        $stmt->execute();
+        $resultId = $db->insert_id;
         
-        if ($question['type'] === 'short_answer') {
-            $points = validateTextAnswer($questionId, $response);
-            $quizResults[] = [
-                'question_id' => $questionId,
-                'response' => $response,
-                'is_correct' => ($points > 0),
-                'type' => 'short_answer'
-            ];
-        } else {
-            $isCorrect = validateMultipleChoice($questionId, $response);
-            $quizResults[] = [
-                'question_id' => $questionId,
-                'response' => $response,
-                'is_correct' => $isCorrect,
-                'type' => 'multiple_choice'
-            ];
+        // Process each response
+        foreach ($quiz['questions'] as $question) {
+            $questionId = $question['question_id'];
+            $response = $responses["q_{$questionId}"] ?? null;
+            $isCorrect = 0;
+            $selectedAnswerId = null;
+            $textResponse = null;
+            
+            if ($question['type'] === 'short_answer') {
+                $textResponse = $response;
+                // You might want to implement a more sophisticated way to check text answers
+                $isCorrect = !empty($textResponse) ? 1 : 0;
+            } else {
+                $selectedAnswerId = $response;
+                // Check if the selected answer is correct
+                foreach ($question['answers'] as $answer) {
+                    if ($answer['answer_id'] == $selectedAnswerId) {
+                        $isCorrect = $answer['is_correct'];
+                        break;
+                    }
+                }
+            }
+            
+            // Insert response
+            $stmt = $db->prepare("
+                INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct, text_response)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param("iiiis", $resultId, $questionId, $selectedAnswerId, $isCorrect, $textResponse);
+            $stmt->execute();
+            
+            if ($isCorrect) {
+                $totalScore += $question['points'];
+            }
+            $totalPoints += $question['points'];
         }
         
-        if ($isCorrect ?? ($points > 0)) {
-            $correctAnswers++;
-        }
+        // Update final score
+        $finalScore = ($totalScore / $totalPoints) * 100;
+        $stmt = $db->prepare("UPDATE QuizResults SET score = ? WHERE result_id = ?");
+        $stmt->bind_param("di", $finalScore, $resultId);
+        $stmt->execute();
+        
+        $db->commit();
+        
+        // Redirect to results page
+        header("Location: quiz_result.php?id={$resultId}");
+        exit();
+        
+    } catch (Exception $e) {
+        $db->rollback();
+        die("Error: " . $e->getMessage());
     }
-
-    // Calculate final score
-    $score = ($correctAnswers / $totalQuestions) * 100;
-    
-    // Save results to database
-    $resultId = saveQuizResults($userId, $quizId, $score, $quizResults);
-    
-    // Redirect to results page
-    header("Location: quiz_result.php?id={$resultId}");
-    exit();
 }
 ?>
 

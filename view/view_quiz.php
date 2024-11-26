@@ -14,18 +14,6 @@ if (!$quizId) {
     exit();
 }
 
-// Add delete quiz function
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_quiz'])) {
-    $quizId = $_POST['quiz_id'];
-    if (deleteQuiz($quizId)) {
-        $_SESSION['success'] = "Quiz deleted successfully";
-        header('Location: quiz.php');
-        exit();
-    } else {
-        $_SESSION['error'] = "Failed to delete quiz";
-    }
-}
-
 // Get quiz details
 $quiz = getQuizById($quizId);
 if (!$quiz) {
@@ -34,7 +22,7 @@ if (!$quiz) {
     exit();
 }
 
-// Get quiz questions
+// Get quiz questions and their answers
 $questions = getQuizQuestions($quizId);
 ?>
 
@@ -43,8 +31,9 @@ $questions = getQuizQuestions($quizId);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($quiz['title']) ?> - Kumi</title>
+    <title><?= htmlspecialchars($quiz['title']) ?> - Preview</title>
     <link rel="stylesheet" href="../assets/css/view_quiz.css">
+    <link rel="stylesheet" href="../assets/css/take_quiz.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
@@ -56,9 +45,24 @@ $questions = getQuizQuestions($quizId);
                 <i class='bx bx-arrow-back'></i> Back to Quizzes
             </a>
 
+            <div class="quiz-progress-floating">
+                <div class="progress-inner">
+                    <div class="progress-text">
+                        Question <span id="currentQuestion">1</span> of <?= count($questions) ?>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="quiz-container">
                 <div class="quiz-header">
+                    <div class="preview-badge">
+                        <i class='bx bx-show'></i> Preview Mode
+                    </div>
                     <h1><?= htmlspecialchars($quiz['title']) ?></h1>
+                    <p class="description"><?= htmlspecialchars($quiz['description']) ?></p>
                     <div class="quiz-metadata">
                         <span><i class='bx bx-calendar'></i> Created: <?= date('M d, Y', strtotime($quiz['created_at'])) ?></span>
                         <span><i class='bx bx-user'></i> Created by: <?= htmlspecialchars($quiz['teacher_name']) ?></span>
@@ -68,24 +72,55 @@ $questions = getQuizQuestions($quizId);
                     </div>
                 </div>
 
-                <?php if (!empty($quiz['description'])): ?>
-                    <div class="description">
-                        <h2>Description</h2>
-                        <p><?= nl2br(htmlspecialchars($quiz['description'])) ?></p>
-                    </div>
-                <?php endif; ?>
-
                 <div class="questions-section">
-                    <h2 class="questions-header">Questions</h2>
-                    <?php if (empty($questions)): ?>
+                    <?php if (empty($quiz['questions'])): ?>
                         <div class="no-questions-message">
                             No questions have been added to this quiz yet.
                         </div>
+                    <?php else: ?>
+                        <?php foreach ($quiz['questions'] as $index => $question): ?>
+                            <div class="question-item">
+                                <div class="question-header">
+                                    <h3>Question <?= $index + 1 ?></h3>
+                                    <span class="question-type"><?= ucfirst(str_replace('_', ' ', $question['type'])) ?></span>
+                                </div>
+                                
+                                <p class="question-text"><?= htmlspecialchars($question['text']) ?></p>
+                                
+                                <div class="answer-container">
+                                    <?php if ($question['type'] === 'multiple_choice' || $question['type'] === 'true_false'): ?>
+                                        <?php foreach ($question['answers'] as $answer): ?>
+                                            <div class="answer-option">
+                                                <input type="radio" 
+                                                       disabled
+                                                       id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
+                                                       name="q_<?= $question['question_id'] ?>">
+                                                <label for="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>">
+                                                    <?= htmlspecialchars($answer['text']) ?>
+                                                </label>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php elseif ($question['type'] === 'short_answer'): ?>
+                                        <div class="text-answer">
+                                            <textarea 
+                                                class="text-input"
+                                                placeholder="Students will enter their answer here..."
+                                                disabled
+                                                rows="6"
+                                            ></textarea>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
 
                 <div class="quiz-actions">
                     <?php if ($_SESSION['role'] === 'teacher'): ?>
+                        <a href="preview_quiz.php?id=<?= $quizId ?>" class="preview-quiz-btn">
+                            <i class='bx bx-play'></i> Preview Quiz
+                        </a>
                         <button onclick="editQuiz(<?= $quizId ?>)" class="edit-quiz-btn">
                             <i class='bx bxs-edit'></i> Edit Quiz
                         </button>
@@ -99,37 +134,58 @@ $questions = getQuizQuestions($quizId);
     </main>
 
     <script>
-    function confirmDelete(quizId) {
-        if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '';
+        const questionCards = document.querySelectorAll('.question-card');
+        const currentQuestionSpan = document.getElementById('currentQuestion');
+        const progressFill = document.getElementById('progressFill');
+        const totalQuestions = questionCards.length;
 
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'delete_quiz';
-            input.value = '1';
-
-            const quizInput = document.createElement('input');
-            quizInput.type = 'hidden';
-            quizInput.name = 'quiz_id';
-            quizInput.value = quizId;
-
-            form.appendChild(input);
-            form.appendChild(quizInput);
-            document.body.appendChild(form);
-            form.submit();
+        // Show first question by default
+        if (questionCards.length > 0) {
+            questionCards[0].classList.add('active');
+            updateProgress(1);
         }
-    }
 
-    function editQuiz(quizId) {
-        window.location.href = `edit_quiz.php?id=${quizId}`;
-    }
+        function updateProgress(currentQuestion) {
+            currentQuestionSpan.textContent = currentQuestion;
+            const progress = (currentQuestion / totalQuestions) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
 
-    function takeQuiz(quizId) {
-        window.location.href = `take_quiz.php?id=${quizId}`;
-    }
+        // Navigation between questions
+        questionCards.forEach((card, index) => {
+            card.addEventListener('click', () => {
+                questionCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                updateProgress(index + 1);
+            });
+        });
+
+        function confirmDelete(quizId) {
+            if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '';
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'delete_quiz';
+                input.value = '1';
+
+                const quizInput = document.createElement('input');
+                quizInput.type = 'hidden';
+                quizInput.name = 'quiz_id';
+                quizInput.value = quizId;
+
+                form.appendChild(input);
+                form.appendChild(quizInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function editQuiz(quizId) {
+            window.location.href = `edit_quiz.php?id=${quizId}`;
+        }
     </script>
 </body>
-</html> 
 </html> 
