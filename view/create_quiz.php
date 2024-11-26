@@ -115,7 +115,7 @@ $conn->close();
     <title>Create New Quiz</title>
 </head>
 <body>
-    <?php include 'components/sidebar.php'; ?>
+    <?php include '../components/sidebar.php'; ?>
 
     <div class="main-content">
         <div class="container">
@@ -127,7 +127,7 @@ $conn->close();
         <label for="description">Description:</label>
         <textarea id="description" name="description"></textarea><br><br>
         <!-- Import CSS -->
-        <link rel="stylesheet" href="new_quiz.css">
+        <link rel="stylesheet" href="../assets/css/create_quiz.css">
 
         <label for="mode">Mode:</label>
         <select id="mode" name="mode" required>
@@ -293,7 +293,7 @@ $conn->close();
             
             const formData = new FormData(this);
             
-            fetch('process_quiz.php', {  // Point to the new processing file
+            fetch('../actions/process_quiz.php', {  // Point to the new processing file
                 method: 'POST',
                 body: formData
             })
