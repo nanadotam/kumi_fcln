@@ -23,65 +23,21 @@ function getQuizzesByTeacher($teacherId) {
 }
 
 function getQuizById($quizId) {
-    $db = Database::getInstance();
-    
-    $sql = "SELECT q.*, u.first_name, u.last_name 
-            FROM Quizzes q 
-            JOIN Users u ON q.created_by = u.user_id 
-            WHERE q.quiz_id = ?";
-            
-    $result = $db->query($sql, [$quizId]);
-    
-    if ($row = $result->fetch_assoc()) {
-        return [
-            'quiz_id' => (int)$row['quiz_id'],
-            'title' => htmlspecialchars($row['title']),
-            'description' => htmlspecialchars($row['description']),
-            'creator_name' => htmlspecialchars($row['first_name'] . ' ' . $row['last_name']),
-            'mode' => $row['mode'],
-            'deadline' => $row['deadline'],
-            'questions' => getQuizQuestions($quizId)
-        ];
-    }
-    
-    return null;
+    global $conn;
+    $stmt = $conn->prepare("SELECT * FROM quizzes WHERE quiz_id = ?");
+    $stmt->bind_param("i", $quizId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
 }
 
 function getQuizQuestions($quizId) {
-    $db = Database::getInstance();
-    
-    $sql = "SELECT q.*, GROUP_CONCAT(a.answer_id, ':::', a.answer_text, ':::', a.is_correct SEPARATOR '|||') as answers 
-            FROM Questions q 
-            LEFT JOIN Answers a ON q.question_id = a.question_id 
-            WHERE q.quiz_id = ? 
-            GROUP BY q.question_id";
-            
-    $result = $db->query($sql, [$quizId]);
-    
-    $questions = [];
-    while ($row = $result->fetch_assoc()) {
-        $answers = [];
-        if ($row['answers']) {
-            foreach (explode('|||', $row['answers']) as $answer) {
-                list($id, $text, $isCorrect) = explode(':::', $answer);
-                $answers[] = [
-                    'answer_id' => (int)$id,
-                    'text' => htmlspecialchars($text),
-                    'is_correct' => (bool)$isCorrect
-                ];
-            }
-        }
-        
-        $questions[] = [
-            'question_id' => (int)$row['question_id'],
-            'text' => htmlspecialchars($row['question_text']),
-            'type' => $row['type'],
-            'points' => (float)$row['points'],
-            'answers' => $answers
-        ];
-    }
-    
-    return $questions;
+    global $conn;
+    $stmt = $conn->prepare("SELECT * FROM questions WHERE quiz_id = ? ORDER BY question_order");
+    $stmt->bind_param("i", $quizId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
 }
 
 function getAvailableQuizzes($studentId) {
