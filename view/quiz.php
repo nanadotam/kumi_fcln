@@ -75,7 +75,9 @@ if ($userRole === 'student') {
                                 <?php if (in_array($quiz['quiz_id'], $completedQuizIds)): ?>
                                     <a href="quiz_result.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
                                 <?php else: ?>
-                                    <a href="take_quiz.php?id=<?= $quiz['quiz_id'] ?>" class="take-btn">Take Quiz</a>
+                                    <button onclick="takeQuiz(<?= $quiz['quiz_id'] ?>)" class="take-btn">
+                                        Take Quiz
+                                    </button>
                                 <?php endif; ?>
                             <?php else: ?>
                                 <a href="quiz_results.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
@@ -94,6 +96,7 @@ if ($userRole === 'student') {
     </main>
 
     <script src="../assets/js/quiz.js"></script>
+    <script src="../assets/js/take_quiz.js"></script>
 </body>
 </html>
 
