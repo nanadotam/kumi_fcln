@@ -342,6 +342,16 @@ CREATE TABLE `Responses` (
 --
 -- Table structure for table `Users`
 --
+--
+-- Table structure for table `login_attempts`
+--
+CREATE TABLE login_attempts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ip_address VARCHAR(45) NOT NULL,
+    attempts INT NOT NULL DEFAULT 1,
+    last_attempt DATETIME NOT NULL,
+    UNIQUE KEY unique_ip (ip_address)
+);
 
 CREATE TABLE `Users` (
   `user_id` int(11) NOT NULL,

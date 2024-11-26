@@ -78,10 +78,9 @@ if ($userRole === 'student') {
                                     </button>
                                 <?php endif; ?>
                             <?php else: ?>
-                                <a href="quiz_results.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
-                                <button class="edit-btn" onclick="editQuiz(<?= $quiz['quiz_id'] ?>)">
-                                    <i class='bx bxs-edit'></i> Edit
-                                </button>
+                                <a href="view_quiz.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">
+                                    <i class='bx bx-show'></i> View Quiz
+                                </a>
                                 <button class="delete-btn" onclick="deleteQuiz(<?= $quiz['quiz_id'] ?>)" title="Delete Quiz">
                                     <i class='bx bx-trash'></i>
                                 </button>
@@ -93,7 +92,7 @@ if ($userRole === 'student') {
         </div>
     </main>
 
-    <script src="../assets/js/quiz.js"></script>
+    <!-- <script src="../assets/js/quiz.js"></script> -->
     <script src="../assets/js/take_quiz.js"></script>
     <script>
     function editQuiz(quizId) {
