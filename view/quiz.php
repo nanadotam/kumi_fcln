@@ -92,7 +92,7 @@ if ($userRole === 'student') {
         </div>
     </main>
 
-    <script src="../assets/js/quiz.js"></script>
+    <!-- <script src="../assets/js/quiz.js"></script> -->
     <script src="../assets/js/take_quiz.js"></script>
     <script>
     function editQuiz(quizId) {
