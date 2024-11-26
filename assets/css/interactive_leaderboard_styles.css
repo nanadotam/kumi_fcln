@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 :root {
     --black: #000000;
     --white: #ffffff;
@@ -24,9 +25,9 @@
     --color: var(--lightest);
     --surface: var(--darker);
     
-    --font-primary: 'Montserrat', system-ui, -apple-system, sans-serif;
-    --font-mono: 'Overpass Mono', 'Courier New', monospace;
-    --font-display: 'Oswald', var(--font-primary);
+    --font-primary: system-ui, -apple-system, sans-serif;
+    --font-mono: 'Courier New', monospace;
+    --font-display: system-ui, -apple-system, sans-serif;
 }
 
 html {
@@ -386,5 +387,32 @@ h1, h2, h3, h4, h5, h6 {
         margin-left: 70px;
         width: calc(100% - 70px);
     }
+}
+
+/* Keep only the Montserrat specific styles */
+.my-rank-label,
+.my-score-label,
+.rank-header,
+.student-header,
+.score-header,
+.rank-value,
+.student-value,
+.score-value {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+}
+
+.my-rank-label,
+.my-score-label,
+.rank-header,
+.student-header,
+.score-header {
+    font-weight: 600;
+}
+
+.rank-value,
+.student-value,
+.score-value {
+    font-weight: 400;
 }
 
