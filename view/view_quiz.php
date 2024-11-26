@@ -73,47 +73,85 @@ $questions = getQuizQuestions($quizId);
                 </div>
 
                 <div class="questions-section">
-                    <?php if (empty($quiz['questions'])): ?>
-                        <div class="no-questions-message">
-                            No questions have been added to this quiz yet.
-                        </div>
-                    <?php else: ?>
-                        <?php foreach ($quiz['questions'] as $index => $question): ?>
-                            <div class="question-item">
-                                <div class="question-header">
-                                    <h3>Question <?= $index + 1 ?></h3>
-                                    <span class="question-type"><?= ucfirst(str_replace('_', ' ', $question['type'])) ?></span>
-                                </div>
-                                
-                                <p class="question-text"><?= htmlspecialchars($question['text']) ?></p>
-                                
-                                <div class="answer-container">
-                                    <?php if ($question['type'] === 'multiple_choice' || $question['type'] === 'true_false'): ?>
+                    <?php foreach ($quiz['questions'] as $index => $question): ?>
+                        <div class="question-item">
+                            <div class="question-header">
+                                <h3>Question <?= $index + 1 ?></h3>
+                                <span class="question-type">
+                                    <?php 
+                                        switch($question['type']) {
+                                            case 'multiple_choice':
+                                                echo 'Multiple Choice';
+                                                break;
+                                            case 'multiple_answer':
+                                                echo 'Multiple Answer';
+                                                break;
+                                            case 'true_false':
+                                                echo 'True/False';
+                                                break;
+                                            case 'short_answer':
+                                                echo 'Short Answer';
+                                                break;
+                                        }
+                                    ?>
+                                </span>
+                            </div>
+                            
+                            <p class="question-text"><?= htmlspecialchars($question['text']) ?></p>
+                            
+                            <div class="answer-options">
+                                <?php switch($question['type']): 
+                                    case 'multiple_choice': ?>
                                         <?php foreach ($question['answers'] as $answer): ?>
                                             <div class="answer-option">
                                                 <input type="radio" 
-                                                       disabled
                                                        id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
-                                                       name="q_<?= $question['question_id'] ?>">
+                                                       name="q_<?= $question['question_id'] ?>" 
+                                                       disabled>
                                                 <label for="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>">
                                                     <?= htmlspecialchars($answer['text']) ?>
                                                 </label>
                                             </div>
                                         <?php endforeach; ?>
-                                    <?php elseif ($question['type'] === 'short_answer'): ?>
-                                        <div class="text-answer">
-                                            <textarea 
-                                                class="text-input"
-                                                placeholder="Students will enter their answer here..."
-                                                disabled
-                                                rows="6"
-                                            ></textarea>
+                                        <?php break; ?>
+
+                                    <?php case 'multiple_answer': ?>
+                                        <?php foreach ($question['answers'] as $answer): ?>
+                                            <div class="answer-option">
+                                                <input type="checkbox" 
+                                                       id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
+                                                       name="q_<?= $question['question_id'] ?>[]" 
+                                                       disabled>
+                                                <label for="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>">
+                                                    <?= htmlspecialchars($answer['text']) ?>
+                                                </label>
+                                            </div>
+                                        <?php endforeach; ?>
+                                        <?php break; ?>
+
+                                    <?php case 'true_false': ?>
+                                        <?php foreach ($question['answers'] as $answer): ?>
+                                            <div class="answer-option">
+                                                <input type="radio" 
+                                                       id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
+                                                       name="q_<?= $question['question_id'] ?>" 
+                                                       disabled>
+                                                <label for="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>">
+                                                    <?= htmlspecialchars($answer['text']) ?>
+                                                </label>
+                                            </div>
+                                        <?php endforeach; ?>
+                                        <?php break; ?>
+
+                                    <?php case 'short_answer': ?>
+                                        <div class="text-answer-preview">
+                                            <p class="answer-placeholder">Students will type their answer here...</p>
                                         </div>
-                                    <?php endif; ?>
-                                </div>
+                                        <?php break; ?>
+                                <?php endswitch; ?>
                             </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <div class="quiz-actions">
