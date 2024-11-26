@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (isset($_GET['timeout']) && $_GET['timeout'] == 1) {
+    echo "<p>Your session has expired due to inactivity. Please log in again.</p>";
+}
+
 include '../db/config.php';
 ?>
 

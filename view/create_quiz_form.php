@@ -1,5 +1,6 @@
 <?php
-session_start();
+include '../includes/session_manager.php';
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
