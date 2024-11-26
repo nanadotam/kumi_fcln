@@ -103,34 +103,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $questionId = $question['question_id'];
             $response = $responses["q_{$questionId}"] ?? null;
             $isCorrect = 0;
-            $selectedAnswerId = null;
-            $textResponse = null;
             
             if ($question['type'] === 'short_answer') {
                 $textResponse = $response;
-                // You might want to implement a more sophisticated way to check text answers
                 $isCorrect = !empty($textResponse) ? 1 : 0;
-                // Ensure selectedAnswerId is NULL for text responses
-                $selectedAnswerId = null;
+                
+                // Insert text response
+                $stmt = $db->prepare("
+                    INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct, text_response)
+                    VALUES (?, ?, NULL, ?, ?)
+                ");
+                $stmt->bind_param("iiis", $resultId, $questionId, $isCorrect, $textResponse);
+                $stmt->execute();
+                
+            } elseif ($question['type'] === 'multiple_answer') {
+                // Handle multiple answer questions
+                $selectedAnswers = is_array($response) ? $response : [];
+                $correctAnswers = array_filter($question['answers'], fn($a) => $a['is_correct'] == 1);
+                
+                // Check if all correct answers are selected and no incorrect answers are selected
+                $isCorrect = 1;
+                foreach ($question['answers'] as $answer) {
+                    $isSelected = in_array($answer['answer_id'], $selectedAnswers);
+                    if (($answer['is_correct'] && !$isSelected) || (!$answer['is_correct'] && $isSelected)) {
+                        $isCorrect = 0;
+                        break;
+                    }
+                }
+                
+                // Insert a response for each selected answer
+                foreach ($selectedAnswers as $selectedAnswerId) {
+                    $stmt = $db->prepare("
+                        INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct, text_response)
+                        VALUES (?, ?, ?, ?, NULL)
+                    ");
+                    $stmt->bind_param("iiii", $resultId, $questionId, $selectedAnswerId, $isCorrect);
+                    $stmt->execute();
+                }
+                
             } else {
                 // For multiple choice and true/false questions
                 $selectedAnswerId = $response ? (int)$response : null;
-                // Check if the selected answer is correct
                 foreach ($question['answers'] as $answer) {
                     if ($answer['answer_id'] == $selectedAnswerId) {
                         $isCorrect = $answer['is_correct'];
                         break;
                     }
                 }
+                
+                $stmt = $db->prepare("
+                    INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct, text_response)
+                    VALUES (?, ?, ?, ?, NULL)
+                ");
+                $stmt->bind_param("iiii", $resultId, $questionId, $selectedAnswerId, $isCorrect);
+                $stmt->execute();
             }
-            
-            // Insert response with proper NULL handling
-            $stmt = $db->prepare("
-                INSERT INTO Responses (result_id, question_id, selected_answer_id, is_correct, text_response)
-                VALUES (?, ?, ?, ?, ?)
-            ");
-            $stmt->bind_param("iiiss", $resultId, $questionId, $selectedAnswerId, $isCorrect, $textResponse);
-            $stmt->execute();
             
             if ($isCorrect) {
                 $totalScore += $question['points'];
@@ -209,6 +236,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </label>
                                     </div>
                                 <?php endforeach; ?>
+                            <?php elseif ($question['type'] === 'multiple_answer'): ?>
+                                <?php foreach ($question['answers'] as $answer): ?>
+                                    <div class="answer-option">
+                                        <input type="checkbox" 
+                                               id="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>"
+                                               name="responses[q_<?= $question['question_id'] ?>][]" 
+                                               value="<?= $answer['answer_id'] ?>">
+                                        <label for="q<?= $question['question_id'] ?>_a<?= $answer['answer_id'] ?>">
+                                            <?= htmlspecialchars($answer['text']) ?>
+                                        </label>
+                                    </div>
+                                <?php endforeach; ?>
                             <?php elseif ($question['type'] === 'short_answer'): ?>
                                 <div class="text-answer">
                                     <textarea 
@@ -258,6 +297,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Count answered radio groups
             answeredQuestions += Object.values(radioGroups).filter(Boolean).length;
             
+            // Check multiple answer (checkbox) answers
+            const checkboxGroups = {};
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                const name = checkbox.getAttribute('name').replace('[]', '');
+                if (!checkboxGroups[name]) {
+                    checkboxGroups[name] = false;
+                }
+                if (checkbox.checked) {
+                    checkboxGroups[name] = true;
+                }
+            });
+            
+            // Count answered checkbox groups
+            answeredQuestions += Object.values(checkboxGroups).filter(Boolean).length;
+            
             // Check text answers
             const textareas = document.querySelectorAll('textarea');
             textareas.forEach(textarea => {
@@ -279,6 +333,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         document.querySelectorAll('textarea').forEach(textarea => {
             textarea.addEventListener('input', updateProgress);
+        });
+
+        // Add event listeners for checkboxes
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateProgress);
         });
 
         // Initial progress check
