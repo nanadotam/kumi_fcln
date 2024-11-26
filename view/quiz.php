@@ -2,7 +2,7 @@
 session_start();
 require_once '../functions/auth_functions.php';
 require_once '../functions/quiz_functions.php';
-
+require_once '../db/config.php';
 
 $currentPage = 'quiz';
 
@@ -13,21 +13,37 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = $_SESSION['user_id'];
 $userRole = $_SESSION['role'];
-$quizId = $_GET['id'] ?? null;
 
-// Get appropriate quizzes based on user role
+// Get quizzes based on user role
 if ($userRole === 'student') {
-    $quizzes = getAvailableQuizzes($userId);
+    // Get only completed quizzes for students
+    $stmt = $conn->prepare("
+        SELECT 
+            q.quiz_id,
+            q.title,
+            q.quiz_code,
+            qr.score,
+            qr.submitted_at as completion_date,
+            COUNT(DISTINCT qst.question_id) as total_questions,
+            SUM(CASE WHEN r.is_correct = 1 THEN 1 ELSE 0 END) as correct_answers
+        FROM QuizResults qr
+        JOIN Quizzes q ON qr.quiz_id = q.quiz_id
+        LEFT JOIN Questions qst ON q.quiz_id = qst.quiz_id
+        LEFT JOIN Responses r ON qr.result_id = r.result_id AND qst.question_id = r.question_id
+        WHERE qr.user_id = ?
+        GROUP BY q.quiz_id, qr.result_id
+        ORDER BY qr.submitted_at DESC
+    ");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $quizzes = $result->fetch_all(MYSQLI_ASSOC);
 } else {
+    // Keep existing teacher quiz retrieval
     $quizzes = getQuizzesByTeacher($userId);
 }
-
-$completedQuizIds = [];
-if ($userRole === 'student') {
-    $completedQuizzes = getCompletedQuizzes($userId);
-    $completedQuizIds = array_column($completedQuizzes, 'quiz_id');
-}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,70 +58,91 @@ if ($userRole === 'student') {
     
     <main class="quiz-page">
         <div class="quiz-sections">
-            <div class="page-header">
-                <h1>My Quizzes</h1>
-                <?php if ($userRole === 'teacher'): ?>
+            <?php if ($userRole === 'student'): ?>
+                <div class="page-header">
+                    <h1>My Quiz History</h1>
+                    <div class="quiz-code-section">
+                        <form id="quizCodeForm" action="../actions/validate_quiz_code.php" method="POST">
+                            <input type="text" 
+                                   name="quiz_code" 
+                                   placeholder="Enter Quiz Code" 
+                                   required>
+                            <button type="submit" class="start-btn">
+                                <i class='bx bx-play'></i> Start Quiz
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="page-header">
+                    <h1>My Quizzes</h1>
                     <a href="create_quiz_form.php" class="create-btn">
                         <i class='bx bx-plus'></i> Create Quiz
                     </a>
-                <?php endif; ?>
-            </div>
+                </div>
+            <?php endif; ?>
             
             <div class="quiz-grid">
-                <?php foreach ($quizzes as $quiz): ?>
-                    <div class="quiz-card" data-quiz-id="<?= $quiz['quiz_id'] ?>">
-                        <div class="quiz-card-header">
-                            <h3><?= htmlspecialchars($quiz['title']) ?></h3>
-                            <?php if (isset($quiz['score'])): ?>
-                                <span class="score-badge <?= $quiz['score'] >= 70 ? 'passing' : 'failing' ?>">
-                                    <?= $quiz['score'] ?>%
-                                </span>
-                            <?php endif; ?>
-                        </div>
-                        <div class="quiz-meta">
-                            <span><i class='bx bx-calendar'></i> <?= date('M d, Y', strtotime($quiz['created_at'])) ?></span>
-                            <?php if ($_SESSION['role'] === 'teacher'): ?>
-                                <span><i class='bx bx-code-alt'></i> Code: <?= htmlspecialchars($quiz['quiz_code']) ?></span>
-                            <?php endif; ?>
-                        </div>
-                        <div class="quiz-actions">
-                            <?php if ($userRole === 'student'): ?>
-                                <?php if (in_array($quiz['quiz_id'], $completedQuizIds)): ?>
-                                    <a href="quiz_result.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">View Results</a>
+                <?php if ($userRole === 'student' && empty($quizzes)): ?>
+                    <div class="no-quizzes">
+                        <i class='bx bx-book-open'></i>
+                        <p>You haven't taken any quizzes yet.</p>
+                        <p>Enter a quiz code above to start a new quiz!</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($quizzes as $quiz): ?>
+                        <div class="quiz-card" data-quiz-id="<?= $quiz['quiz_id'] ?>">
+                            <div class="quiz-card-header">
+                                <h3><?= htmlspecialchars($quiz['title']) ?></h3>
+                                <?php if ($userRole === 'student'): ?>
+                                    <span class="score-badge <?= $quiz['score'] >= 70 ? 'passing' : 'failing' ?>">
+                                        <?= $quiz['score'] ?>%
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="quiz-meta">
+                                <?php if ($userRole === 'student'): ?>
+                                    <span>
+                                        <i class='bx bx-calendar'></i> 
+                                        Completed: <?= date('M d, Y', strtotime($quiz['completion_date'])) ?>
+                                    </span>
+                                    <span>
+                                        <i class='bx bx-check-circle'></i>
+                                        <?= $quiz['correct_answers'] ?>/<?= $quiz['total_questions'] ?> Correct
+                                    </span>
                                 <?php else: ?>
-                                    <button onclick="takeQuiz(<?= $quiz['quiz_id'] ?>)" class="take-btn">
-                                        Take Quiz
+                                    <span>
+                                        <i class='bx bx-calendar'></i> 
+                                        Created: <?= date('M d, Y', strtotime($quiz['created_at'])) ?>
+                                    </span>
+                                    <span>
+                                        <i class='bx bx-code-alt'></i> 
+                                        Code: <?= htmlspecialchars($quiz['quiz_code']) ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="quiz-actions">
+                                <?php if ($userRole === 'student'): ?>
+                                    <a href="quiz_result.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">
+                                        <i class='bx bx-show'></i> View Results
+                                    </a>
+                                <?php else: ?>
+                                    <a href="view_quiz.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">
+                                        <i class='bx bx-show'></i> View Quiz
+                                    </a>
+                                    <button class="delete-btn" onclick="deleteQuiz(<?= $quiz['quiz_id'] ?>)">
+                                        <i class='bx bx-trash'></i>
                                     </button>
                                 <?php endif; ?>
-                            <?php else: ?>
-                                <a href="view_quiz.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">
-                                    <i class='bx bx-show'></i> View Quiz
-                                </a>
-                                <button class="delete-btn" onclick="deleteQuiz(<?= $quiz['quiz_id'] ?>)" title="Delete Quiz">
-                                    <i class='bx bx-trash'></i>
-                                </button>
-                            <?php endif; ?>
+                            </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
     </main>
 
-    <!-- <script src="../assets/js/quiz.js"></script> -->
     <script src="../assets/js/take_quiz.js"></script>
-    <script>
-    function editQuiz(quizId) {
-        // Redirect to edit_quiz.php with the quiz ID
-        window.location.href = `edit_quiz.php?id=${quizId}`;
-    }
-
-    function deleteQuiz(quizId) {
-        if (confirm('Are you sure you want to delete this quiz?')) {
-            // Existing delete functionality...
-        }
-    }
-    </script>
 </body>
 </html>
 
