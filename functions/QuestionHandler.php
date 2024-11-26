@@ -8,38 +8,42 @@ class QuestionHandler {
 
     public function saveQuestion($quizId, $questionData) {
         $stmt = $this->db->prepare("
-            INSERT INTO questions (quiz_id, question_text, question_type)
-            VALUES (?, ?, ?)
+            INSERT INTO questions (quiz_id, question_text, question_type, points)
+            VALUES (?, ?, ?, ?)
         ");
         
         $stmt->execute([
             $quizId,
             $questionData['text'],
-            $questionData['type']
+            $questionData['type'],
+            $questionData['points']
         ]);
         
         $questionId = $this->db->lastInsertId();
         
+        // Handle options based on question type
         switch($questionData['type']) {
             case 'true_false':
-                $this->saveTrueFalseAnswer($questionId, $questionData['correct_answer']);
+                $this->saveTrueFalseOptions($questionId, $questionData['correct_answer']);
                 break;
             case 'multiple_choice':
+                $this->saveMultipleChoiceOptions($questionId, $questionData['options']);
+                break;
             case 'multiple_answer':
-                $this->saveOptions($questionId, $questionData['options']);
+                $this->saveMultipleAnswerOptions($questionId, $questionData['options']);
                 break;
             case 'short_answer':
-                $this->saveModelAnswer($questionId, $questionData['model_answer']);
+                $this->saveShortAnswerDetails($questionId, $questionData['model_answer']);
                 break;
         }
         
         return $questionId;
     }
 
-    private function saveTrueFalseAnswer($questionId, $correctAnswer) {
+    private function saveTrueFalseOptions($questionId, $correctAnswer) {
         $stmt = $this->db->prepare("
             INSERT INTO question_options (question_id, option_text, is_correct)
-            VALUES (?, 'true', ?), (?, 'false', ?)
+            VALUES (?, 'True', ?), (?, 'False', ?)
         ");
         
         $stmt->execute([
@@ -50,7 +54,7 @@ class QuestionHandler {
         ]);
     }
 
-    private function saveOptions($questionId, $options) {
+    private function saveMultipleChoiceOptions($questionId, $options) {
         $stmt = $this->db->prepare("
             INSERT INTO question_options (question_id, option_text, is_correct)
             VALUES (?, ?, ?)
@@ -65,7 +69,22 @@ class QuestionHandler {
         }
     }
 
-    private function saveModelAnswer($questionId, $modelAnswer) {
+    private function saveMultipleAnswerOptions($questionId, $options) {
+        $stmt = $this->db->prepare("
+            INSERT INTO question_options (question_id, option_text, is_correct)
+            VALUES (?, ?, ?)
+        ");
+        
+        foreach ($options as $option) {
+            $stmt->execute([
+                $questionId,
+                $option['text'],
+                $option['is_correct']
+            ]);
+        }
+    }
+
+    private function saveShortAnswerDetails($questionId, $modelAnswer) {
         $stmt = $this->db->prepare("
             INSERT INTO short_answer_details (question_id, model_answer)
             VALUES (?, ?)

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="question-header">
                 <h3>Question ${questionCount}</h3>
                 <button type="button" class="delete-question" onclick="deleteQuestion(this)">
-                    <i class='bx bx-trash'></i> Delete
+                    <i class='bx bx-trash'></i>
                 </button>
             </div>
             <div class="form-group">
@@ -25,15 +25,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <label>Question Type</label>
                 <select class="question-type" onchange="handleQuestionTypeChange(this)">
                     <option value="">Select question type...</option>
-                    <option value="multiple_choice">Multiple Choice</option>
-                    <option value="checkbox">Multiple Answers</option>
                     <option value="true_false">True/False</option>
-                    <option value="paragraph">Short Answer</option>
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="multiple_answer">Multiple Answer</option>
+                    <option value="short_answer">Short Answer</option>
                 </select>
-            </div>
-            <div class="form-group">
-                <label>Points</label>
-                <input type="number" class="question-points" min="1" value="1" required>
             </div>
             <div class="options-container">
                 <!-- Options will be added here based on question type -->
@@ -83,14 +79,10 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function updateOptionNumbers(container) {
-        container.querySelectorAll('.option').forEach((item, index) => {
+        container.querySelectorAll('.option-item').forEach((item, index) => {
             const input = item.querySelector('.option-input');
-            const radioOrCheckbox = item.querySelector('input[type="radio"], input[type="checkbox"]');
             if (input) {
                 input.placeholder = `Option ${index + 1}`;
-            }
-            if (radioOrCheckbox) {
-                radioOrCheckbox.value = index;
             }
         });
     }
@@ -148,88 +140,152 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function handleQuestionTypeChange(select) {
     const optionsContainer = select.closest('.question-card').querySelector('.options-container');
-    const type = select.value;
-    
-    // Clear existing options
     optionsContainer.innerHTML = '';
-    
-    // Only create options if a type is selected
-    if (!type) return;
-    
-    switch(type) {
-        case 'multiple_choice':
-            createMultipleChoiceOptions(optionsContainer);
-            break;
-        case 'checkbox':
-            createCheckboxOptions(optionsContainer);
-            break;
+
+    switch(select.value) {
         case 'true_false':
             createTrueFalseOptions(optionsContainer);
             break;
-        case 'paragraph':
-            createParagraphOption(optionsContainer);
+        case 'multiple_choice':
+            createMultipleChoiceOptions(optionsContainer);
+            break;
+        case 'multiple_answer':
+            createMultipleAnswerOptions(optionsContainer);
+            break;
+        case 'short_answer':
+            createShortAnswerField(optionsContainer);
             break;
     }
 }
 
+
+function createTrueFalseOptions(container) {
+    container.innerHTML = `
+        <div class="true-false-options">
+            <label class="option-card">
+                <input type="radio" name="correct_${Date.now()}" value="true" required>
+                <span class="option-text">True</span>
+                <span class="checkmark"></span>
+            </label>
+            <label class="option-card">
+                <input type="radio" name="correct_${Date.now()}" value="false" required>
+                <span class="option-text">False</span>
+                <span class="checkmark"></span>
+            </label>
+        </div>
+    `;
+}
+
+
+
+
+
+
 function createMultipleChoiceOptions(container) {
     container.innerHTML = `
-        <div class="options-list multiple-choice">
-            <div class="option">
-                <input type="radio" name="correct_${questionCount}" value="1">
-                <input type="text" class="option-input" placeholder="Option 1" required>
-                <span class="radio-mark"></span>
-            </div>
-            <div class="option">
-                <input type="radio" name="correct_${questionCount}" value="2">
-                <input type="text" class="option-input" placeholder="Option 2" required>
-                <span class="radio-mark"></span>
-            </div>
+        <div class="multiple-choice-options">
+            <div class="options-list"></div>
+            <button type="button" class="add-option-btn" onclick="addMultipleChoiceOption(this)">
+                <i class='bx bx-plus-circle'></i> Add Option
+            </button>
         </div>
-        <button class="btn-add" onclick="addOption(this, 'radio')">
-            <i class='bx bx-plus'></i> Add Option
-        </button>
     `;
+    // Add first two options by default
+   // addMultipleChoiceOption(container.querySelector('.add-option-btn'));
+    //ddMultipleChoiceOption(container.querySelector('.add-option-btn'));
 }
 
-function createCheckboxOptions(container) {
-    container.innerHTML = `
-        <div class="options-list checkbox-choice">
-            <div class="option">
-                <input type="checkbox" name="correct_${questionCount}" value="1">
-                <input type="text" class="option-input" placeholder="Option 1" required>
-                <span class="checkbox-mark"></span>
-            </div>
-            <div class="option">
-                <input type="checkbox" name="correct_${questionCount}" value="2">
-                <input type="text" class="option-input" placeholder="Option 2" required>
-                <span class="checkbox-mark"></span>
-            </div>
+
+
+function addMultipleChoiceOption(container) {
+    const optionsList = container.querySelector('.options-list');
+    const optionId = Date.now();
+    const optionDiv = document.createElement('div');
+    optionDiv.className = 'option-item';
+    optionDiv.innerHTML = `
+        <div class="option-input-group">
+            <input type="radio" 
+                   name="correct_${container.closest('.question-card').dataset.questionId}" 
+                   value="${optionId}">
+            <input type="text" 
+                   class="option-text" 
+                   placeholder="Enter option text..."
+                   required>
+            <button type="button" class="delete-option" onclick="this.closest('.option-item').remove()">
+                <i class='bx bx-trash'></i>
+            </button>
         </div>
-        <button class="btn-add" onclick="addOption(this, 'checkbox')">
-            <i class='bx bx-plus'></i> Add Option
-        </button>
     `;
+    optionsList.appendChild(optionDiv);
 }
 
-function createParagraphOption(container) {
+
+
+
+
+function createMultipleAnswerOptions(container) {
     container.innerHTML = `
-        <div class="option-item">
-            <textarea disabled placeholder="Students will type their answer here" 
-                      style="width: 100%; min-height: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
-            <div class="model-answer-container">
+        <div class="multiple-answer-options">
+            <div class="options-list"></div>
+            <button type="button" class="add-option-btn" onclick="addMultipleAnswerOption(this)">
+                <i class='bx bx-plus-circle'></i> Add Option
+            </button>
+        </div>
+    `;
+    // Add first two options by default
+    addMultipleAnswerOption(container.querySelector('.add-option-btn'));
+    addMultipleAnswerOption(container.querySelector('.add-option-btn'));
+}
+
+
+
+function addMultipleAnswerOption(container) {
+    const optionsList = container.querySelector('.options-list');
+    const optionId = Date.now();
+    const optionDiv = document.createElement('div');
+    optionDiv.className = 'option-item';
+    optionDiv.innerHTML = `
+        <div class="option-input-group">
+            <input type="checkbox" 
+                   name="correct_${container.closest('.question-card').dataset.questionId}[]" 
+                   value="${optionId}">
+            <input type="text" 
+                   class="option-text" 
+                   placeholder="Enter option text..."
+                   required>
+            <button type="button" class="delete-option" onclick="this.closest('.option-item').remove()">
+                <i class='bx bx-trash'></i>
+            </button>
+        </div>
+    `;
+    optionsList.appendChild(optionDiv);
+}
+
+
+
+
+
+function createShortAnswerField(container) {
+    container.innerHTML = `
+        <div class="short-answer-field">
+            <div class="preview-area">
+                <textarea disabled placeholder="Students will type their answer here" class="student-answer-preview"></textarea>
+            </div>
+            <div class="model-answer">
                 <label>Model Answer (for grading reference):</label>
-                <textarea class="model-answer" placeholder="Enter the correct answer here..."
-                          style="width: 100%; min-height: 80px;"></textarea>
+                <textarea class="model-answer-input" placeholder="Enter the expected answer here..."></textarea>
             </div>
         </div>
     `;
 }
+
+
 
 function addOption(button, type) {
-    const container = button.closest('.options-container');
-    const optionsList = container.querySelector('.options-list');
-    const existingOptions = optionsList.querySelectorAll('.option');
+    const container = button.parentElement;
+    // Get all existing options
+    const existingOptions = container.querySelectorAll('.option');
+    // New option will be number of existing options + 1
     const newOptionNumber = existingOptions.length + 1;
     const questionNumber = button.closest('.question-card').querySelector('.question-header h3').textContent.split(' ')[1];
     
@@ -238,32 +294,16 @@ function addOption(button, type) {
     optionDiv.innerHTML = `
         <input type="${type}" name="correct_${questionNumber}" value="${newOptionNumber}">
         <input type="text" class="option-input" placeholder="Option ${newOptionNumber}" required>
-        <span class="${type}-mark"></span>
+        <label class="correct-label">
+            <input type="checkbox" class="is-correct" /> Correct Answer
+        </label>
         <button type="button" class="delete-option" onclick="deleteOption(this)">
             <i class='bx bx-x'></i>
         </button>
     `;
     
-    optionsList.appendChild(optionDiv);
-}
-
-function toggleOptionSelection(option, type) {
-    if (type === 'radio') {
-        option.closest('.options-list').querySelectorAll('.option').forEach(opt => {
-            opt.classList.remove('selected');
-        });
-        option.classList.add('selected');
-    } else {
-        option.classList.toggle('selected');
-    }
-}
-
-function selectTrueFalseOption(option, isTrue) {
-    const container = option.closest('.true-false-options');
-    container.querySelectorAll('.option').forEach(opt => {
-        opt.classList.remove('selected');
-    });
-    option.classList.add('selected');
+    // Insert before the "Add Option" button
+    container.insertBefore(optionDiv, button);
 }
 
 function deleteOption(button) {
@@ -297,93 +337,99 @@ function deleteQuestion(button) {
 }
 
 function saveQuiz() {
-    // Generate a random 6-character alphanumeric code
-    const generateQuizCode = () => {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let code = '';
-        for (let i = 0; i < 6; i++) {
-            code += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return code;
-    };
-
     const quiz = {
         title: document.getElementById('quizTitle')?.value || 'Untitled Quiz',
         description: document.getElementById('quizDescription')?.value || '',
-        dueDate: document.getElementById('quizDueDate')?.value || '',
-        quiz_code: generateQuizCode(),
+        due_date: document.getElementById('quizDueDate')?.value || '',
+        due_time: document.getElementById('quizDueTime')?.value || '',
+        mode: document.getElementById('quizMode')?.value || 'individual',
         questions: []
     };
 
     if (!quiz.title.trim()) {
-        alert('Quiz title is required.');
+        showNotification('Quiz title is required.', 'error');
         return;
     }
 
+    // Collect questions data
+    const questionCards = document.querySelectorAll('.question-card');
     let isValid = true;
-    document.querySelectorAll('.question-card').forEach(card => {
+
+    questionCards.forEach((card, index) => {
         const questionType = card.querySelector('.question-type')?.value;
-        const optionsContainer = card.querySelector('.options-container');
-        
-        if (!questionType) {
-            alert('Please select a question type for all questions');
+        const questionText = card.querySelector('.question-text')?.value;
+
+        if (!questionType || !questionText?.trim()) {
+            showNotification(`Please complete all fields for Question ${index + 1}`, 'error');
             isValid = false;
-            return;
-        }
-
-        if ((questionType === 'multiple_choice' || questionType === 'checkbox') && 
-            optionsContainer.querySelectorAll('.option-item').length < 2) {
-            alert('Multiple choice questions must have at least 2 options');
-            isValid = false;
-            return;
-        }
-    });
-
-    if (!isValid) return;
-
-    document.querySelectorAll('.question-card').forEach(card => {
-        const questionText = card.querySelector('.question-text')?.value.trim();
-        const questionType = card.querySelector('.question-type')?.value;
-        const points = card.querySelector('.question-points')?.value || 1;
-
-        if (!questionText) {
-            alert('All questions must have text.');
             return;
         }
 
         const question = {
             text: questionText,
             type: questionType,
-            points: points,
-            options: []
+            options: [],
+            correct_answer: null,
+            model_answer: null
         };
 
-        switch(questionType) {
-            case 'paragraph':
-                const modelAnswer = card.querySelector('.model-answer')?.value.trim();
-                question.model_answer = modelAnswer;
+        switch (questionType) {
+            case 'true_false':
+                const selectedTF = card.querySelector('input[type="radio"]:checked');
+                if (!selectedTF) {
+                    showNotification(`Please select correct answer for Question ${index + 1}`, 'error');
+                    isValid = false;
+                    return;
+                }
+                question.correct_answer = selectedTF.value;
                 break;
-                
+
             case 'multiple_choice':
-            case 'checkbox':
-                card.querySelectorAll('.option-item').forEach(optionDiv => {
-                    const optionInput = optionDiv.querySelector('.option-input');
-                    const isCorrect = optionDiv.querySelector('.is-correct')?.checked || false;
-                    
-                    const optionValue = optionInput.value.trim();
-                    if (optionValue) {
-                        question.options.push({
-                            text: optionValue,
-                            is_correct: isCorrect
-                        });
-                    }
+                const mcOptions = card.querySelectorAll('.option-item');
+                if (mcOptions.length < 2) {
+                    showNotification(`Question ${index + 1} must have at least 2 options`, 'error');
+                    isValid = false;
+                    return;
+                }
+                mcOptions.forEach(option => {
+                    question.options.push({
+                        text: option.querySelector('.option-text').value,
+                        is_correct: option.querySelector('input[type="radio"]').checked
+                    });
                 });
+                break;
+
+            case 'multiple_answer':
+                const maOptions = card.querySelectorAll('.option-item');
+                if (maOptions.length < 2) {
+                    showNotification(`Question ${index + 1} must have at least 2 options`, 'error');
+                    isValid = false;
+                    return;
+                }
+                maOptions.forEach(option => {
+                    question.options.push({
+                        text: option.querySelector('.option-text').value,
+                        is_correct: option.querySelector('input[type="checkbox"]').checked
+                    });
+                });
+                break;
+
+            case 'short_answer':
+                question.model_answer = card.querySelector('.model-answer-input')?.value;
+                if (!question.model_answer?.trim()) {
+                    showNotification(`Please provide a model answer for Question ${index + 1}`, 'error');
+                    isValid = false;
+                    return;
+                }
                 break;
         }
 
         quiz.questions.push(question);
     });
 
+    if (!isValid) return;
+
+    // Send to server
     fetch('../actions/save_quiz.php', {
         method: 'POST',
         headers: {
@@ -391,20 +437,21 @@ function saveQuiz() {
         },
         body: JSON.stringify(quiz)
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(`Quiz saved successfully! Quiz Code: ${quiz.quiz_code}`);
-                window.location.href = '../view/quiz.php';
-                
-            } else {
-                alert('Error saving quiz: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error saving quiz. Please try again.');
-        });
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Quiz saved successfully!', 'success');
+            setTimeout(() => {
+                window.location.href = 'quiz.php';
+            }, 1500);
+        } else {
+            showNotification(data.message || 'Error saving quiz', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Error saving quiz', 'error');
+        console.error('Error:', error);
+    });
 }
 
 function editQuiz(quizId) {
@@ -442,19 +489,4 @@ function showNotification(message, type) {
     setTimeout(() => {
         notification.remove();
     }, 3000);
-}
-
-function createTrueFalseOptions(container) {
-    container.innerHTML = `
-        <div class="options-list true-false-options">
-            <div class="option true-option">
-                <input type="radio" name="correct_${questionCount}" value="true" id="true_${questionCount}">
-                <label for="true_${questionCount}">True</label>
-            </div>
-            <div class="option false-option">
-                <input type="radio" name="correct_${questionCount}" value="false" id="false_${questionCount}">
-                <label for="false_${questionCount}">False</label>
-            </div>
-        </div>
-    `;
 }
