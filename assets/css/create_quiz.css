@@ -331,3 +331,33 @@ select:focus {
         padding: 1rem;
     }
 }
+
+/* Quiz Creator Responsive Styles */
+@media screen and (max-width: 768px) {
+    .quiz-creator {
+        margin-left: 70px;
+        padding: 1rem;
+    }
+
+    .question-editor {
+        padding: 1rem;
+    }
+
+    .options-container {
+        grid-template-columns: 1fr;
+    }
+
+    .option-item {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .quiz-settings {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

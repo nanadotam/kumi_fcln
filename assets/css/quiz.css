@@ -579,3 +579,38 @@ body {
     border-color: #2E7D32;
     box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
 }
+
+/* Quiz Page Responsive Styles */
+@media screen and (max-width: 768px) {
+    .quiz-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .quiz-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .quiz-search input {
+        width: 100%;
+    }
+
+    .quiz-code-section form {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .quiz-code-section input,
+    .quiz-code-section .start-btn {
+        width: 100%;
+    }
+
+    .question-container {
+        padding: 1rem;
+    }
+
+    .options-grid {
+        grid-template-columns: 1fr;
+    }
+}

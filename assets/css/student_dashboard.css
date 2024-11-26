@@ -22,16 +22,14 @@ body {
 
 /* Sidebar styles */
 .sidebar {
-    width: 250px;
-    height: 100vh;
-    background-color: var(--color-light);
     position: fixed;
     left: 0;
     top: 0;
-    padding: 1rem;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     z-index: 100;
-    overflow-y: auto;
+    transition: all 0.3s ease;
 }
 
 .logo-container {
@@ -408,4 +406,252 @@ body {
 
 .start-btn:hover {
     background: var(--color-secondary);
+}
+
+/* Base styles for the dashboard */
+.dashboard {
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+/* Mobile-first sidebar */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+/* Stats cards container */
+.stats-container {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--color-primary);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card .icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    opacity: 0.2;
+}
+
+.stat-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Quiz code section */
+.quizcode-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.quizcode-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-dark);
+}
+
+.quizcode-container p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.quizcode-container input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.start-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+/* Comprehensive Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    /* Sidebar adjustments */
+    .sidebar {
+        width: 70px;
+    }
+    
+    .sidebar .logo-container {
+        padding: 0.5rem;
+    }
+    
+    .sidebar .logo-container img {
+        width: 40px;
+    }
+    
+    .sidebar span {
+        display: none;
+    }
+    
+    .nav-links a {
+        justify-content: center;
+        padding: 1rem 0;
+    }
+    
+    .nav-links i {
+        margin: 0;
+    }
+    
+    /* Main content adjustments */
+    .dashboard-container {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+        padding: 1rem;
+    }
+
+    /* Welcome section */
+    .welcome-section {
+        padding: 1.5rem;
+    }
+
+    .welcome-section h1 {
+        font-size: 1.3rem;
+    }
+
+    /* Stats overview */
+    .stats-overview {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1.2rem;
+    }
+
+    /* Quiz grid */
+    .quiz-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .quiz-card {
+        aspect-ratio: auto;
+        padding: 1.2rem;
+    }
+
+    /* Quiz code section */
+    .quizcode-container {
+        padding: 1.2rem;
+    }
+
+    .quizcode-container input {
+        max-width: 100%;
+    }
+}
+
+/* Small mobile devices */
+@media screen and (max-width: 480px) {
+    /* Further sidebar adjustments */
+    .sidebar {
+        width: 60px;
+    }
+
+    .dashboard-container {
+        margin-left: 60px;
+        width: calc(100% - 60px);
+        padding: 0.8rem;
+    }
+
+    /* Welcome section */
+    .welcome-section {
+        padding: 1.2rem;
+    }
+
+    .welcome-section h1 {
+        font-size: 1.2rem;
+    }
+
+    /* Stats and cards */
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-info p {
+        font-size: 1.2rem;
+    }
+
+    .quiz-card {
+        padding: 1rem;
+    }
+
+    .quiz-meta {
+        gap: 0.3rem;
+    }
+
+    /* Buttons */
+    .start-btn,
+    .start-quiz-btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .quiz-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Landscape orientation */
+@media screen and (max-height: 480px) and (orientation: landscape) {
+    .sidebar {
+        position: absolute;
+        height: 100%;
+    }
+
+    .dashboard-container {
+        margin-bottom: 2rem;
+    }
+
+    .welcome-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-overview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-bg: #1a1a1a;
+    }
 }

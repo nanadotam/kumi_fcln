@@ -263,4 +263,30 @@
   .password-section {
     margin-top: 2.5rem;
   }
+}
+
+/* Profile Page Responsive Styles */
+@media screen and (max-width: 768px) {
+    .profile-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .profile-card {
+        padding: 1rem;
+    }
+
+    .info-item {
+        padding: 0.8rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1rem;
+    }
 } 

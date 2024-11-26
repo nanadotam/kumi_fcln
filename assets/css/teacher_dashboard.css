@@ -354,3 +354,99 @@ footer {
 .quiz-actions button[title="Delete Quiz"] i {
     color: #dc3545;
 }
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 1024px) {
+    .dashboard {
+        padding: 1rem;
+    }
+
+    .welcome-section {
+        padding: 1.5rem;
+    }
+
+    .stats-overview {
+        gap: 1rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .dashboard {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+    }
+
+    .welcome-section {
+        padding: 1.2rem;
+    }
+
+    .stats-overview {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-card i {
+        font-size: 2rem;
+    }
+
+    .stat-info h3 {
+        font-size: 0.8rem;
+    }
+
+    .stat-info p {
+        font-size: 1.2rem;
+    }
+
+    .quiz-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .dashboard {
+        padding: 0.8rem;
+    }
+
+    .welcome-section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .welcome-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .welcome-message {
+        font-size: 0.9rem;
+    }
+
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+
+    .stat-info h3 {
+        font-size: 0.75rem;
+    }
+
+    .stat-info p {
+        font-size: 1.1rem;
+    }
+
+    .quiz-item {
+        padding: 0.8rem;
+    }
+
+    .quiz-title {
+        font-size: 0.9rem;
+    }
+
+    .quiz-meta {
+        font-size: 0.8rem;
+    }
+}

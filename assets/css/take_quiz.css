@@ -245,4 +245,163 @@
 
 .back-link:hover {
     color: #333;
+}
+
+/* Comprehensive Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .quiz-wrapper {
+        margin: 4rem auto 1rem;
+        padding: 0 0.8rem;
+    }
+
+    .quiz-container {
+        padding: 1.2rem;
+    }
+
+    .quiz-header {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+    }
+
+    .quiz-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .description {
+        font-size: 0.9rem;
+    }
+
+    .question-card {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .question-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .question-text {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .answer-container {
+        margin-left: 0;
+    }
+
+    .answer-option label {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+    }
+
+    .paragraph-input,
+    .text-input {
+        min-height: 100px;
+        padding: 0.8rem;
+        font-size: 0.95rem;
+    }
+
+    .quiz-actions {
+        margin-top: 1.5rem;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .quiz-progress-floating .progress-inner {
+        padding: 0.5rem 0.8rem;
+    }
+
+    .progress-text {
+        font-size: 0.8rem;
+    }
+
+    .progress-bar {
+        height: 4px;
+    }
+
+    .text-guidelines {
+        font-size: 0.8rem;
+    }
+
+    .preview-mode-banner {
+        padding: 0.4rem;
+        font-size: 0.9rem;
+    }
+
+    .back-link {
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+    }
+}
+
+/* Small mobile devices */
+@media screen and (max-width: 480px) {
+    .quiz-wrapper {
+        margin: 3.5rem auto 1rem;
+        padding: 0 0.6rem;
+    }
+
+    .quiz-container {
+        padding: 1rem;
+    }
+
+    .quiz-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .question-card {
+        padding: 0.8rem;
+    }
+
+    .question-type {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    .answer-option label {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .paragraph-input,
+    .text-input {
+        min-height: 80px;
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .submit-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.95rem;
+    }
+
+    .preview-mode-banner {
+        font-size: 0.8rem;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media screen and (max-height: 480px) and (orientation: landscape) {
+    .quiz-wrapper {
+        margin: 3rem auto 1rem;
+    }
+
+    .quiz-progress-floating {
+        position: absolute;
+    }
+
+    .question-card {
+        margin-bottom: 1rem;
+    }
+
+    .paragraph-input,
+    .text-input {
+        min-height: 60px;
+    }
 } 
