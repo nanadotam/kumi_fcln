@@ -135,9 +135,15 @@ if (!isset($_SESSION['user_id'])) {
                     <div class="answer">
                         <button type="button" onclick="addOption(${questionIndex})">Add Option</button><br><br>
                         <div class="option">
-                            <label for="answer_text">Option 1:</label>
-                            <textarea id="answer_text" name="questions[${questionIndex}][answers][0][answer_text]" required></textarea>
-                            <input type="checkbox" id="is_correct" name="questions[${questionIndex}][answers][0][is_correct]" value="1"><br><br>
+                            <label for="answer_text_${questionIndex}_0">Option 1:</label>
+                            <textarea id="answer_text_${questionIndex}_0" 
+                                     name="questions[${questionIndex}][answers][0][answer_text]" 
+                                     required></textarea>
+                            <input type="checkbox" 
+                                   id="is_correct_${questionIndex}_0" 
+                                   name="questions[${questionIndex}][answers][0][is_correct]" 
+                                   value="1">
+                            <label for="is_correct_${questionIndex}_0">Correct Answer</label><br><br>
                         </div>
                     </div>
                 `;
@@ -175,11 +181,20 @@ if (!isset($_SESSION['user_id'])) {
             
             const type = document.querySelector(`select[name="questions[${questionIndex}][type]"]`).value;
             const inputType = type === 'multiple_choice' ? 'radio' : 'checkbox';
+            const name = type === 'multiple_choice' 
+                ? `questions[${questionIndex}][answers][is_correct]`
+                : `questions[${questionIndex}][answers][${optionsCount}][is_correct]`;
             
             newOption.innerHTML = `
-                <label for="answer_text">Option ${optionsCount + 1}:</label>
-                <textarea id="answer_text" name="questions[${questionIndex}][answers][${optionsCount}][answer_text]" required></textarea>
-                <input type="${inputType}" id="is_correct" name="questions[${questionIndex}][answers][${optionsCount}][is_correct]" value="1"><br><br>
+                <label for="answer_text_${questionIndex}_${optionsCount}">Option ${optionsCount + 1}:</label>
+                <textarea id="answer_text_${questionIndex}_${optionsCount}" 
+                         name="questions[${questionIndex}][answers][${optionsCount}][answer_text]" 
+                         required></textarea>
+                <input type="${inputType}" 
+                       id="is_correct_${questionIndex}_${optionsCount}" 
+                       name="${name}" 
+                       value="1">
+                <label for="is_correct_${questionIndex}_${optionsCount}">Correct Answer</label><br><br>
             `;
             
             answersDiv.querySelector('.answer').appendChild(newOption);

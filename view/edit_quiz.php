@@ -323,22 +323,28 @@ foreach ($questions as &$question) {
         function addOption(questionIndex) {
             const answersDiv = document.getElementById(`answers_${questionIndex}`);
             const optionsCount = answersDiv.getElementsByClassName('option').length;
-            const type = document.querySelector(`select[name="questions[${questionIndex}][type]"]`).value;
+            const newOption = document.createElement('div');
+            newOption.className = 'option';
             
-            const optionDiv = document.createElement('div');
-            optionDiv.className = 'option';
-            optionDiv.innerHTML = `
-                <label>Option ${optionsCount + 1}:</label>
-                <textarea name="questions[${questionIndex}][answers][${optionsCount}][answer_text]" 
-                    required></textarea>
-                <input type="${type === 'multiple_choice' ? 'radio' : 'checkbox'}" 
-                    name="questions[${questionIndex}][answers][${optionsCount}][is_correct]" 
-                    value="1">
+            const type = document.querySelector(`select[name="questions[${questionIndex}][type]"]`).value;
+            const inputType = type === 'multiple_choice' ? 'radio' : 'checkbox';
+            const name = type === 'multiple_choice' 
+                ? `questions[${questionIndex}][answers][is_correct]`
+                : `questions[${questionIndex}][answers][${optionsCount}][is_correct]`;
+            
+            newOption.innerHTML = `
+                <label for="answer_text_${questionIndex}_${optionsCount}">Option ${optionsCount + 1}:</label>
+                <textarea id="answer_text_${questionIndex}_${optionsCount}" 
+                         name="questions[${questionIndex}][answers][${optionsCount}][answer_text]" 
+                         required></textarea>
+                <input type="${inputType}" 
+                       id="is_correct_${questionIndex}_${optionsCount}" 
+                       name="${name}" 
+                       value="1">
+                <label for="is_correct_${questionIndex}_${optionsCount}">Correct Answer</label><br><br>
             `;
             
-            // Insert before the "Add Option" button
-            const addButton = answersDiv.querySelector('button');
-            answersDiv.insertBefore(optionDiv, addButton);
+            answersDiv.querySelector('.answer').appendChild(newOption);
         }
     </script>
 </body>
