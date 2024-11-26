@@ -23,53 +23,68 @@ function getQuizzesByTeacher($teacherId) {
 }
 
 function getQuizById($quizId) {
-    try {
-        $db = Database::getInstance();
-        
-        // Get quiz basic info
-        $sql = "SELECT q.*, u.first_name as teacher_name 
-                FROM Quizzes q
-                LEFT JOIN Users u ON q.created_by = u.user_id
-                WHERE q.quiz_id = ?";
-                
-        $result = $db->query($sql, [$quizId]);
-        
-        if (!$result || $result->num_rows === 0) {
-            return null;
-        }
-        
-        $quiz = $result->fetch_assoc();
-        
-        // Get questions with their text and type
-        $sql = "SELECT * FROM Questions 
-                WHERE quiz_id = ? 
-                ORDER BY order_position";
-                
-        $result = $db->query($sql, [$quizId]);
-        $questions = $result->fetch_all(MYSQLI_ASSOC);
-        
-        // Get answers for each question
-        foreach ($questions as &$question) {
-            $sql = "SELECT * FROM Answers 
-                    WHERE question_id = ?
-                    ORDER BY answer_id";
-            $result = $db->query($sql, [$question['question_id']]);
-            $question['answers'] = $result->fetch_all(MYSQLI_ASSOC);
-            
-            // Add the question text and type
-            $question['text'] = $question['question_text'];
-            $question['type'] = $question['question_type'];
-        }
-        
-        // Add questions to quiz array
-        $quiz['questions'] = $questions;
-        
-        return $quiz;
-        
-    } catch (Exception $e) {
-        error_log("Error in getQuizById: " . $e->getMessage());
+    $db = new mysqli("localhost", "root", "", "kumidb");
+    
+    if ($db->connect_error) {
         return null;
     }
+
+    // Get quiz details
+    $stmt = $db->prepare("
+        SELECT q.*, u.first_name, u.last_name 
+        FROM Quizzes q
+        JOIN Users u ON q.created_by = u.user_id
+        WHERE q.quiz_id = ?
+    ");
+    
+    $stmt->bind_param("i", $quizId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        return null;
+    }
+    
+    $quiz = $result->fetch_assoc();
+    
+    // Get questions and answers
+    $stmt = $db->prepare("
+        SELECT q.*, a.answer_id, a.answer_text, a.is_correct 
+        FROM Questions q
+        LEFT JOIN Answers a ON q.question_id = a.question_id
+        WHERE q.quiz_id = ?
+        ORDER BY q.order_position, q.question_id
+    ");
+    
+    $stmt->bind_param("i", $quizId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $questions = [];
+    while ($row = $result->fetch_assoc()) {
+        $questionId = $row['question_id'];
+        if (!isset($questions[$questionId])) {
+            $questions[$questionId] = [
+                'question_id' => $questionId,
+                'text' => $row['question_text'],
+                'type' => $row['type'],
+                'points' => $row['points'],
+                'answers' => []
+            ];
+        }
+        if ($row['answer_id']) {
+            $questions[$questionId]['answers'][] = [
+                'answer_id' => $row['answer_id'],
+                'text' => $row['answer_text'],
+                'is_correct' => $row['is_correct']
+            ];
+        }
+    }
+    
+    $quiz['questions'] = array_values($questions);
+    
+    $db->close();
+    return $quiz;
 }
 
 function getQuizQuestions($quizId) {
