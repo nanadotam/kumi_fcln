@@ -4,10 +4,17 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Database connection credentials
+// // Database connection credentials
+// $servername = "localhost";  // Database host
+// $username = "nana.amoako";         // Database username
+// $password = "6YM7YABR!b9";            // Database password (empty for local development)
+// $dbname = "webtech_fall2024_nana_amoako";        // Name of the database
+
+
+// Database connection credentials      - LOCAL
 $servername = "localhost";  // Database host
-$username = "nana.amoako";         // Database username
-$password = "6YM7YABR!b9";            // Database password (empty for local development)
+$username = "root";         // Database username
+$password = "";            // Database password (empty for local development)
 $dbname = "webtech_fall2024_nana_amoako";        // Name of the database
 
 // Create new MySQL database connection

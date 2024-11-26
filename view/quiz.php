@@ -2,7 +2,7 @@
 session_start();
 require_once '../functions/auth_functions.php';
 require_once '../functions/quiz_functions.php';
-require_once '../db/config.php';
+require_once '../utils/Database.php';
 
 $currentPage = 'quiz';
 
@@ -14,34 +14,37 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $userRole = $_SESSION['role'];
 
-// Get quizzes based on user role
-if ($userRole === 'student') {
-    // Get only completed quizzes for students
-    $stmt = $conn->prepare("
-        SELECT 
-            q.quiz_id,
-            q.title,
-            q.quiz_code,
-            qr.result_id,
-            qr.score,
-            qr.submitted_at as completion_date,
-            COUNT(DISTINCT qst.question_id) as total_questions,
-            SUM(CASE WHEN r.is_correct = 1 THEN 1 ELSE 0 END) as correct_answers
-        FROM QuizResults qr
-        JOIN Quizzes q ON qr.quiz_id = q.quiz_id
-        LEFT JOIN Questions qst ON q.quiz_id = qst.quiz_id
-        LEFT JOIN Responses r ON qr.result_id = r.result_id AND qst.question_id = r.question_id
-        WHERE qr.user_id = ?
-        GROUP BY q.quiz_id, qr.result_id
-        ORDER BY qr.submitted_at DESC
-    ");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $quizzes = $result->fetch_all(MYSQLI_ASSOC);
-} else {
-    // Keep existing teacher quiz retrieval
-    $quizzes = getQuizzesByTeacher($userId);
+try {
+    $db = Database::getInstance();
+
+    // Get quizzes based on user role
+    if ($userRole === 'student') {
+        // Get only completed quizzes for students
+        $sql = "SELECT 
+                q.quiz_id,
+                q.title,
+                q.quiz_code,
+                qr.result_id,
+                qr.score,
+                qr.submitted_at as completion_date,
+                COUNT(DISTINCT qst.question_id) as total_questions,
+                SUM(CASE WHEN r.is_correct = 1 THEN 1 ELSE 0 END) as correct_answers
+            FROM QuizResults qr
+            JOIN Quizzes q ON qr.quiz_id = q.quiz_id
+            LEFT JOIN Questions qst ON q.quiz_id = qst.quiz_id
+            LEFT JOIN Responses r ON qr.result_id = r.result_id AND qst.question_id = r.question_id
+            WHERE qr.user_id = ?
+            GROUP BY q.quiz_id, qr.result_id
+            ORDER BY qr.submitted_at DESC";
+        
+        $result = $db->query($sql, [$userId]);
+        $quizzes = $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Keep existing teacher quiz retrieval
+        $quizzes = getQuizzesByTeacher($userId);
+    }
+} catch (Exception $e) {
+    die("Error: " . $e->getMessage());
 }
 ?>
 
@@ -144,7 +147,6 @@ if ($userRole === 'student') {
         </div>
     </main>
 
-    <script src="../assets/js/take_quiz.js"></script>
     <script>
     function verifyQuizCode() {
         const quizCode = document.getElementById('quiz_code').value.trim();
@@ -192,8 +194,6 @@ if ($userRole === 'student') {
                     // Remove the quiz card from the UI
                     const quizCard = document.querySelector(`.quiz-card[data-quiz-id="${quizId}"]`);
                     quizCard.remove();
-                    
-                    // Show success message
                     alert('Quiz deleted successfully');
                 } else {
                     alert(data.message || 'Error deleting quiz');
