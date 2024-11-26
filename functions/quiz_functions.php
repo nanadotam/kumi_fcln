@@ -29,9 +29,10 @@ function getQuizById($quizId) {
         return null;
     }
 
-    // Get quiz details
+    // Get quiz details with teacher name
     $stmt = $db->prepare("
-        SELECT q.*, u.first_name, u.last_name 
+        SELECT q.*, u.first_name, u.last_name,
+        CONCAT(u.first_name, ' ', u.last_name) as teacher_name
         FROM Quizzes q
         JOIN Users u ON q.created_by = u.user_id
         WHERE q.quiz_id = ?
