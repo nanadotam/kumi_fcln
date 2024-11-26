@@ -22,6 +22,7 @@ if ($userRole === 'student') {
             q.quiz_id,
             q.title,
             q.quiz_code,
+            qr.result_id,
             qr.score,
             qr.submitted_at as completion_date,
             COUNT(DISTINCT qst.question_id) as total_questions,
@@ -62,12 +63,13 @@ if ($userRole === 'student') {
                 <div class="page-header">
                     <h1>My Quiz History</h1>
                     <div class="quiz-code-section">
-                        <form id="quizCodeForm" action="../actions/validate_quiz_code.php" method="POST">
+                        <form id="quizCodeForm" onsubmit="return false;">
                             <input type="text" 
                                    name="quiz_code" 
+                                   id="quiz_code"
                                    placeholder="Enter Quiz Code" 
                                    required>
-                            <button type="submit" class="start-btn">
+                            <button type="button" class="start-btn" onclick="verifyQuizCode()">
                                 <i class='bx bx-play'></i> Start Quiz
                             </button>
                         </form>
@@ -123,7 +125,7 @@ if ($userRole === 'student') {
                             </div>
                             <div class="quiz-actions">
                                 <?php if ($userRole === 'student'): ?>
-                                    <a href="quiz_result.php?id=<?= $quiz['quiz_id'] ?>" class="view-btn">
+                                    <a href="quiz_result.php?id=<?= $quiz['result_id'] ?>" class="view-btn">
                                         <i class='bx bx-show'></i> View Results
                                     </a>
                                 <?php else: ?>
@@ -143,6 +145,37 @@ if ($userRole === 'student') {
     </main>
 
     <script src="../assets/js/take_quiz.js"></script>
+    <script>
+    function verifyQuizCode() {
+        const quizCode = document.getElementById('quiz_code').value.trim();
+        
+        if (!quizCode) {
+            alert('Please enter a quiz code');
+            return;
+        }
+
+        // Send the code to verify_quiz_code.php
+        fetch('../actions/verify_quiz_code.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quiz_code: quizCode })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `take_quiz.php?id=${data.quiz_id}`;
+            } else {
+                alert(data.message || 'Invalid quiz code. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+    </script>
 </body>
 </html>
 
