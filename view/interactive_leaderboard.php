@@ -75,14 +75,18 @@ $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($quiz['title']) ?> - Leaderboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Oswald:wght@400;500;600&family=Overpass+Mono&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Oswald:wght@400;500;600&family=Overpass+Mono&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/interactive_leaderboard_styles.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
+
 <body>
     <div class="sidebar sidebar-leaderboard">
         <div class="logo-container">
@@ -111,7 +115,7 @@ $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
             </a>
         </nav>
     </div>
-    
+
     <div class="l-wrapper leaderboard-page">
         <header class="c-header">
             <div class="c-logo">
@@ -120,8 +124,24 @@ $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
             </div>
             <a href="quiz.php" class="c-button c-button--primary">Back to Quizzes</a>
         </header>
-        
+
         <div class="l-grid">
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <div class="stat-info">
+                        <h3>Average Score</h3>
+                        <p class="average-score-value">Loading...</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class='bx bx-group'></i>
+                    <div class="stat-info">
+                        <h3>Participation Rate</h3>
+                        <p class="participation-rate-value">Loading...</p>
+                    </div>
+                </div>
+            </div>
             <div class="l-grid__item l-grid__item--sticky">
                 <div class="c-card u-bg--light-gradient u-text--dark">
                     <div class="c-card__body">
@@ -138,7 +158,7 @@ $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
                     </div>
                 </div>
             </div>
-            
+
             <div class="l-grid__item">
                 <div class="c-card">
                     <div class="c-card__header">
@@ -154,18 +174,19 @@ $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
                                 </div>
                             </li>
                             <?php foreach ($leaderboardData as $student): ?>
-                            <li class="c-list__item <?= $student['user_id'] === $userId ? 'current-user' : '' ?>">
-                                <div class="c-list__grid">
-                                    <div class="rank"><?= $student['rank'] ?></div>
-                                    <div class="c-media">
-                                        <div class="c-media__content">
-                                            <div class="c-media__title"><?= htmlspecialchars($student['name']) ?></div>
-                                            <div class="u-text--small"><?= $student['questions_answered'] ?> questions</div>
+                                <li class="c-list__item <?= $student['user_id'] === $userId ? 'current-user' : '' ?>">
+                                    <div class="c-list__grid">
+                                        <div class="rank"><?= $student['rank'] ?></div>
+                                        <div class="c-media">
+                                            <div class="c-media__content">
+                                                <div class="c-media__title"><?= htmlspecialchars($student['name']) ?></div>
+                                                <div class="u-text--small"><?= $student['questions_answered'] ?> questions
+                                                </div>
+                                            </div>
                                         </div>
+                                        <div class="score"><?= number_format($student['total_score']) ?></div>
                                     </div>
-                                    <div class="score"><?= number_format($student['total_score']) ?></div>
-                                </div>
-                            </li>
+                                </li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
@@ -179,15 +200,15 @@ $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
         <div class="error-message"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <script src="../assets/js/interactive_leaderboard.js"></script>
+    <script src="../assets/js/interactive_leaderboard_script.js"></script>
     <script>
-    function confirmLogout(event) {
-        event.preventDefault();
-        if (confirm('Are you sure you want to logout?')) {
-            window.location.href = '../actions/logout.php';
+        function confirmLogout(event) {
+            event.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '../actions/logout.php';
+            }
         }
-    }
     </script>
 </body>
-</html>
 
+</html>

@@ -62,18 +62,34 @@ h1, h2, h3, h4, h5, h6 {
 .l-wrapper {
     margin-left: 250px;
     width: calc(100% - 250px);
-    padding: 2rem;
+    padding: 2rem 4rem;
+    max-width: 1600px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .l-grid {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 1.6rem;
-    position: relative;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-@media screen and (max-width: 700px) {
-    .l-grid {
+@media screen and (max-width: 1200px) {
+    .l-wrapper {
+        padding: 2rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .l-wrapper {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+        padding: 1rem;
+    }
+    
+    .stats-overview {
         grid-template-columns: 1fr;
     }
 }
@@ -126,8 +142,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .c-card {
-    border-radius: 0.8rem;
     background: var(--sidebar-bg, #1a1a1a);
+    border-radius: 0.8rem;
     width: 100%;
     margin-bottom: 1.6rem;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
@@ -215,9 +231,14 @@ h1, h2, h3, h4, h5, h6 {
 
 @media screen and (max-width: 768px) {
     .l-wrapper {
-        width: 100%;
-        margin-left: 0;
+        margin-left: 70px;
+        width: calc(100% - 70px);
         padding: 1rem;
+    }
+    
+    .l-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 }
 
@@ -414,5 +435,64 @@ h1, h2, h3, h4, h5, h6 {
 .student-value,
 .score-value {
     font-weight: 400;
+}
+
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 3rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.stat-card {
+    background: var(--lightest);
+    border-radius: 12px;
+    padding: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card i {
+    font-size: 3.5rem;
+    color: var(--primary);
+    opacity: 0.9;
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-info h3 {
+    font-size: 1.2rem;
+    color: var(--dark);
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-info p {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--darkest);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .stats-overview {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 }
 
