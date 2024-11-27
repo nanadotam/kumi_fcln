@@ -84,6 +84,7 @@ $leaderboardData = $result->fetch_all(MYSQLI_ASSOC);
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Oswald:wght@400;500;600&family=Overpass+Mono&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/interactive_leaderboard_styles.css">
+    <!-- <link rel="stylesheet" href="../assets/css/leaderboard_modal.css"> -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 

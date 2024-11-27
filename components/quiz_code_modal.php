@@ -7,7 +7,7 @@ function renderQuizCodeModal($error = null) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Quiz Leaderboard - Enter Code</title>
-        <link rel="stylesheet" href="../assets/css/interactive_leaderboard.css">
+        <link rel="stylesheet" href="../assets/css/interactive_leaderboard_styles.css">
         <link rel="stylesheet" href="../assets/css/leaderboard_modal.css">
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     </head>
@@ -51,7 +51,7 @@ function renderQuizCodeModal($error = null) {
             </div>
         </main>
 
-        <script src="../assets/js/leaderboard.js"></script>
+        <script src="../assets/js/interactive_leaderboard_script.js"></script>
     </body>
     </html>
     <?php
